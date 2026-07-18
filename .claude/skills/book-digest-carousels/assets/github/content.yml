@@ -117,5 +117,12 @@ jobs:
           git config user.name "content-bot"
           git config user.email "content-bot@users.noreply.github.com"
           git add docs/ TRACKER.md || true
-          git commit -m "Batch $(date -u +%F)" || echo "nothing to commit"
-          git push || echo "nothing to push"
+          git commit -m "Batch $(date -u +%F)" || { echo "nothing to commit"; exit 0; }
+          # Rebase onto any concurrent pushes, then push. Retry so a race never drops a
+          # batch (a plain 'git push || true' would silently lose the just-built content).
+          for attempt in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main || true
+            if git push origin main; then echo "pushed on attempt $attempt"; exit 0; fi
+            echo "push attempt $attempt rejected; retrying"; sleep 5
+          done
+          echo "::error::could not push batch after 5 attempts"; exit 1
