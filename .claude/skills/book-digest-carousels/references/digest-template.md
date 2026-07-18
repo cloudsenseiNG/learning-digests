@@ -41,6 +41,13 @@ Where this shows up in the real world / how it connects to what they'll do next.
 
 **Go deeper (optional)**
 One pointer, like a section to reread or a natural next question to explore.
+
+**Sources & verify** (always include, last section)
+- The primary source this digest is grounded in: book title, chapter, and page range
+  where known (for the AWS track, the specific docs.aws.amazon.com pages, as links).
+- A one-line reminder that the digest is a teaching draft, not a substitute for the
+  source, and that the reader should verify anything they'll rely on against it.
+- If any claim was uncertain or the source was thin, say so plainly here.
 ```
 
 ## Style rules

@@ -42,6 +42,62 @@ is the source of truth. Read it at the start of every run and update it at the e
 
 ---
 
+## Content guardrails (non-negotiable)
+
+These apply to every digest, carousel, and micro-project. If a run cannot satisfy
+them, hold and surface the gap rather than shipping something that violates them.
+
+**1. Accuracy and source discipline**
+- Treat every digest as a **teaching draft, not an authoritative source**.
+- Ground every technical claim in the supplied book chapter, official AWS
+  documentation, or another explicitly provided primary source.
+- Put a short **"Sources & verify"** section in every HTML digest: book title,
+  chapter, relevant page range where available, and source links for AWS material.
+- Do **not** invent commands, APIs, configs, performance numbers, pricing, limits,
+  or "best practices." If you can't ground it, leave it out.
+- When you simplify a concept for a beginner, **label it a simplification** and state
+  the important caveat.
+- Prefer "here's the mental model" over unsupported certainty. If the source is
+  unclear or insufficient, **flag the uncertainty** instead of filling the gap.
+
+**2. Copyright and originality**
+- Never reproduce substantial book passages, tables, illustrations, diagrams,
+  exercises, or end-of-chapter material.
+- Write every explanation in **entirely original language**; build every diagram and
+  schematic **from first principles** (never trace or imitate a source figure).
+- Use quotations only when essential: brief, clearly attributed, with chapter/page.
+- Cite the source, but never present the digest as a substitute for reading the book.
+- Micro-projects are **original adaptations**, never copied book exercises.
+
+**3. One book = one job (don't bundle)**
+Each book (and the AWS track) is handled as its **own independent job**, carried
+through the six stages below in order. Do not merge multiple books into one job unless
+the user explicitly asks. Keep it fully automated: **no human PR-review step before
+delivery**, and the default output is for the user's **private use**, not an audience.
+
+  1. **Source** — identify the exact chapter or docs section, extract the learning
+     objective, and record citations (book/chapter/pages, or the AWS doc URLs).
+  2. **Teaching** — write the beginner-friendly explanation, examples, caveats, and
+     recall questions.
+  3. **Visual** — create original diagrams that clarify the system or idea.
+  4. **Build** — design a small, runnable micro-project with clear completion criteria.
+  5. **Verification** — check factual claims, commands, citations, links, and
+     consistency with the source before delivery. Fix or flag anything that fails.
+  6. **Delivery** — package the final HTML digest and companion assets and deliver
+     them straight to the user: **no human PR-review step, ever**. Publishing the
+     digest to the user's **own GitHub Pages library** is authorized (they've opted
+     into it). Beyond that, do not push to any other public platform (e.g. posting the
+     carousels to TikTok) unless the user explicitly asks. A cycle's carousels are
+     zipped with a **top-level folder per book** and attached to the digest email.
+
+**Combined delivery, independent jobs.** In the unattended cycle the four jobs are
+processed independently (each through stages 1–6 above) but delivered in **one**
+email: all the new digests linked, plus a single carousels zip organised with a
+**folder per book**. "Don't bundle" is about the *work* (each book sourced, taught,
+and verified on its own), not about forcing four separate emails.
+
+---
+
 ## First-run setup
 
 If `config.yaml` does not exist in the working directory, create it from
@@ -102,6 +158,10 @@ Trigger phrases: "today's digest", "digest chapter N of <book>", "catch me up on
    section**: 4 to 6 small things to build (each an hour or two in any language) that
    reinforce the chapter, since building broadens understanding more than notes. Match
    the dark brand theme; keep the fellow-learner voice and the no-em-dash / human style.
+   **End every digest with a "Sources & verify" section** (book title, chapter, page
+   range where known; source doc links for AWS) per the accuracy guardrail above.
+   Obey all **Content guardrails**: ground claims, label simplifications, flag
+   uncertainty, and keep all wording and diagrams original.
 4. Publish and notify:
    - Append the digest's entry (`slug, book, ch, title, date`) to `docs/digests.json`
      and rebuild the index with `scripts/build_index.py --docs docs`.
@@ -175,9 +235,15 @@ through the previous batch.
 
 When the gate is clear, the run produces the **next batch**: the next unit for each of
 the four tracks (the three books plus AWS), finishing an in-progress chapter before
-starting a new one. For each unit it publishes the HTML digest to GitHub Pages, renders
-the carousel, then emails one link email with that batch's carousels attached as a zip,
-and rewrites the "Current batch" checklist (all unchecked) for the next cycle.
+starting a new one. Each track is handled as its **own independent job** (source →
+teaching → visual → build → verification → delivery) under the **Content guardrails**,
+and every digest ends with a **"Sources & verify"** section.
+
+For each unit it publishes the HTML digest to GitHub Pages and renders that unit's
+carousel PNGs into a **per-book folder**, `build/carousels/<book>/<slug>/`, so the
+final zip is organised with **one top-level folder per book**. It then sends **one
+combined link email** for the whole batch with that single foldered zip attached, and
+rewrites the "Current batch" checklist (all unchecked) for the next cycle.
 
 Full setup (secrets, Drive service account, GitHub Pages, `SITE_BASE_URL`) is in
 `references/github-actions.md`. Credentials go in GitHub Actions **Secrets**, never in

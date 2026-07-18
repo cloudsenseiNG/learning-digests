@@ -74,15 +74,25 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
         run: |
-          claude -p "Use the book-digest-carousels skill. Read TRACKER.md. Produce the NEXT unit for \
-          each of the four tracks (DDIA, AI Engineering, High Performance MySQL, AWS): finish an \
-          in-progress chapter before starting a new one. For each unit: write the HTML digest (with \
-          schematics and a micro-project 'Try it yourself' section) to docs/digests/<slug>.html, append \
-          docs/digests.json, and render its carousel PNGs to build/carousels/<slug>/. Then write a link \
-          email to build/email.html that links the new digests and notes the attached carousels zip. \
-          Update the per-book tables in TRACKER.md, and REPLACE the 'Current batch' checklist with the \
-          new unit list, all unchecked." \
-            --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep"
+          claude -p "Use the book-digest-carousels skill. Read TRACKER.md, then follow its Content \
+          guardrails exactly. Produce the NEXT unit for each of the four tracks (DDIA, AI Engineering, \
+          High Performance MySQL, AWS), finishing an in-progress chapter before starting a new one. \
+          Treat each book as its OWN independent job, carried through all six stages in order: (1) Source \
+          - pin the exact chapter/AWS docs section and record citations; (2) Teaching - beginner-friendly \
+          explanation, examples, caveats, recall questions; (3) Visual - original schematics from first \
+          principles; (4) Build - a small runnable micro-project with clear completion criteria; \
+          (5) Verification - check every factual claim, command, citation, and link against the source, \
+          fix or flag anything that fails; (6) Delivery. Do NOT bundle the books' research together. \
+          Ground all claims in the source, invent nothing (no fake commands, APIs, numbers, pricing, or \
+          limits), label any beginner simplification with its caveat, keep all wording and diagrams \
+          original, and END EACH DIGEST WITH A 'Sources & verify' SECTION (book, chapter, pages; AWS doc \
+          links). For each unit: write the HTML digest to docs/digests/<slug>.html, append \
+          docs/digests.json, and render its carousel PNGs to build/carousels/<book>/<slug>/ where <book> \
+          is a clean folder name (DDIA, AI-Engineering, High-Performance-MySQL, AWS) so the zip is \
+          foldered per book. Then write ONE combined link email to build/email.html linking all the new \
+          digests and noting the attached carousels zip. Update the per-book tables in TRACKER.md, and \
+          REPLACE the 'Current batch' checklist with the new unit list, all unchecked." \
+            --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
       - name: Rebuild index + zip the carousels
         if: steps.gate.outputs.send == 'true'
