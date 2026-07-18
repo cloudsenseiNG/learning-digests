@@ -101,6 +101,24 @@ These are the *shape*, not gospel: adapt the schematic to whatever the unit's cr
 (an index B-tree, a queue, a cache-aside path). The point is a glanceable picture that
 proves the concept.
 
+## Fixed per-track chrome (never drifts)
+
+The `terminal` path and the `counter` prefix are the track's identity. They must be
+**byte-for-byte identical across every carousel in that track, chapter after chapter** —
+`~/learning/ai` never becomes `~/learning/ai-engineering`, `~/learning/systems` never
+becomes `~/learning/ddia`. Always use exactly these:
+
+| Track | `terminal` | counter prefix |
+|-------|-----------|----------------|
+| Designing Data-Intensive Applications | `~/learning/systems` | `SYSTEMS` |
+| AI Engineering | `~/learning/ai` | `AI` |
+| High Performance MySQL | `~/learning/mysql` | `MYSQL` |
+| AWS | `~/learning/aws` | `AWS` |
+
+The cover's `counter` is `<PREFIX> · NN` (the chapter/topic number, e.g. `AI · 03`);
+inner slides use `NN / TOTAL` (e.g. `02 / 08`). Only the footer `tags` (e.g.
+`ai · foundation models`) vary by subtopic — the terminal and prefix never do.
+
 ## The templates (already built, on-brand)
 
 Four editable SVGs in `assets/templates/`, dark theme with a red `#C8453A` accent,
