@@ -24,16 +24,16 @@ still treated like a chapter: one digest, one carousel.
 
 ## Current batch: tick each when you've studied it
 
-- [ ] DDIA Ch.1 — Reliable, Scalable, and Maintainable Applications (docs/digests/ddia-ch1-reliable-scalable-maintainable.html)
-- [ ] AI Engineering Ch.1 (Part 1 of 3) — From Language Models to Foundation Models (docs/digests/ai-engineering-ch1-intro-foundation-models.html)
-- [ ] High Performance MySQL Ch.1 — MySQL Architecture (docs/digests/high-performance-mysql-ch1-architecture.html)
-- [ ] AWS Topic 1 — Core networking: VPC, subnets, route tables, NAT, and the IGW (docs/digests/aws-01-core-networking.html)
+<!-- Fresh start from Chapter 1: this list is empty, so the completion gate is CLEAR and
+     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) using
+     the current carousel style (signature arc + one visual-proof slide, 4-8 slides), then
+     writes the new "Current batch" checklist here for you to tick. -->
 
 ## Track A: Designing Data-Intensive Applications
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | 2026-07-18 | 2026-07-18 | Fault-vs-failure carousel (Knight Capital, Aug 2012, verified); digest covers reliability, scalability (Twitter fan-out, percentiles), and maintainability in full. |
+| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | | | |
 | 2 | Data Models and Query Languages | 49–90 | | | |
 | 3 | Storage and Retrieval | 91–132 | | | |
 | 4 | Encoding and Evolution | 133–166 | | | |
@@ -51,7 +51,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | In progress (Part 1 of 3, pp.25–39) | 2026-07-18 | Part 1 of 3 covers language models → self-supervision → foundation models → why AI engineering emerged (pp. 25–39). Next: "Foundation Model Use Cases" from p.40. |
+| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | |
 | 2 | Understanding Foundation Models | 73-136 | | | |
 | 3 | Evaluation Methodology | 137-182 | | | |
 | 4 | Evaluate AI Systems | 183-234 | | | |
@@ -66,7 +66,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | MySQL Architecture | 23-40 | 2026-07-18 | 2026-07-18 | Layered architecture + ACID/isolation/MVCC/replication; carousel case study = GitHub's Oct 2018 replication-gap outage (web-verified). |
+| 1 | MySQL Architecture | 23-40 | | | |
 | 2 | Monitoring in a Reliability Engineering World | 41-62 | | | |
 | 3 | Performance Schema | 63-96 | | | |
 | 4 | Operating System and Hardware Optimization | 97-120 | | | |
@@ -84,7 +84,7 @@ still treated like a chapter: one digest, one carousel.
 
 | # | Topic | Source | Digested | Carousel | Notes |
 |--:|-------|--------|----------|----------|-------|
-| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | 2026-07-18 | 2026-07-18 | Route table decides public/private; case study = Dec 7 2021 AWS internal routing/NAT outage (verified via AWS's own post-event summary). |
+| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | | | |
 | 2 | Transit Gateway & multi-VPC connectivity | docs.aws.amazon.com | | | |
 | 3 | EC2 (instances, AMIs, ASGs, load balancing) | docs.aws.amazon.com | | | |
 | 4 | S3 (storage classes, lifecycle, security) | docs.aws.amazon.com | | | |
