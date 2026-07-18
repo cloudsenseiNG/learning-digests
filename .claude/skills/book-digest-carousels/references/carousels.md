@@ -19,14 +19,42 @@ so there's nothing to attribute. Just never copy the source's exact wording.
 
 ## Length
 
-**4–8 slides, matched to complexity.** A simple idea is a tight 4; a meatier one can
-run to 8. Err on the shorter side — it should never feel overwhelming. Structure:
-**cover (hook) → concept/code slides (one idea each) → close (takeaway + CTA)**.
+**4–8 slides, matched to complexity.** A simple idea is a tight 4; a meatier one earns
+the full 7–8 so the arc can breathe. Don't compress a rich idea to hit a low count, and
+don't pad a thin one: give the idea the length it deserves. It should never feel
+overwhelming, but **depth wins** over brevity.
 
 - Slide 1 hooks: a promise, a surprising number, or "I kept getting this wrong."
 - One thought per slide. Short lines. No paragraphs — this is glanceable.
 - Use a `code` slide only when a snippet or concrete example carries the point.
 - Close with the takeaway distilled to a line, plus a light CTA.
+
+## Signature structure (match this — the AWS core-networking carousel is the benchmark)
+
+The carousels the user loves read like a short **story**, not a list of facts. Match
+this arc (each numbered beat is one `concept` slide unless noted):
+
+1. **Cover / hook** — frame a real tension or realization in the learner's voice
+   ("Public subnet or private subnet? It's ONE line in a table."). The subtitle is a
+   first-person promise ("The route table trick that finally made VPC click for me.").
+2. **Orient** (kicker e.g. `THE SETUP`) — one plain-language slide giving the beginner
+   the ground they need ("Everything in AWS lives inside a VPC").
+3. **The crux** — put the single **concrete artifact** at the centre as the heading: a
+   real value, row, command, or number (`0.0.0.0/0 pointed at an internet gateway =
+   public`), then explain it simply. Specific always beats abstract.
+4. **Why it matters — a real, named, dated case study (REQUIRED).** Tie the small
+   detail to a real incident with stakes: the Feb 2017 S3 typo outage, the Dec 2021
+   AWS outage, a documented postmortem. **Verify it with a quick web search; never
+   invent an incident, date, or number.** This is the beat that makes the set land.
+5. **Bring it home** (kicker e.g. `SAME INSTINCT, SMALLER STAKES`) — scale it back to
+   the learner's own situation: the practical caution, or how to apply it day to day.
+6. **Close / takeaway** — the whole thing distilled to one memorable line, plus the
+   Follow CTA, avatar, name, and the social handles.
+
+**Kickers are punchy and specific**, never generic: "THE ONE ROW THAT DECIDES IT" and
+"WHY THIS ROW MATTERS SO MUCH" beat "Definition" and "Example". Footer chrome stays
+topic-based ("aws · route tables") with the `@mayowa` handle. Every track (DDIA, AI
+Engineering, MySQL, AWS) follows this same arc — it is not AWS-only.
 
 ## The templates (already built, on-brand)
 

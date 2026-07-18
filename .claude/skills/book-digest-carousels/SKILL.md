@@ -147,7 +147,10 @@ Trigger phrases: "today's digest", "digest chapter N of <book>", "catch me up on
    finish the current chapter before starting the next**. Don't force a whole chapter
    into one day: if a chapter is long, cover a coherent section, mark it "in progress"
    in the tracker, and pick up where you left off next time. Only move to the next
-   chapter once the current one is done.
+   chapter once the current one is done. **There is no rush to finish a book — depth
+   over speed.** Prefer splitting a chapter across several batches to bring out real
+   detail (clear explanations, concrete examples, and a real named case study) over
+   racing ahead; only advance when the current unit is genuinely thorough.
 2. Locate and extract the chapter text (see above).
 3. Write the digest as **HTML** into `docs/digests/<slug>.html` (the GitHub Pages
    folder), using the content structure in `references/digest-template.md` and the
