@@ -61,6 +61,13 @@ this arc (each numbered beat is one `concept` slide unless noted):
 topic-based ("aws · route tables") with the `@mayowa` handle. Every track (DDIA, AI
 Engineering, MySQL, AWS) follows this same arc — it is not AWS-only.
 
+**Length stays flexible, 4–8 — the arc is a menu, not a fixed seven.** The beats above
+are the full-length shape. For a simpler idea, merge beats (fold "orient" into the crux,
+or "bring it home" into the close) and run as tight as **4**: cover → crux + visual
+proof → case study or takeaway → close. Scale toward 8 only when the idea genuinely has
+that much to show. The one visual-proof slide (and a real case study, when the concept
+has one worth telling) fit inside that range. **Never pad slides to hit a number.**
+
 ## The visual-proof slide (required, one per deck)
 
 Every deck includes **exactly one** `code`-template slide whose job is to *show* the
