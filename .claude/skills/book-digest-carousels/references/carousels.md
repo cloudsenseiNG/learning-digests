@@ -112,7 +112,7 @@ becomes `~/learning/ddia`. Always use exactly these:
 |-------|-----------|----------------|
 | Designing Data-Intensive Applications | `~/learning/systems` | `SYSTEMS` |
 | AI Engineering | `~/learning/ai` | `AI` |
-| High Performance MySQL | `~/learning/mysql` | `MYSQL` |
+| High Performance MySQL | `~/learning/sql` | `SQL` |
 | AWS | `~/learning/aws` | `AWS` |
 
 The cover's `counter` is `<PREFIX> · NN` (the chapter/topic number, e.g. `AI · 03`);
