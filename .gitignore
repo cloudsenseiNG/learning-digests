@@ -1,0 +1,8 @@
+build/
+books/*.pdf
+books/**/*.pdf
+sa.json
+*.env
+.env
+__pycache__/
+.DS_Store

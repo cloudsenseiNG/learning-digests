@@ -1,0 +1,200 @@
+---
+name: book-digest-carousels
+description: "Turn a book chapter (PDF) into a beginner-friendly daily DIGEST drafted as a ready-to-send email, plus a batch of ready-to-post TikTok CAROUSEL image slides that follow the user's own template, and keep a progress tracker so chapters are never skipped or repeated. Use this skill whenever the user asks for a digest, chapter summary, carousels, slides, this week's carousels, today's digest, wants to turn a book or PDF into social content, or mentions their study or TikTok content routine, even if they don't name the skill. Trigger it on any recurring book-to-content request."
+---
+
+# Book Digest & Carousels
+
+This skill runs a personal learning-to-content pipeline for someone **new to the
+material**. It reads a chapter from a book PDF and produces:
+
+1. A **daily digest** — a plain-language email that teaches the chapter without
+   assuming prior knowledge and without dropping important detail.
+2. **Weekly carousels** — 5 sets (Mon–Fri) of ready-to-post image slides that
+   distill the week's chapters, rendered to match a template the user supplies.
+
+It also keeps a **tracker** so you always know what's been covered and what's next.
+
+**Voice:** the user (Mayowa) is learning this material alongside their audience.
+Write everything, digests and carousels, as a relatable fellow learner ("here's what
+finally made this click"), in plain English, never as a lecturing expert. Define terms
+as they appear.
+
+**Write like a person, not an AI.** No em dashes anywhere (use commas, periods,
+parentheses, or a colon). Avoid the giveaway patterns: "it's not X, it's Y",
+forced rule-of-three phrasing, and stacking colons for drama. Use contractions and
+the occasional short sentence. Read it back and cut anything that sounds generated.
+
+**Don't cite the source book on carousels.** These are general field concepts in
+Mayowa's own words, so no attribution is needed on a social post. Just never reproduce
+the source's exact wording or its signature examples verbatim. Keep the chrome
+topic-based (e.g. "SYSTEMS · 01"), not book-based.
+
+**Use fresh, real examples, not the book's.** When a point needs an illustration,
+reach for a true real-world example from outside the source (verify it with a quick
+web search first), and prefer ones that tie into Mayowa's own tracks. For instance, to
+show "faults shouldn't become failures," use S3 storing every file across 3+ data
+centers; to show human error, use the 2017 AWS typo outage. Don't reuse the book's own
+case studies (that's the tell that it's a book recap).
+
+Because there is no automatic scheduling or cross-session memory, the tracker file
+is the source of truth. Read it at the start of every run and update it at the end.
+
+---
+
+## First-run setup
+
+If `config.yaml` does not exist in the working directory, create it from
+`assets/config.example.yaml` and ask the user to fill in the paths. Key fields:
+
+- `books_dir` — where the PDFs live. This is normally a **Google Drive folder
+  synced to the local disk** (via the Google Drive desktop app) so the skill can
+  read PDFs as ordinary files. A plain repo folder or downloaded PDFs work too.
+- `output_dir` — where digests and rendered slides are written.
+- `tracker` — path to the `TRACKER.md` progress file (create from `assets/TRACKER.example.md`).
+- `carousel_template` — path to the `template.json` describing the user's slide design.
+- `digest.email_to` — the address the digest email is addressed to.
+
+If any path is missing, ask before guessing. Never invent a books folder.
+
+---
+
+## Locating a chapter in a PDF
+
+A book PDF contains many chapters, so you must find the right one:
+
+1. Check the tracker first — if this book+chapter already has a cached page range,
+   use it directly (fast path).
+2. Otherwise, read the PDF's table of contents / headings to find the chapter's
+   start and end pages, then extract just those pages' text.
+3. **Cache the discovered page range back into the tracker** so the next run is instant.
+
+Use `scripts/extract_chapter.py --pdf <file> --pages <start-end>` to pull clean text,
+or read the pages directly if the PDF is scanned (then OCR).
+
+## Web-sourced topics (e.g. AWS)
+
+Not every source is a book. For a track whose source is a website (the tracker lists
+`https://docs.aws.amazon.com/` for the AWS track), treat each topic like a chapter but
+read it from the web instead of a PDF: fetch the relevant service doc pages for that
+topic, then produce the same digest and carousel. Record the topic as done in the
+tracker just like a chapter. Everything downstream (voice, templates, delivery) is
+identical.
+
+---
+
+## Workflow A — Daily digest
+
+Trigger phrases: "today's digest", "digest chapter N of <book>", "catch me up on <book>".
+
+1. Read `config.yaml` and `TRACKER.md`. Work through the plan **sequentially and
+   finish the current chapter before starting the next**. Don't force a whole chapter
+   into one day: if a chapter is long, cover a coherent section, mark it "in progress"
+   in the tracker, and pick up where you left off next time. Only move to the next
+   chapter once the current one is done.
+2. Locate and extract the chapter text (see above).
+3. Write the digest as **HTML** into `docs/digests/<slug>.html` (the GitHub Pages
+   folder), using the content structure in `references/digest-template.md` and the
+   layout in `references/digest-html.md`. Teach for a beginner: define every term,
+   explain each idea with a concrete example, keep important detail. **Add simple SVG
+   schematics where a diagram makes a concept clearer** (fault/flow, a percentile
+   distribution, an architecture sketch). End with a **"Try it yourself" micro-projects
+   section**: 4 to 6 small things to build (each an hour or two in any language) that
+   reinforce the chapter, since building broadens understanding more than notes. Match
+   the dark brand theme; keep the fellow-learner voice and the no-em-dash / human style.
+4. Publish and notify:
+   - Append the digest's entry (`slug, book, ch, title, date`) to `docs/digests.json`
+     and rebuild the index with `scripts/build_index.py --docs docs`.
+   - Write a **lightweight link email** to `build/email.html` (title, one-line teaser,
+     a button to `<site_base_url>/digests/<slug>.html`, a note about the exercises,
+     and the brand footer). Keep it small: use a downscaled avatar, no schematics.
+   - Send it with `scripts/deliver_digest.py --file build/email.html`. The full digest
+     is hosted (too big to email); the inbox just gets the link.
+5. Update the tracker: mark the chapter digested (or "in progress") with today's date.
+
+---
+
+## Workflow B — Weekly carousels (Mon–Fri)
+
+Trigger phrases: "this week's carousels", "make the carousels", "5 carousels from chapters X–Y".
+
+1. Read `config.yaml` and `TRACKER.md`. Identify the chapters to cover this week
+   (from the reading plan or the user's request).
+2. For each of the 5 weekday posts, pick the single most **post-worthy thread** from
+   the assigned chapter — not the whole digest. One clear idea per carousel.
+3. Write the slide copy following `references/carousels.md`. Each carousel is **4–8
+   slides, sized to the idea's complexity** — keep it from feeling overwhelming. Use
+   the editable SVG templates in `assets/templates/` (`cover`, `concept`, `code`,
+   `close`). Save each carousel as a `deck.json` (schema in that reference) under
+   `output_dir/carousels/<day>/`.
+4. Render each carousel to PNGs:
+   ```bash
+   python scripts/render_carousels.py \
+     --templates assets/templates --fonts assets/fonts.json \
+     --content output_dir/carousels/<day>/deck.json \
+     --out output_dir/carousels/<day>/
+   ```
+   This produces `slide_01.png … slide_NN.png` sized and styled per the template.
+5. Present all five sets to the user so their week is queued. Update the tracker:
+   mark the chapters as "carousels made" with the week's date.
+
+The user posts one set per weekday manually — the skill just prepares the whole week.
+
+---
+
+## Updating the templates
+
+The four SVG templates in `assets/templates/` already match the user's brand. To
+change the look, edit those SVGs directly (see the "How the templates work" section
+in `references/carousels.md`) or swap the TTFs in `assets/fonts/`.
+
+If the user submits **new** designs: the cleanest input is an SVG exported with live
+text (not outlined) — replace its text with `{{field}}` tokens. If the export has
+outlined text, rebuild by keeping the design's non-text vector parts (background,
+decoration, logo) and adding `<text>` fields with `data-*` layout attributes.
+
+---
+
+## Progress tracker rules
+
+`TRACKER.md` is the memory of this system. Always:
+
+- Read it at the start of a run to know what's done and what's next.
+- Update it at the end of a run (chapters digested, carousels made, cached page ranges).
+- Never re-digest or re-post a chapter already marked done unless the user asks.
+
+---
+
+## Running unattended (GitHub Actions)
+
+`assets/github/content.yml` runs **twice a day (00:00 and 18:00 GMT+1)**. Each run first
+checks a **completion gate**: `scripts/gate.py` reads the "Current batch" checklist in
+`TRACKER.md`, and only if every box is ticked does the run proceed. This keeps content
+self-paced: nothing new is produced, published, or emailed until the user has worked
+through the previous batch.
+
+When the gate is clear, the run produces the **next batch**: the next unit for each of
+the four tracks (the three books plus AWS), finishing an in-progress chapter before
+starting a new one. For each unit it publishes the HTML digest to GitHub Pages, renders
+the carousel, then emails one link email with that batch's carousels attached as a zip,
+and rewrites the "Current batch" checklist (all unchecked) for the next cycle.
+
+Full setup (secrets, Drive service account, GitHub Pages, `SITE_BASE_URL`) is in
+`references/github-actions.md`. Credentials go in GitHub Actions **Secrets**, never in
+the repo.
+
+## Reference files
+
+- `references/digest-template.md` — digest content structure, voice, and a worked example.
+- `references/digest-html.md` — the HTML digest layout, brand tokens, and schematics guide.
+- `references/carousels.md` — copywriting rules, the SVG templates, and the
+  `deck.json` schema the renderer consumes.
+- `references/github-actions.md` — the scheduled-automation architecture and setup.
+
+## Scripts
+
+- `scripts/extract_chapter.py` — extract clean text from a PDF page range.
+- `scripts/render_carousels.py` — fill the SVG templates and render slide PNGs.
+- `scripts/deliver_digest.py` — email a digest or link email over SMTP (HTML with
+  inline schematics is auto-converted to CID images).
+- `scripts/build_index.py` — rebuild the hosted digest library index from the manifest.

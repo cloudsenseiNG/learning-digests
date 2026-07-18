@@ -1,0 +1,30 @@
+# Copy this to ./config.yaml and fill in your paths.
+
+# The book PDFs. Your "books" folder in Google Drive.
+#  - Local runs: point at the Drive-synced folder on disk (Google Drive desktop app).
+#  - GitHub Actions runs: leave as ./books — the workflow pulls the Drive folder there
+#    (see references/github-actions.md; folder is matched by GDRIVE_BOOKS_FOLDER_ID).
+books_dir: "./books"
+
+# Where digests and rendered slides get written.
+output_dir: "./output"
+
+# Progress tracker (create from assets/TRACKER.example.md the first time).
+tracker: "./TRACKER.md"
+
+# Carousel design: editable SVG templates + bundled fonts (already set up).
+carousel_templates: "./assets/templates"
+carousel_fonts: "./assets/fonts.json"
+
+digest:
+  email_to: "you@example.com"
+  # Full digests are HTML with schematics, hosted (too big to email). The email
+  # is a lightweight link to the hosted page. Hosting = GitHub Pages serving ./docs.
+  site_base_url: "https://yourname.github.io/learning-digests"
+  docs_dir: "./docs"          # GitHub Pages source; digests go in docs/digests/
+  # Sequential pace: finish the current chapter before the next; long chapters
+  # can span several days (tracked as "in progress").
+
+carousels:
+  per_week: 5          # Mon–Fri
+  slides_per_carousel: "6-9"

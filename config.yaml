@@ -1,0 +1,35 @@
+# learning-digests config
+# Two values you must edit are marked EDIT ME.
+
+# Book PDFs. In CI they're pulled from your Google Drive "books" folder into ./books.
+# Locally, drop PDFs here (or point at a Drive-synced folder) to test.
+books_dir: "./books"
+
+# Working output (rendered carousels, the outgoing email). Gitignored.
+output_dir: "./build"
+
+# Progress tracker + completion gate.
+tracker: "./TRACKER.md"
+
+# Carousel design (lives inside the skill).
+carousel_templates: "./.claude/skills/book-digest-carousels/assets/templates"
+carousel_fonts: "./.claude/skills/book-digest-carousels/assets/fonts.json"
+
+digest:
+  email_to: "bodunwamayowa@gmail.com"         # EDIT ME: where the link email is sent
+  # Full HTML digests are hosted on GitHub Pages; the email is a lightweight link.
+  site_base_url: "https://mayusb.github.io/learning-digests"   # EDIT ME
+  docs_dir: "./docs"                           # GitHub Pages source (main /docs)
+
+carousels:
+  per_batch_per_track: 1
+  slides_per_carousel: "4-8"
+
+# Self-paced batches across four tracks (3 books + AWS). New content only ships once
+# the "Current batch" checklist in TRACKER.md is fully ticked. Cron runs 00:00 and
+# 18:00 GMT+1 and checks the gate each time.
+tracks:
+  - "Designing Data-Intensive Applications"
+  - "AI Engineering"
+  - "High Performance MySQL"
+  - "AWS (https://docs.aws.amazon.com/)"

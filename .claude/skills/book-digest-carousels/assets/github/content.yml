@@ -1,0 +1,107 @@
+# Copy to .github/workflows/content.yml
+# Runs twice a day (00:00 and 18:00 West Africa Time / GMT+1). On each run it checks
+# the completion gate: only if you've ticked every item in the "Current batch"
+# checklist in TRACKER.md does it produce and send the NEXT batch. Otherwise it waits.
+#
+# A batch = the next unit for each of the four tracks (DDIA, AI Engineering,
+# High Performance MySQL, AWS). It publishes the HTML digests to GitHub Pages and
+# emails you the link plus that batch's carousels as a zip.
+name: Content
+
+on:
+  schedule:
+    - cron: "0 23 * * *"   # 00:00 WAT (GMT+1)  = 23:00 UTC
+    - cron: "0 17 * * *"   # 18:00 WAT (GMT+1)  = 17:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content
+  cancel-in-progress: false
+
+jobs:
+  content:
+    runs-on: ubuntu-latest
+    env:
+      SKILL: .claude/skills/book-digest-carousels
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      # ---- gate: have you finished the current batch? ----
+      - name: Completion gate
+        id: gate
+        run: python "$SKILL"/scripts/gate.py --tracker TRACKER.md
+
+      - name: System deps
+        if: steps.gate.outputs.send == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rclone libcairo2 libpango-1.0-0 fontconfig zip
+          pip install --quiet cairosvg pillow pypdf pyyaml anthropic
+
+      - name: Install bundled fonts
+        if: steps.gate.outputs.send == 'true'
+        run: mkdir -p ~/.fonts && cp "$SKILL"/assets/fonts/*.ttf ~/.fonts/ && fc-cache -f
+
+      - name: Configure Google Drive (rclone, read-only)
+        if: steps.gate.outputs.send == 'true'
+        run: |
+          echo "$GDRIVE_SA_JSON" > /tmp/sa.json
+          mkdir -p ~/.config/rclone
+          printf '[gdrive]\ntype = drive\nscope = drive.readonly\nservice_account_file = /tmp/sa.json\nroot_folder_id = %s\n' "${{ vars.GDRIVE_BOOKS_FOLDER_ID }}" > ~/.config/rclone/rclone.conf
+        env:
+          GDRIVE_SA_JSON: ${{ secrets.GDRIVE_SA_JSON }}
+
+      - name: Pull the books folder
+        if: steps.gate.outputs.send == 'true'
+        run: rclone copy gdrive: ./books --fast-list
+
+      - name: Install Claude Code
+        if: steps.gate.outputs.send == 'true'
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Produce the next batch (4 tracks)
+        if: steps.gate.outputs.send == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
+        run: |
+          claude -p "Use the book-digest-carousels skill. Read TRACKER.md. Produce the NEXT unit for \
+          each of the four tracks (DDIA, AI Engineering, High Performance MySQL, AWS): finish an \
+          in-progress chapter before starting a new one. For each unit: write the HTML digest (with \
+          schematics and a micro-project 'Try it yourself' section) to docs/digests/<slug>.html, append \
+          docs/digests.json, and render its carousel PNGs to build/carousels/<slug>/. Then write a link \
+          email to build/email.html that links the new digests and notes the attached carousels zip. \
+          Update the per-book tables in TRACKER.md, and REPLACE the 'Current batch' checklist with the \
+          new unit list, all unchecked." \
+            --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep"
+
+      - name: Rebuild index + zip the carousels
+        if: steps.gate.outputs.send == 'true'
+        run: |
+          python "$SKILL"/scripts/build_index.py --docs docs
+          mkdir -p build
+          (cd build/carousels && zip -r "../carousels-$(date -u +%F).zip" .)
+
+      - name: Email the link + carousels zip
+        if: steps.gate.outputs.send == 'true'
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          DIGEST_TO: ${{ secrets.DIGEST_TO }}
+        run: python "$SKILL"/scripts/deliver_digest.py --file build/email.html --attach "build/carousels-*.zip"
+
+      - name: Publish + commit
+        if: steps.gate.outputs.send == 'true'
+        run: |
+          git config user.name "content-bot"
+          git config user.email "content-bot@users.noreply.github.com"
+          git add docs/ TRACKER.md || true
+          git commit -m "Batch $(date -u +%F)" || echo "nothing to commit"
+          git push || echo "nothing to push"

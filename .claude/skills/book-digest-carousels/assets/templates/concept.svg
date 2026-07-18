@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+<defs>
+<radialGradient id="bg" cx="50%" cy="0%" r="120%">
+<stop offset="0" stop-color="#131316"/><stop offset="0.55" stop-color="#0A0A0B"/><stop offset="1" stop-color="#070708"/>
+</radialGradient>
+<pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+<path d="M60 0H0V60" fill="none" stroke="rgba(242,239,233,0.035)" stroke-width="1"/>
+</pattern>
+<clipPath id="avclip"><circle cx="0" cy="0" r="1"/></clipPath>
+</defs>
+<rect width="1080" height="1350" rx="6" fill="url(#bg)"/>
+<rect width="1080" height="1350" rx="6" fill="url(#grid)"/>
+<path d="M48 48 h56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M48 48 v56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M1032 48 h-56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M1032 48 v56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M48 1302 h56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M48 1302 v-56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M1032 1302 h-56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<path d="M1032 1302 v-56" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<text data-field="terminal" x="80" y="132" data-box-w="640" data-max-lines="1"
+  data-size="30" data-min-size="24" data-align="left" font-family="JetBrains Mono" font-weight="500"
+  fill="#F2EFE9">{{terminal}}</text>
+<text data-field="counter" x="1000" y="132" data-box-w="260" data-max-lines="1"
+  data-size="30" data-min-size="24" data-align="right" font-family="JetBrains Mono" font-weight="400"
+  fill="#7A7A80">{{counter}}</text>
+<text data-field="kicker" x="80" y="270" data-box-w="900" data-max-lines="1"
+  data-size="30" data-min-size="24" data-align="left" font-family="JetBrains Mono" font-weight="500"
+  fill="#C8453A" letter-spacing="4">{{kicker}}</text>
+<path d="M80 300 h920" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+<text data-field="heading" x="80" y="440" data-box-w="920" data-box-h="290" data-max-lines="3"
+  data-size="72" data-min-size="46" data-line-height="1.06" data-align="left"
+  font-family="Bricolage Grotesque" font-weight="800" fill="#F2EFE9">{{heading}}</text>
+<text data-field="body" x="80" y="780" data-box-w="900" data-box-h="440" data-max-lines="8"
+  data-size="42" data-min-size="30" data-line-height="1.42" data-align="left"
+  font-family="Inter" font-weight="400" fill="#D8D5CD">{{body}}</text>
+<text data-field="handle" x="80" y="1278" data-box-w="560" data-max-lines="1"
+  data-size="30" data-min-size="24" data-align="left" font-family="JetBrains Mono" font-weight="500"
+  fill="#7A7A80" letter-spacing="1">{{handle}}</text>
+<text data-field="tags" x="1000" y="1278" data-box-w="420" data-max-lines="1"
+  data-size="28" data-min-size="22" data-align="right" font-family="JetBrains Mono" font-weight="400"
+  fill="#7A7A80" letter-spacing="1">{{tags}}</text>
+</svg>

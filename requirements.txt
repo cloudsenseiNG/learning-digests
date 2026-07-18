@@ -1,0 +1,4 @@
+cairosvg
+pillow
+pypdf
+pyyaml
