@@ -26,7 +26,8 @@ overwhelming, but **depth wins** over brevity.
 
 - Slide 1 hooks: a promise, a surprising number, or "I kept getting this wrong."
 - One thought per slide. Short lines. No paragraphs — this is glanceable.
-- Use a `code` slide only when a snippet or concrete example carries the point.
+- Include **one `code` visual-proof slide per deck** (the tiny schematic, see below);
+  add further `code` slides only if another snippet genuinely carries a point.
 - Close with the takeaway distilled to a line, plus a light CTA.
 
 ## Signature structure (match this — the AWS core-networking carousel is the benchmark)
@@ -42,19 +43,55 @@ this arc (each numbered beat is one `concept` slide unless noted):
 3. **The crux** — put the single **concrete artifact** at the centre as the heading: a
    real value, row, command, or number (`0.0.0.0/0 pointed at an internet gateway =
    public`), then explain it simply. Specific always beats abstract.
-4. **Why it matters — a real, named, dated case study (REQUIRED).** Tie the small
+4. **Visual proof (REQUIRED — one per deck).** A `code`-panel slide that *shows* the
+   crux as a tiny monospace schematic instead of describing it: a route-table snippet,
+   a replication fan-out, a fault → failure flow, a next-token strip. See "The
+   visual-proof slide" below. This is the beat that turns "I read it" into "I see it."
+5. **Why it matters — a real, named, dated case study (REQUIRED).** Tie the small
    detail to a real incident with stakes: the Feb 2017 S3 typo outage, the Dec 2021
    AWS outage, a documented postmortem. **Verify it with a quick web search; never
    invent an incident, date, or number.** This is the beat that makes the set land.
-5. **Bring it home** (kicker e.g. `SAME INSTINCT, SMALLER STAKES`) — scale it back to
+6. **Bring it home** (kicker e.g. `SAME INSTINCT, SMALLER STAKES`) — scale it back to
    the learner's own situation: the practical caution, or how to apply it day to day.
-6. **Close / takeaway** — the whole thing distilled to one memorable line, plus the
+7. **Close / takeaway** — the whole thing distilled to one memorable line, plus the
    Follow CTA, avatar, name, and the social handles.
 
 **Kickers are punchy and specific**, never generic: "THE ONE ROW THAT DECIDES IT" and
 "WHY THIS ROW MATTERS SO MUCH" beat "Definition" and "Example". Footer chrome stays
 topic-based ("aws · route tables") with the `@mayowa` handle. Every track (DDIA, AI
 Engineering, MySQL, AWS) follows this same arc — it is not AWS-only.
+
+## The visual-proof slide (required, one per deck)
+
+Every deck includes **exactly one** `code`-template slide whose job is to *show* the
+idea, not tell it. The `code` template is a terminal-window panel with a monospace body
+(JetBrains Mono, line breaks preserved), so a small ASCII/box schematic renders crisply
+and on-brand. Keep it **≤ 13 lines and ≤ ~40 characters wide** so it never shrinks to
+unreadable. Safe glyphs: `-> | + [ ] :` and the arrows/box-drawing `→ ▶ ┌ ┐ └ ┘ ├ ┤ │ ─`.
+Put a short `kicker` (e.g. `SEE IT`), a `filename` label, the schematic in `code`
+(`data-pre` keeps your line breaks), and a one-line `caption` under the panel. If a value
+is illustrative (a probability, an ID), keep it obviously rounded/example — per the
+guardrails, don't pass invented numbers off as real.
+
+One per track, matched to the chapter's crux:
+
+```
+AWS — route table (filename: route-table)        DDIA — fault vs failure (fault-model)
+Destination    Target                            fault ──▶ [ caught in time? ]
+10.0.0.0/16    local                                         │yes        │no
+0.0.0.0/0      igw-0abc   ← public                           ▼           ▼
+                                                          contained    FAILURE
+
+MySQL/DDIA — replication (replication)           AI Engineering — next token (predict)
+          writes                                 "the cat sat on the ___"
+Primary ──┬──▶ Replica A  (reads)                  mat    ▓▓▓▓▓▓▓  0.71
+          └──▶ Replica B  (reads)                  floor  ▓        0.09
+   async, may lag                                  roof   ▓        0.04
+```
+
+These are the *shape*, not gospel: adapt the schematic to whatever the unit's crux is
+(an index B-tree, a queue, a cache-aside path). The point is a glanceable picture that
+proves the concept.
 
 ## The templates (already built, on-brand)
 
@@ -89,6 +126,12 @@ Any field left empty is simply omitted, so slides degrade gracefully.
         "kicker": "THE MENTAL MODEL",
         "heading": "Picture two tables as circles",
         "body": "INNER JOIN keeps only the overlap.\n\nLEFT JOIN keeps everything on the left, blanks on the right.",
+        "handle": "@yourhandle", "tags": "sql · joins" } },
+    { "template": "code", "fields": {
+        "terminal": "~/learning/sql", "counter": "02 / 04",
+        "kicker": "SEE IT", "filename": "inner-join",
+        "code": "users        orders\n1 ann        1 ann\n2 ben        1 ann\n\nINNER  ->  keeps only id 1",
+        "caption": "The overlap is the whole point: no match, no row.",
         "handle": "@yourhandle", "tags": "sql · joins" } },
     { "template": "close", "fields": {
         "kicker": "THE TAKEAWAY",
