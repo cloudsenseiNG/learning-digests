@@ -19,11 +19,12 @@ so there's nothing to attribute. Just never copy the source's exact wording.
 
 ## Length
 
-**6–10 slides.** Never ship a scanty carousel: **6 is the floor** so the topic actually
-gets explained, and a rich idea runs to **10** so the arc can breathe. Give the idea the
-length it deserves inside that range. Every deck keeps its three anchors: a real
-**explanation** of the topic, the **visual-proof** slide, and a **real case study**.
-Depth wins over brevity, but it should still never feel padded.
+**7–10 slides.** Never ship a scanty carousel. **7 is the floor** — the best idea gets
+the full arc, one slide per beat: cover, orient, crux, visual proof, incident, practical
+application, close. A richer chapter expands a beat or two (a second explanation, a
+second proof) up to **10**. Every deck keeps its three anchors: a real **explanation**
+of the topic, the **visual-proof** slide, and a **real case study**. Depth wins over
+brevity, but it should still never feel padded.
 
 - Slide 1 hooks: a promise, a surprising number, or "I kept getting this wrong."
 - One thought per slide. Short lines. No paragraphs — this is glanceable.
@@ -62,11 +63,11 @@ this arc (each numbered beat is one `concept` slide unless noted):
 topic-based ("aws · route tables") with the `@mayowa` handle. Every track (DDIA, AI
 Engineering, MySQL, AWS) follows this same arc — it is not AWS-only.
 
-**Length is 6–10 — the arc is a menu, not a fixed count.** The beats above are the
-shape; order and combine them to fit the topic. Even the tightest deck stays at **6**
-and keeps all three anchors — a real explanation, the visual-proof slide, and a real
-case study — so it never reads scanty. Scale toward **10** when the idea genuinely has
-that much to show. **Never pad to hit a number, and never drop below 6.**
+**Length is 7–10 — the seven beats above ARE the floor, not a menu to trim.** Give the
+best idea all seven, one slide each: cover, orient, crux, visual proof, incident,
+practical application, close. Don't fold beats together to go shorter — 7 is the
+minimum. Scale toward **10** by expanding a beat when the idea has that much to show.
+**Never pad to hit a number, and never drop below 7.**
 
 ## The visual-proof slide (required, one per deck)
 
@@ -150,7 +151,9 @@ Any field left empty is simply omitted, so slides degrade gracefully.
 }
 ```
 
-Use `\n` in a field to force a line break; otherwise text wraps automatically.
+Use `\n` in a field to force a line break; otherwise text wraps automatically. The deck
+above is **abbreviated to show the field shapes** — a real deck runs the full 7–10 slides
+(cover, orient, crux, visual proof, incident, practical application, close).
 
 ## Rendering
 
