@@ -44,10 +44,13 @@ The full HTML digest is heavy (schematics, embedded avatar), so it is hosted on 
 Pages under `docs/digests/<slug>.html`, not emailed. Each run also:
 - appends `docs/digests.json` and rebuilds `docs/index.html` via `scripts/build_index.py`
   (a browsable library of all digests), and
-- writes a small **link email** to `build/email.html`: eyebrow, title, one-line teaser,
-  a red "Read the full digest" button pointing at `<site_base_url>/digests/<slug>.html`,
-  a one-line exercises note, and the brand footer. Keep it light: downscale the avatar
-  (about 96px) and include no schematics, so the email stays a few KB.
+- builds a small **link email** to `build/email.html` via `scripts/build_email.py` (do
+  NOT hand-author it). The script emits a Gmail-safe email: table layout, fully inline
+  styles, a web-safe font stack, and one card per new digest with a red "Read the digest"
+  button pointing at `<site_base_url>/digests/<slug>.html`. The avatar is downscaled to
+  ~96px and embedded as a `data:` URI so `deliver_digest.py` turns it into a CID image
+  that renders everywhere. Hand-written email HTML is unreliable: clients strip `<style>`
+  blocks, ignore CSS variables/flex/grid, and hide images that aren't embedded.
 
 ## Email delivery caveat (already handled)
 

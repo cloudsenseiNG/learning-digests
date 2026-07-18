@@ -89,15 +89,19 @@ jobs:
           links). For each unit: write the HTML digest to docs/digests/<slug>.html, append \
           docs/digests.json, and render its carousel PNGs to build/carousels/<book>/<slug>/ where <book> \
           is a clean folder name (DDIA, AI-Engineering, High-Performance-MySQL, AWS) so the zip is \
-          foldered per book. Then write ONE combined link email to build/email.html linking all the new \
-          digests and noting the attached carousels zip. Update the per-book tables in TRACKER.md, and \
+          foldered per book. Do NOT write the email yourself; a later step builds a Gmail-safe one \
+          from docs/digests.json. Update the per-book tables in TRACKER.md, and \
           REPLACE the 'Current batch' checklist with the new unit list, all unchecked." \
             --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
-      - name: Rebuild index + zip the carousels
+      - name: Rebuild index, build email, zip the carousels
         if: steps.gate.outputs.send == 'true'
+        env:
+          SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
         run: |
           python "$SKILL"/scripts/build_index.py --docs docs
+          python "$SKILL"/scripts/build_email.py --docs docs --site-base-url "$SITE_BASE_URL" \
+            --logo "$SKILL"/assets/brand/logo.png --out build/email.html
           mkdir -p build
           (cd build/carousels && zip -r "../carousels-$(date -u +%F).zip" .)
 

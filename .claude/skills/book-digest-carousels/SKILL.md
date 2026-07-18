@@ -165,9 +165,10 @@ Trigger phrases: "today's digest", "digest chapter N of <book>", "catch me up on
 4. Publish and notify:
    - Append the digest's entry (`slug, book, ch, title, date`) to `docs/digests.json`
      and rebuild the index with `scripts/build_index.py --docs docs`.
-   - Write a **lightweight link email** to `build/email.html` (title, one-line teaser,
-     a button to `<site_base_url>/digests/<slug>.html`, a note about the exercises,
-     and the brand footer). Keep it small: use a downscaled avatar, no schematics.
+   - Build the **lightweight link email** with `scripts/build_email.py --docs docs
+     --site-base-url <site_base_url> --logo assets/brand/logo.png --out build/email.html`
+     (Gmail-safe: inline styles, embedded avatar, a button per new digest). Don't
+     hand-author it.
    - Send it with `scripts/deliver_digest.py --file build/email.html`. The full digest
      is hosted (too big to email); the inbox just gets the link.
 5. Update the tracker: mark the chapter digested (or "in progress") with today's date.
@@ -262,5 +263,9 @@ the repo.
 - `scripts/extract_chapter.py` — extract clean text from a PDF page range.
 - `scripts/render_carousels.py` — fill the SVG templates and render slide PNGs.
 - `scripts/deliver_digest.py` — email a digest or link email over SMTP (HTML with
-  inline schematics is auto-converted to CID images).
-- `scripts/build_index.py` — rebuild the hosted digest library index from the manifest.
+  inline schematics / `data:` images is auto-converted to CID images).
+- `scripts/build_index.py` — rebuild the hosted digest library index from the manifest,
+  grouped by track and ordered by chapter (additive; never deletes a digest).
+- `scripts/build_email.py` — build the batch's **Gmail-safe** link email deterministically
+  (table layout, fully inline styles, logo embedded as a CID image). Do not hand-author
+  the email; email clients strip `<style>` blocks and non-embedded images.
