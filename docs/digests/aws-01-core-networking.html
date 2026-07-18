@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core networking: VPCs, subnets, route tables, and NAT gateways</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0B;
+    --card:#0E0E10;
+    --card2:#131316;
+    --hairline:rgba(242,239,233,0.10);
+    --ink:#F2EFE9;
+    --body:#C9C7C1;
+    --muted:#7A7A80;
+    --accent:#C8453A;
+    --green:#6FCF97;
+    --display:'Bricolage Grotesque',system-ui,sans-serif;
+    --sans:'Inter',system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--body);
+    font-family:var(--sans);
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:660px;
+    margin:0 auto;
+    padding:56px 20px 80px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 18px;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:800;
+    font-size:34px;
+    line-height:1.18;
+    color:var(--ink);
+    margin:0 0 18px;
+  }
+  .lead{
+    font-size:18px;
+    color:var(--ink);
+    margin:0 0 40px;
+    font-weight:400;
+  }
+  h2{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:44px 0 16px;
+  }
+  h3{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:19px;
+    color:var(--ink);
+    margin:30px 0 10px;
+  }
+  p{margin:0 0 14px;}
+  ul{margin:0 0 14px; padding-left:20px;}
+  li{margin:0 0 8px;}
+  strong{color:var(--ink);}
+  code, .mono{
+    font-family:var(--mono);
+    font-size:0.92em;
+    color:var(--ink);
+    background:var(--card2);
+    padding:1px 6px;
+    border-radius:4px;
+    border:1px solid var(--hairline);
+  }
+  pre code{
+    display:block;
+    padding:14px 16px;
+    overflow-x:auto;
+    white-space:pre;
+    line-height:1.5;
+  }
+  a{color:var(--ink); text-decoration-color:var(--accent);}
+  a:hover{text-decoration-color:var(--ink);}
+
+  .terms{
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:10px;
+    padding:20px 22px;
+  }
+  .terms ul{margin:0; padding-left:0; list-style:none;}
+  .terms li{margin:0 0 12px; padding-left:0;}
+  .terms li:last-child{margin-bottom:0;}
+  .term-name{font-family:var(--mono); color:var(--accent); font-weight:500;}
+
+  figure{
+    margin:22px 0 8px;
+    background:var(--card);
+    border:1px solid var(--hairline);
+    border-radius:10px;
+    padding:16px 16px 12px;
+  }
+  figure svg{width:100%; height:auto; display:block;}
+  figcaption{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  .box{
+    border:1px solid var(--hairline);
+    border-left:3px solid var(--accent);
+    background:var(--card);
+    border-radius:8px;
+    padding:22px 22px;
+    margin:36px 0;
+  }
+  .box.green{border-left-color:var(--green);}
+  .box h2{margin-top:0; color:var(--ink);}
+  .box.green h2{color:var(--ink);}
+
+  .simp{
+    font-size:14px;
+    color:var(--muted);
+    border-left:2px solid var(--hairline);
+    padding-left:12px;
+    margin:12px 0;
+  }
+  .simp b{color:var(--body); font-style:normal;}
+
+  footer{
+    margin-top:56px;
+    padding-top:28px;
+    border-top:1px solid var(--hairline);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  footer img{
+    width:48px; height:48px;
+    border-radius:50%;
+    object-fit:cover;
+    border:1px solid var(--hairline);
+  }
+  footer .name{font-family:var(--display); font-weight:700; color:var(--ink); font-size:15px;}
+  footer .tagline{font-family:var(--mono); font-size:12px; color:var(--muted);}
+
+  .sources{
+    margin-top:40px;
+    padding-top:24px;
+    border-top:1px solid var(--hairline);
+  }
+  .sources h2{margin-top:0;}
+  .sources ul{padding-left:18px;}
+  .sources .note{
+    font-size:13px;
+    color:var(--muted);
+    margin-top:14px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">AWS · TOPIC 1 DIGEST</p>
+  <h1>Core networking: VPCs, subnets, route tables, and NAT gateways</h1>
+  <p class="lead">In one line: the one route table entry that decides whether a subnet can reach the internet, and the two gateways involved in getting traffic in and out of your own private slice of AWS.</p>
+
+  <h2>The big idea</h2>
+  <p>Every AWS resource that needs to talk over a network has to live inside one, and a <strong>VPC (Virtual Private Cloud)</strong> is that network: a slice of AWS's infrastructure that's logically isolated and that you get to define yourself. You pick the address range, split it into subnets that live in different physical locations, and then decide, subnet by subnet, whether it can reach the public internet. That last decision isn't a checkbox anywhere. It comes down to a single line in a routing table.</p>
+
+  <h2>Key terms</h2>
+  <div class="terms">
+    <ul>
+      <li><span class="term-name">VPC</span> — a logically isolated virtual network you define inside AWS. AWS's own description: it "closely resembles a traditional network that you'd operate in your own data center."</li>
+      <li><span class="term-name">CIDR block</span> — a compact way of writing a range of IP addresses, like <code>10.0.0.0/16</code>. It's the address space your VPC (or subnet) owns.</li>
+      <li><span class="term-name">Availability Zone (AZ)</span> — one of several physically separate, isolated locations inside an AWS Region. A VPC spans every AZ in its Region; a subnet does not.</li>
+      <li><span class="term-name">Subnet</span> — a smaller range of IP addresses carved out of a VPC's CIDR block. A subnet has to live entirely inside one Availability Zone.</li>
+      <li><span class="term-name">Route table</span> — a set of rules ("routes") attached to a subnet. Each route says: traffic headed to this destination should go to this target.</li>
+      <li><span class="term-name">Internet gateway (IGW)</span> — the component you attach to a VPC so it can talk to the public internet at all.</li>
+      <li><span class="term-name">NAT gateway</span> — lets a resource that has no public IP start outbound connections to the internet, without letting anything on the internet start a connection back in.</li>
+      <li><span class="term-name">Public subnet / private subnet</span> — not a property you set on the subnet itself. It's a label that describes what the subnet's route table points at.</li>
+    </ul>
+  </div>
+
+  <h2>How it works</h2>
+
+  <h3>A VPC is your own address space</h3>
+  <p>When you create a VPC, the first thing you give it is a CIDR block, something like <code>10.0.0.0/16</code>. That's the entire pool of private IP addresses your VPC owns. Every AWS account also gets a default VPC in each Region, already wired up with an internet gateway and public subnets, which is why you can launch an EC2 instance and reach it on day one without touching any networking config. A custom VPC starts empty: just an address range, waiting for you to add subnets, route tables, and gateways.</p>
+  <p class="simp"><b>Simplification:</b> CIDR math (why <code>/16</code> means a bigger range than <code>/24</code>) is general networking convention, not something specific to AWS, so I'm not walking through the bit arithmetic here. AWS's docs page for creating a VPC didn't spell out the exact smallest/largest block size it allows when I checked it, so if that number matters for what you're building, check the current console or docs rather than assuming.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="10" width="580" height="220" rx="10" fill="none" stroke="rgba(242,239,233,0.35)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="26" y="32" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80" letter-spacing="1">VPC · 10.0.0.0/16</text>
+
+      <rect x="40" y="55" width="240" height="160" rx="8" fill="#0E0E10" stroke="rgba(242,239,233,0.10)"/>
+      <text x="58" y="80" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80" letter-spacing="1">AVAILABILITY ZONE A</text>
+      <rect x="60" y="105" width="200" height="86" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="160" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#F2EFE9">Subnet</text>
+      <text x="160" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">10.0.0.0/24</text>
+
+      <rect x="320" y="55" width="240" height="160" rx="8" fill="#0E0E10" stroke="rgba(242,239,233,0.10)"/>
+      <text x="338" y="80" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80" letter-spacing="1">AVAILABILITY ZONE B</text>
+      <rect x="340" y="105" width="200" height="86" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="440" y="140" text-anchor="middle" font-family="Inter, sans-serif" font-size="13" fill="#F2EFE9">Subnet</text>
+      <text x="440" y="160" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">10.0.1.0/24</text>
+    </svg>
+    <figcaption>A VPC's address space splits into subnets, and each subnet lives entirely inside one Availability Zone.</figcaption>
+  </figure>
+
+  <h3>Subnets and why they're tied to one Availability Zone</h3>
+  <p>A subnet is a slice of the VPC's CIDR block, and AWS is strict about one thing: "each subnet must reside entirely within one Availability Zone and cannot span zones." That's not an arbitrary rule, it's what makes multi-AZ resilience possible. If you put resources in subnets across two or three AZs, the failure of one AZ (a whole physical location going down) doesn't take your whole app with it. AWS's own guidance is to spread production subnets across at least two AZs for exactly this reason.</p>
+
+  <h3>Route tables: the traffic controller</h3>
+  <p>AWS describes a route table plainly: it "serves as the traffic controller for your VPC." Every route table holds a list of routes, and each route is just a pair: a <strong>destination</strong> (a CIDR block, like <code>0.0.0.0/0</code> for "anywhere") and a <strong>target</strong> (where to send traffic headed there, like an internet gateway, a NAT gateway, or a VPC peering connection). Every subnet is associated with a route table (if you don't pick one, it uses the VPC's main route table), and that table's rows are the only thing that decides where a packet leaving the subnet actually goes.</p>
+  <p class="simp"><b>Simplification:</b> AWS's docs also mention resources inside a VPC being able to reach each other automatically, which usually shows up as an implicit route covering the VPC's own address range. I'm not detailing exactly how that's represented here since I didn't confirm the specifics on the pages I read; look at a real route table in the console to see it for yourself.</p>
+
+  <h3>The internet gateway: the door to the internet</h3>
+  <p>An internet gateway is, in AWS's words, "a horizontally scaled, redundant, and highly available VPC component that allows communication between your VPC and the internet." On its own it does nothing for a subnet. You have to attach it to the VPC <em>and</em> add a route in a subnet's route table that points at it (usually <code>0.0.0.0/0 → igw-xxxxxxxx</code> for "send anything not otherwise matched to the internet gateway"). A default VPC already has an internet gateway attached and that route in place, which is why default VPCs "just work." A VPC you create yourself starts without either.</p>
+
+  <h3>What actually makes a subnet "public"</h3>
+  <p>This is the part that took me a minute to really get: AWS states it directly. "If a subnet is associated with a route table that has a route to an internet gateway, it's known as a public subnet. If a subnet is associated with a route table that does not have a route to an internet gateway, it's known as a private subnet." That's it. There's no separate "make this subnet public" switch. It's entirely about whether the route table attached to that subnet has a row pointing at an internet gateway.</p>
+  <p>One detail that surprised me: AWS explicitly calls out that an instance in a private subnet <em>can't</em> reach the internet "even if they have public IP addresses," because there's still no route to the internet gateway. Having a public IP and having a route to the internet gateway are two separate things, and you need both.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="16" width="270" height="216" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="36" y="42" font-family="JetBrains Mono, monospace" font-size="11" fill="#C8453A" letter-spacing="0.5" font-weight="700">PUBLIC SUBNET ROUTE TABLE</text>
+      <text x="36" y="76" font-family="JetBrains Mono, monospace" font-size="10" fill="#7A7A80" letter-spacing="1">DESTINATION</text>
+      <text x="180" y="76" font-family="JetBrains Mono, monospace" font-size="10" fill="#7A7A80" letter-spacing="1">TARGET</text>
+      <text x="36" y="104" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">10.0.0.0/16</text>
+      <text x="180" y="104" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">local</text>
+      <rect x="28" y="122" width="254" height="34" rx="4" fill="rgba(200,69,58,0.14)"/>
+      <text x="36" y="144" font-family="JetBrains Mono, monospace" font-size="12" fill="#C8453A" font-weight="700">0.0.0.0/0</text>
+      <text x="180" y="144" font-family="JetBrains Mono, monospace" font-size="12" fill="#C8453A" font-weight="700">igw-xxxxxxx</text>
+      <text x="36" y="192" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">Points at the internet</text>
+      <text x="36" y="208" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">gateway → this is public.</text>
+
+      <rect x="310" y="16" width="270" height="216" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="326" y="42" font-family="JetBrains Mono, monospace" font-size="11" fill="#F2EFE9" letter-spacing="0.5" font-weight="700">PRIVATE SUBNET ROUTE TABLE</text>
+      <text x="326" y="76" font-family="JetBrains Mono, monospace" font-size="10" fill="#7A7A80" letter-spacing="1">DESTINATION</text>
+      <text x="470" y="76" font-family="JetBrains Mono, monospace" font-size="10" fill="#7A7A80" letter-spacing="1">TARGET</text>
+      <text x="326" y="104" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">10.0.0.0/16</text>
+      <text x="470" y="104" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">local</text>
+      <rect x="318" y="122" width="254" height="34" rx="4" fill="rgba(242,239,233,0.06)"/>
+      <text x="326" y="144" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9">0.0.0.0/0</text>
+      <text x="470" y="144" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9">nat-xxxxxxx</text>
+      <text x="326" y="192" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">Points at a NAT gateway,</text>
+      <text x="326" y="208" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">not the IGW → still private.</text>
+    </svg>
+    <figcaption>Same two rows in both tables. Only the target of the 0.0.0.0/0 row differs, and that's the entire test AWS uses to call a subnet "public."</figcaption>
+  </figure>
+
+  <h3>NAT gateways: outbound-only for private subnets</h3>
+  <p>So how does something in a private subnet get software updates or call an external API if it has no route to the internet gateway? That's the job of a <strong>NAT gateway</strong>. AWS's definition: "You can use a NAT gateway so that instances in a private subnet can connect to services outside your VPC but external services can't initiate a connection with those instances." Traffic only flows one way: out, and back as a reply. Nothing on the internet can open a fresh connection to that private instance through it.</p>
+  <p>A public NAT gateway has to live in a <em>public</em> subnet (the docs are explicit: "You create a public NAT gateway in a public subnet and must associate an Elastic IP address with the NAT gateway at creation"), and traffic reaches it from the private subnet, then the NAT gateway forwards it to the internet gateway for the actual trip out. The private subnet's route table gets its own <code>0.0.0.0/0</code> row, but pointed at the NAT gateway, not the IGW, which is exactly why it stays classified as private.</p>
+
+  <figure>
+    <svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="am" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#7A7A80"/>
+        </marker>
+        <marker id="ag" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#6FCF97"/>
+        </marker>
+      </defs>
+
+      <rect x="130" y="14" width="120" height="30" rx="6" fill="none" stroke="rgba(242,239,233,0.35)" stroke-dasharray="4 4"/>
+      <text x="190" y="34" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" fill="#C9C7C1" letter-spacing="1">INTERNET</text>
+      <line x1="190" y1="44" x2="190" y2="66" stroke="#7A7A80" stroke-width="1.5" marker-end="url(#am)"/>
+
+      <rect x="130" y="70" width="120" height="40" rx="6" fill="#131316" stroke="rgba(242,239,233,0.20)"/>
+      <text x="190" y="94" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#F2EFE9">Internet gateway</text>
+
+      <rect x="40" y="140" width="560" height="240" rx="10" fill="none" stroke="rgba(242,239,233,0.35)" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="56" y="162" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80" letter-spacing="1">VPC</text>
+
+      <line x1="190" y1="110" x2="190" y2="176" stroke="#7A7A80" stroke-width="1.5" marker-end="url(#am)"/>
+      <text x="200" y="140" font-family="JetBrains Mono, monospace" font-size="10" fill="#7A7A80">0.0.0.0/0</text>
+
+      <rect x="70" y="176" width="240" height="180" rx="8" fill="#131316" stroke="rgba(200,69,58,0.5)"/>
+      <text x="88" y="200" font-family="JetBrains Mono, monospace" font-size="11" fill="#C8453A" letter-spacing="1" font-weight="700">PUBLIC SUBNET</text>
+      <rect x="100" y="280" width="180" height="48" rx="6" fill="#0E0E10" stroke="rgba(242,239,233,0.15)"/>
+      <text x="190" y="309" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#F2EFE9">NAT gateway</text>
+
+      <rect x="340" y="176" width="230" height="180" rx="8" fill="#131316" stroke="rgba(242,239,233,0.15)"/>
+      <text x="358" y="200" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80" letter-spacing="1" font-weight="700">PRIVATE SUBNET</text>
+      <rect x="365" y="280" width="180" height="48" rx="6" fill="#0E0E10" stroke="rgba(242,239,233,0.15)"/>
+      <text x="455" y="309" text-anchor="middle" font-family="Inter, sans-serif" font-size="12" fill="#F2EFE9">EC2 instance</text>
+
+      <line x1="365" y1="304" x2="284" y2="304" stroke="#6FCF97" stroke-width="1.5" marker-end="url(#ag)"/>
+      <text x="288" y="290" font-family="JetBrains Mono, monospace" font-size="10" fill="#6FCF97">outbound only</text>
+    </svg>
+    <figcaption>A private-subnet instance reaches the internet by hopping through the NAT gateway, then the internet gateway. Nothing on the internet can start that trip in reverse.</figcaption>
+  </figure>
+
+  <h2>Why it matters</h2>
+  <p>This is the layer everything else in AWS sits on top of. Whether you're launching an EC2 instance, pointing a Lambda function at a VPC, or standing up a database, one of the first questions is which subnet it lands in and what that subnet can reach. The common real-world pattern (a load balancer or bastion host in a public subnet, application servers and databases in private subnets behind a NAT gateway) exists because of exactly the mechanics in this digest: route tables deciding what's reachable, and a NAT gateway giving private resources a controlled way out without opening a way in. Once this model clicks, the next topics in this track (Transit Gateway for connecting multiple VPCs, then EC2 placement) build directly on it.</p>
+
+  <div class="box">
+    <h2>Remember this</h2>
+    <ul>
+      <li>A VPC is your own isolated slice of AWS network space, defined by a CIDR block (a compact way of writing an IP address range).</li>
+      <li>A subnet lives inside exactly one Availability Zone and is carved out of the VPC's CIDR block.</li>
+      <li>"Public" and "private" aren't settings on the subnet. They're just a description of what that subnet's route table points its <code>0.0.0.0/0</code> row at.</li>
+      <li>An internet gateway has to be attached to the VPC <em>and</em> referenced by a route before any subnet can use it.</li>
+      <li>A NAT gateway lives in a public subnet and lets private-subnet resources start outbound connections, without accepting unsolicited inbound ones.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h2>Try it yourself</h2>
+    <ul>
+      <li><strong>Build the standard layout in the console.</strong> In the VPC console, choose "Create VPC" → "VPC and more," pick 1 Availability Zone, 1 public subnet, 1 private subnet, and 0 NAT gateways to start. Note the CIDR blocks AWS assigns automatically, and open the resource map to see how the pieces connect.</li>
+      <li><strong>Rebuild it with the AWS CLI.</strong> Follow the documented sequence: <code>aws ec2 create-vpc --cidr-block 10.0.0.0/24</code>, then two <code>aws ec2 create-subnet</code> calls in different Availability Zones. Compare the subnet IDs and CIDR blocks you get back to what the console gave you.</li>
+      <li><strong>Draw a route table by hand first.</strong> Before opening the console's Route Tables tab, sketch what you expect the public and private route tables to contain (destination + target rows). Then check your guess against the real thing.</li>
+      <li><strong>Prove a private subnet can't reach out.</strong> Launch a small instance in your private subnet (no NAT gateway yet) and try to reach the internet from it. Confirm it fails, and connect that back to the route table you sketched.</li>
+      <li><strong>Add the NAT gateway and watch it flip.</strong> Create a NAT gateway in the public subnet (console, or <code>aws ec2 create-nat-gateway --subnet-id ... --allocation-id ...</code> after allocating an Elastic IP), add the <code>0.0.0.0/0 → nat-...</code> route to the private route table, and retry the same outbound test.</li>
+      <li><strong>Break it back on purpose.</strong> Remove the internet gateway route from your public subnet's route table and confirm resources there lose internet access too, even with public IPs assigned. This is the cleanest proof that "public" is a route table property, not a fixed label.</li>
+    </ul>
+  </div>
+
+  <h2>Go deeper (optional)</h2>
+  <p>The docs page "Create a VPC using the AWS CLI" chains every command in this digest into one ordered walkthrough (VPC → subnets → internet gateway → route tables → NAT gateway). Running it once end to end, out loud, narrating what each command attaches to what, is the fastest way to make the whole model stick. Natural next question for this track: what changes when you need to connect more than one VPC together? That's Transit Gateway, coming up next.</p>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="name">Mayowa</div>
+      <div class="tagline">learning in public</div>
+    </div>
+  </footer>
+
+  <div class="sources">
+    <h2>Sources & verify</h2>
+    <ul>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html">What is Amazon VPC?</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-subnet-basics.html">VPC basics</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html">Subnets for your VPC</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html">Configure route tables</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">Enable internet access for a VPC using an internet gateway</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">NAT gateways</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/create-vpc.html">Create a VPC</a> — Amazon VPC User Guide (console and CLI steps)</li>
+    </ul>
+    <p class="note">This is a teaching draft written from the pages above on 2026-07-18. AWS docs, console flows, and limits change over time, so verify anything you're about to rely on (exact CIDR size limits, current console steps, NAT gateway pricing) against the live docs before you build on it. Two spots I flagged above as simplified rather than fully confirmed: the exact minimum/maximum CIDR block size AWS allows for a VPC, and the precise mechanics of the automatic "local" route inside a VPC.</p>
+  </div>
+
+</div>
+</body>
+</html>

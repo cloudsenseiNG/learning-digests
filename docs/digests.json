@@ -1,1 +1,6 @@
-[]
+[
+  {"slug": "ddia-ch01-reliable-scalable-maintainable", "book": "Designing Data-Intensive Applications", "ch": "Ch.1", "title": "Reliable, Scalable, and Maintainable Applications", "date": "2026-07-18"},
+  {"slug": "ai-engineering-ch01-part1-rise-of-ai-engineering", "book": "AI Engineering", "ch": "Ch.1 (Part 1 of 3)", "title": "The Rise of AI Engineering", "date": "2026-07-18"},
+  {"slug": "hpm-ch01-mysql-architecture", "book": "High Performance MySQL", "ch": "Ch.1", "title": "MySQL Architecture", "date": "2026-07-18"},
+  {"slug": "aws-01-core-networking", "book": "AWS", "ch": "Topic 1", "title": "Core networking: VPCs, subnets, route tables, and NAT gateways", "date": "2026-07-18"}
+]

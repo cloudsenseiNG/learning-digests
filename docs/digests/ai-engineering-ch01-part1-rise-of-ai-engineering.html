@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineering · Ch.1: The Rise of AI Engineering (Part 1 of 3)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0B;
+    --card:#0E0E10;
+    --card2:#131316;
+    --hair:rgba(242,239,233,0.10);
+    --ink:#F2EFE9;
+    --body:#C9C7C1;
+    --muted:#7A7A80;
+    --red:#C8453A;
+    --green:#6FCF97;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--body);
+    font-family:'Inter',sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:660px;
+    margin:0 auto;
+    padding:56px 20px 80px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    color:var(--red);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  h1{
+    font-family:'Bricolage Grotesque',serif;
+    font-weight:800;
+    color:var(--ink);
+    font-size:34px;
+    line-height:1.15;
+    margin:0 0 14px;
+  }
+  .lead{
+    font-size:16px;
+    color:var(--body);
+    margin:0 0 40px;
+    padding-bottom:32px;
+    border-bottom:1px solid var(--hair);
+  }
+  h2{
+    font-family:'Bricolage Grotesque',serif;
+    font-weight:700;
+    color:var(--ink);
+    font-size:15px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin:44px 0 16px;
+  }
+  h3{
+    font-family:'Bricolage Grotesque',serif;
+    font-weight:700;
+    color:var(--ink);
+    font-size:19px;
+    margin:30px 0 10px;
+  }
+  p{margin:0 0 14px;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--hair);
+    border-radius:12px;
+    padding:22px 24px;
+  }
+  .terms{list-style:none;margin:0;padding:0;}
+  .terms li{
+    padding:14px 0;
+    border-bottom:1px solid var(--hair);
+    font-size:15px;
+  }
+  .terms li:last-child{border-bottom:none;}
+  .terms b{color:var(--ink);font-family:'JetBrains Mono',monospace;font-weight:500;font-size:14px;}
+  figure{
+    margin:20px 0 28px;
+    background:var(--card2);
+    border:1px solid var(--hair);
+    border-radius:12px;
+    padding:18px 16px 14px;
+  }
+  figure svg{width:100%;height:auto;display:block;}
+  figcaption{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:10px;
+  }
+  .note{
+    font-size:14px;
+    color:var(--muted);
+    border-left:2px solid var(--hair);
+    padding-left:12px;
+    margin:14px 0;
+  }
+  .box{
+    border-radius:12px;
+    padding:22px 24px;
+    margin:28px 0;
+    border-left:3px solid var(--red);
+    background:var(--card);
+  }
+  .box.green{border-left-color:var(--green);}
+  .box h2{margin-top:0;color:var(--ink);}
+  .box.green h2{color:var(--green);}
+  .box ul, .box ol{margin:0;padding-left:20px;}
+  .box li{margin-bottom:10px;font-size:15px;}
+  .box li:last-child{margin-bottom:0;}
+  .try-item b{color:var(--ink);}
+  .crit{
+    display:block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--green);
+    margin-top:4px;
+  }
+  footer{
+    margin-top:56px;
+    padding-top:32px;
+    border-top:1px solid var(--hair);
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  footer img{
+    width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--hair);
+    object-fit:cover;
+  }
+  footer .who b{
+    display:block;
+    color:var(--ink);
+    font-family:'Bricolage Grotesque',serif;
+    font-size:15px;
+  }
+  footer .who span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .sources{
+    margin-top:40px;
+    padding-top:24px;
+    border-top:1px solid var(--hair);
+  }
+  .sources h2{margin-top:0;}
+  .sources p{font-size:14px;color:var(--muted);}
+  code{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--card2);
+    padding:1px 5px;
+    border-radius:4px;
+    font-size:13px;
+    color:var(--ink);
+  }
+  a{color:var(--red);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">AI · CH.1 DIGEST (PART 1 OF 3)</div>
+  <h1>The Rise of AI Engineering</h1>
+  <p class="lead">
+    This is Part 1 of a 3-part digest on Chapter 1 of <i>AI Engineering</i> by Chip Huyen
+    (pages 25&ndash;39). It covers the section "The Rise of AI Engineering": what a language
+    model actually is, how self-supervision let language models scale into LLMs, how LLMs
+    stretched beyond text into foundation models, and why the author lands on the term
+    "AI engineering" instead of ML engineering, MLOps, or LLMOps. Part 2 will cover
+    "Foundation Model Use Cases" (what these models are good and not-yet-good at), and
+    Part 3 covers planning AI applications and the AI engineering stack.
+  </p>
+
+  <h2>The big idea</h2>
+  <p>
+    Here's the throughline for this whole chapter: a language model is just a system that
+    guesses what token comes next. That idea is decades old. What changed after 2020 is
+    scale, models trained on far more data than before. The reason they could scale is a
+    training trick called self-supervision, which lets a model learn from raw text without
+    anyone hand-labeling it. Once language models got big enough, and started handling more
+    than just text, people started calling them foundation models instead. And once
+    foundation models became something you could rent through an API instead of having to
+    build yourself, a new job showed up: adapting those models to real problems. The author
+    calls that job AI engineering.
+  </p>
+
+  <h2>Key terms</h2>
+  <div class="card">
+    <ul class="terms">
+      <li><b>Token</b> &mdash; the basic unit a language model works with. Can be a whole
+        short word, part of a word, or a character. Example: "cooking" can split into
+        "cook" + "ing".</li>
+      <li><b>Tokenization</b> &mdash; the process of chopping raw text into tokens before a
+        model can use it.</li>
+      <li><b>Vocabulary</b> &mdash; the full set of tokens a model knows. GPT-4's vocabulary
+        has 100,256 tokens; the smaller Mixtral 8x7B has 32,000.</li>
+      <li><b>Autoregressive language model</b> &mdash; predicts the next token using only
+        the tokens that came before it. This is what "language model" means almost all the
+        time today.</li>
+      <li><b>Masked language model</b> &mdash; predicts a missing token using context from
+        both before and after the gap (fill-in-the-blank, not write-forward). BERT is the
+        classic example.</li>
+      <li><b>Self-supervision</b> &mdash; a way of training where the data supplies its own
+        correct answers, so nothing needs to be hand-labeled. Not the same as unsupervised
+        learning, where there are no labels at all; self-supervision still has labels, they're
+        just pulled from the input itself.</li>
+      <li><b>Supervision</b> &mdash; training where a human (or a labeling service) tags each
+        example with the "right answer" first, like marking a transaction "fraud" or "not
+        fraud".</li>
+      <li><b>Parameter</b> &mdash; one of the internal values a model adjusts while learning
+        (loosely, a "dial"). More parameters usually means more capacity to learn, not
+        automatically more accuracy.</li>
+      <li><b>Foundation model</b> &mdash; a large model, language or multi-modality, general
+        enough to be adapted to many different tasks instead of being built for one.</li>
+      <li><b>Model as a service</b> &mdash; using a powerful model through an API call
+        instead of hosting and training your own.</li>
+    </ul>
+  </div>
+
+  <h2>How it works</h2>
+
+  <h3>What a language model actually does</h3>
+  <p>
+    At its core, a language model encodes statistical information about a language: how
+    likely a given word is to show up next, given the words before it. Feed it "My favorite
+    color is __" and a model trained on English should rate "blue" as far more likely than
+    "car". This isn't a new idea; people noticed language has statistical patterns long
+    before computers existed. What's new is what we can build on top of it.
+  </p>
+  <p>
+    A simple way to picture a language model: it's a completion machine. Give it some text,
+    it tries to continue it. "To be or not to be" in, ", that is the question" out.
+    <span class="note">Simplification: this "completion machine" framing explains raw text
+    generation well, but it doesn't explain why a chatbot answers your question instead of
+    just continuing your sentence with another question. That extra behavior comes from a
+    separate training step (post-training) that's outside this section.</span>
+  </p>
+
+  <h3>Tokens: the units a model actually thinks in</h3>
+  <p>
+    A model doesn't see letters or whole words, it sees tokens. A token might be a whole
+    short word or a meaningful piece of a longer one. "cooking" can split into "cook" +
+    "ing", and a made-up word like "chatgpting" can split into "chatgpt" + "ing". That's
+    deliberate: splitting words into pieces lets a model keep some meaning from each piece,
+    keep its total vocabulary far smaller than "one entry per possible word" would need, and
+    still handle brand-new or made-up words it's never seen whole. As a rough rule of thumb,
+    an average token is about &frac34; of a word, so 100 tokens is roughly 75 words.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 600 190" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="34" font-family="JetBrains Mono, monospace" font-size="13" fill="#7A7A80">word</text>
+      <text x="20" y="58" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="20" fill="#F2EFE9">cooking</text>
+      <text x="150" y="52" font-family="JetBrains Mono, monospace" font-size="16" fill="#7A7A80">&#8594;</text>
+      <rect x="185" y="30" width="72" height="36" rx="6" fill="#0E0E10" stroke="#C8453A" stroke-width="1.2"/>
+      <text x="221" y="53" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F2EFE9">cook</text>
+      <rect x="265" y="30" width="56" height="36" rx="6" fill="#0E0E10" stroke="#C8453A" stroke-width="1.2"/>
+      <text x="293" y="53" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F2EFE9">ing</text>
+      <text x="335" y="53" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80">2 tokens</text>
+
+      <line x1="20" y1="98" x2="580" y2="98" stroke="#F2EFE9" stroke-opacity="0.1"/>
+
+      <text x="20" y="128" font-family="JetBrains Mono, monospace" font-size="13" fill="#7A7A80">made-up word</text>
+      <text x="20" y="152" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="20" fill="#F2EFE9">chatgpting</text>
+      <text x="185" y="146" font-family="JetBrains Mono, monospace" font-size="16" fill="#7A7A80">&#8594;</text>
+      <rect x="220" y="124" width="96" height="36" rx="6" fill="#0E0E10" stroke="#C8453A" stroke-width="1.2"/>
+      <text x="268" y="147" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F2EFE9">chatgpt</text>
+      <rect x="326" y="124" width="56" height="36" rx="6" fill="#0E0E10" stroke="#C8453A" stroke-width="1.2"/>
+      <text x="354" y="147" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="14" fill="#F2EFE9">ing</text>
+      <text x="396" y="147" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80">2 tokens, even for a word the model never saw whole</text>
+    </svg>
+    <figcaption>Subword tokens let a model handle new or long words by splitting them into familiar pieces.</figcaption>
+  </figure>
+
+  <h3>Two ways to predict: masked vs. autoregressive</h3>
+  <p>
+    There are two main flavors of language model, and they differ in what information
+    they're allowed to use to predict a token. An autoregressive model only looks at what
+    came before, and predicts the next token moving forward, one at a time. A masked model
+    can look at what's both before and after a gap, and predicts what belongs in the middle.
+    Autoregressive models are what you interact with when something writes text for you.
+    Masked models (BERT is the classic example) show up more in tasks like classifying a
+    chunk of text or spotting an error, where understanding the whole surrounding context
+    matters more than generating new text. Unless stated otherwise, "language model" by
+    itself usually means the autoregressive kind.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="12" letter-spacing="0.08em" fill="#C8453A">AUTOREGRESSIVE</text>
+      <g font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">
+        <rect x="20" y="38" width="60" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="50" y="58" text-anchor="middle">The</text>
+        <rect x="86" y="38" width="70" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="121" y="58" text-anchor="middle">server</text>
+        <rect x="162" y="38" width="60" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="192" y="58" text-anchor="middle">just</text>
+        <rect x="228" y="38" width="82" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="269" y="58" text-anchor="middle">crashed</text>
+        <rect x="316" y="38" width="86" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="359" y="58" text-anchor="middle">because</text>
+      </g>
+      <path d="M20 84 L402 84" stroke="#C8453A" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <rect x="410" y="38" width="60" height="30" rx="5" fill="#0E0E10" stroke="#C8453A" stroke-width="1.4" stroke-dasharray="3 2"/>
+      <text x="440" y="58" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" fill="#C8453A">___</text>
+      <text x="20" y="100" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">reads only what came before &#8594; predicts one next token</text>
+
+      <line x1="20" y1="122" x2="580" y2="122" stroke="#F2EFE9" stroke-opacity="0.1"/>
+
+      <text x="20" y="150" font-family="JetBrains Mono, monospace" font-size="12" letter-spacing="0.08em" fill="#6FCF97">MASKED</text>
+      <g font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">
+        <rect x="20" y="162" width="60" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="50" y="182" text-anchor="middle">The</text>
+        <rect x="86" y="162" width="60" height="30" rx="5" fill="#0E0E10" stroke="#6FCF97" stroke-width="1.4" stroke-dasharray="3 2"/>
+        <text x="116" y="182" text-anchor="middle" fill="#6FCF97">___</text>
+        <rect x="152" y="162" width="60" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="182" y="182" text-anchor="middle">just</text>
+        <rect x="218" y="162" width="82" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="259" y="182" text-anchor="middle">crashed</text>
+        <rect x="306" y="162" width="60" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="336" y="182" text-anchor="middle">while</text>
+        <rect x="372" y="162" width="82" height="30" rx="5" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+        <text x="413" y="182" text-anchor="middle">idling</text>
+      </g>
+      <path d="M50 158 L116 152" stroke="#6FCF97" stroke-width="1.3"/>
+      <path d="M413 158 L146 152" stroke="#6FCF97" stroke-width="1.3"/>
+      <text x="20" y="222" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">reads both sides of the gap &#8594; predicts what's missing in the middle</text>
+      <defs>
+        <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#C8453A"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Same sentence, two different jobs: writing forward vs. filling a gap.</figcaption>
+  </figure>
+
+  <h3>Self-supervision: how models train without a human labeler</h3>
+  <p>
+    This is the part that explains why these models could get so big. Most machine learning
+    needs supervision: you show a model lots of examples labeled with the right answer (this
+    transaction: fraud; this transaction: not fraud), and it learns the pattern. Labeling is
+    slow and expensive. The chapter's own example: if it costs 5 cents to label one image,
+    labeling a million images (roughly the size of ImageNet, the dataset behind the
+    deep-learning model AlexNet) runs $50,000. Push that same approach to a million
+    categories and you're at $50 million, just for labels.
+  </p>
+  <p>
+    Self-supervision sidesteps this. The input data supplies its own labels. Take any
+    sentence and you already have a built-in set of practice questions: given the words so
+    far, what's the next word? Nobody has to sit down and tag it by hand. Because usable
+    text already exists everywhere (books, articles, comments, code), models could train on
+    far more data than any hand-labeled dataset could realistically provide. More data plus
+    more parameters is what turned language models into LLMs.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80">sentence: "Deploys fail on Fridays."</text>
+      <g font-family="JetBrains Mono, monospace" font-size="12">
+        <text x="20" y="60" fill="#7A7A80">context</text>
+        <text x="330" y="60" fill="#6FCF97">next token (free label)</text>
+
+        <text x="20" y="88" fill="#C9C7C1">&lt;BOS&gt;</text>
+        <text x="330" y="88" fill="#6FCF97">Deploys</text>
+
+        <text x="20" y="112" fill="#C9C7C1">&lt;BOS&gt;, Deploys</text>
+        <text x="330" y="112" fill="#6FCF97">fail</text>
+
+        <text x="20" y="136" fill="#C9C7C1">&lt;BOS&gt;, Deploys, fail</text>
+        <text x="330" y="136" fill="#6FCF97">on</text>
+
+        <text x="20" y="160" fill="#C9C7C1">&lt;BOS&gt;, Deploys, fail, on</text>
+        <text x="330" y="160" fill="#6FCF97">Fridays</text>
+
+        <text x="20" y="184" fill="#C9C7C1">&lt;BOS&gt;, Deploys, fail, on, Fridays, .</text>
+        <text x="330" y="184" fill="#6FCF97">&lt;EOS&gt;</text>
+      </g>
+      <line x1="20" y1="70" x2="580" y2="70" stroke="#F2EFE9" stroke-opacity="0.1"/>
+      <text x="20" y="222" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">One sentence &#8594; six free training pairs. No human ever labeled any of it.</text>
+    </svg>
+    <figcaption>The sentence grades its own homework: every next word is a label that was already there.</figcaption>
+  </figure>
+
+  <p class="note">
+    Worth keeping straight: self-supervised is not the same as unsupervised. In
+    self-supervised learning, labels are inferred from the input itself (as above). In
+    unsupervised learning, there are no labels at all, of any kind.
+  </p>
+
+  <h3>From language model to LLM: what changed was scale</h3>
+  <p>
+    What actually makes something an "LLM" instead of just a "language model"? Mostly size,
+    and the book is upfront that this isn't a precise scientific line. Size is usually
+    measured in parameters, the internal values a model adjusts while training. When
+    OpenAI's first GPT model shipped in June 2018, its 117 million parameters counted as
+    large. By February 2019, GPT-2 arrived with 1.5 billion parameters, and 117 million
+    suddenly looked small. At the time this book was written, around 100 billion parameters
+    was the rough bar for "large". Why do bigger models need more data? Because a bigger
+    model has more capacity to learn, so it needs more examples to actually use that
+    capacity well; train a huge model on a tiny dataset and you're mostly wasting compute a
+    smaller model could've used to reach similar results.
+  </p>
+  <p class="note">
+    Flag: those parameter-count benchmarks are already a few years old as of the book's
+    writing, and it's mid-2026 as you're reading this. Treat "100 billion is large" as a
+    snapshot of a moving target, not a number to memorize.
+  </p>
+
+  <h3>From LLM to foundation model: beyond text</h3>
+  <p>
+    Language models are stuck with text, but humans understand the world through more than
+    just language: images, sound, and more. So the same core idea (predict the next token)
+    got extended to other kinds of data. A multimodal model takes in more than one type of
+    input, for example both text tokens and image tokens, and still predicts what comes
+    next. A generative multimodal model (one that produces new content, not just classifies)
+    is also called a large multimodal model, or LMM.
+  </p>
+  <p>
+    Once a model works across modalities and is genuinely general-purpose, the book's term
+    for it is foundation model: something you build applications on top of, the way a
+    building sits on a foundation. This book (and this digest) uses "foundation models" to
+    mean both large language models and large multimodal models. Not every foundation model
+    generates content, either: the chapter's example is CLIP, trained on 400 million
+    (image, text) pairs found naturally co-occurring on the internet (a self-supervision
+    variant the book calls natural language supervision, avoiding manual labeling entirely).
+    CLIP doesn't generate text or images; it produces embeddings, numeric vectors that
+    capture meaning, and those embedding models power a lot of newer generative multimodal
+    systems under the hood.
+  </p>
+  <p>
+    The other shift is that foundation models are general-purpose. Older models were usually
+    built for exactly one task; a sentiment classifier couldn't do translation and vice
+    versa. A foundation model can do a wide range of tasks out of the box, and can be pushed
+    further toward a specific task with prompt engineering (writing better instructions),
+    retrieval-augmented generation or RAG (giving the model a database to pull facts from),
+    or finetuning (further training it on examples of what you want). A task-specific model
+    built from scratch can still win in narrow cases, and it can be smaller, faster, and
+    cheaper to run, but adapting an existing foundation model is almost always faster to get
+    started with.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="60" width="160" height="90" rx="8" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.15"/>
+      <text x="90" y="90" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="14" fill="#F2EFE9">LANGUAGE MODEL</text>
+      <text x="90" y="112" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">predicts likely words</text>
+      <text x="90" y="128" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">text only, small by</text>
+      <text x="90" y="144" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">today's standards</text>
+
+      <path d="M172 105 L228 105" stroke="#C8453A" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <text x="200" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#C8453A">self-supervision</text>
+      <text x="200" y="101" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#C8453A">+ scale</text>
+
+      <rect x="230" y="50" width="170" height="110" rx="8" fill="#131316" stroke="#C8453A" stroke-opacity="0.5"/>
+      <text x="315" y="78" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="14" fill="#F2EFE9">LARGE LANGUAGE</text>
+      <text x="315" y="94" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="14" fill="#F2EFE9">MODEL (LLM)</text>
+      <text x="315" y="114" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">117M (2018) &#8594; 1.5B (2019)</text>
+      <text x="315" y="128" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">&#8594; 100B+ params</text>
+      <text x="315" y="144" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">(as of this book's writing)</text>
+
+      <path d="M402 105 L458 105" stroke="#C8453A" stroke-width="1.5" marker-end="url(#arrow2)"/>
+      <text x="430" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#C8453A">add images,</text>
+      <text x="430" y="101" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9.5" fill="#C8453A">audio, more</text>
+
+      <rect x="460" y="40" width="150" height="130" rx="8" fill="#131316" stroke="#6FCF97" stroke-opacity="0.6"/>
+      <text x="535" y="68" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="14" fill="#F2EFE9">FOUNDATION</text>
+      <text x="535" y="84" text-anchor="middle" font-family="Bricolage Grotesque, serif" font-weight="700" font-size="14" fill="#F2EFE9">MODEL</text>
+      <text x="535" y="104" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">general-purpose,</text>
+      <text x="535" y="118" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">multi-modality,</text>
+      <text x="535" y="132" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" fill="#7A7A80">built to adapt from</text>
+      <defs>
+        <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#C8453A"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Same underlying idea (predict the next token), three names for three eras of scale.</figcaption>
+  </figure>
+
+  <h3>From foundation model to AI engineering: three factors, one new job</h3>
+  <p>
+    People have shipped ML-powered products for over a decade already (fraud detection,
+    recommendations, churn prediction), usually called ML engineering or MLOps. So why does
+    the author give "AI engineering" its own name? Three conditions lined up at once:
+  </p>
+  <ol>
+    <li><b>General-purpose capability.</b> Because foundation models can do so many
+      different tasks reasonably well out of the box, way more applications became
+      possible, pulling in way more people who want to build them.</li>
+    <li><b>A jump in investment.</b> The success of ChatGPT triggered a wave of venture and
+      enterprise spending on AI; the book cites a Goldman Sachs Research estimate that AI
+      investment could approach $100 billion in the US and $200 billion globally by 2025 (a
+      projection from the book's 2024 writing, worth treating as dated context rather than a
+      current figure).</li>
+    <li><b>A much lower barrier to entry.</b> "Model as a service" means you can call a
+      powerful model through an API instead of standing up your own training
+      infrastructure, and you can often steer it in plain English instead of writing a
+      training pipeline.</li>
+  </ol>
+  <p>
+    So why not just call it "ML engineering"? The book's answer: working with a foundation
+    model is different enough from building your own model from scratch (you're adapting,
+    not training from zero) that the old term undersells the difference, even though the two
+    disciplines share a lot underneath. Why not one of the "Ops" terms (MLOps, LLMOps)?
+    Because those emphasize operations, and the day-to-day work here is more about
+    engineering: tweaking prompts, retrieval setups, and finetuning to get an existing model
+    to behave the way you want. In the end, the author asked 20 people who were actually
+    building on foundation models what they called what they did. Most said "AI
+    engineering." That's the term the book goes with.
+  </p>
+
+  <h2>Why it matters</h2>
+  <p>
+    This isn't just vocabulary. It explains the shape of the job you'd be doing if you got
+    into this field today. You're mostly not training models from scratch (that's still a
+    small, well-funded club: big tech companies, a few governments, well-funded startups).
+    You're adapting existing, rentable models to a specific problem, using prompt
+    engineering, RAG, and finetuning, the three techniques this section names and the rest
+    of the book digs into. It also explains why the field feels like it's moving so fast:
+    when the barrier to trying something is "write a prompt" instead of "assemble a training
+    pipeline and a GPU cluster," a lot more people can experiment.
+  </p>
+
+  <div class="box">
+    <h2>Remember this</h2>
+    <ul>
+      <li>A language model just predicts the next likely token, given the tokens before it. Everything else in this chapter builds on that.</li>
+      <li>Tokens aren't words, they're often word-pieces, which is how a model handles text it's never seen before.</li>
+      <li>Self-supervision is the real unlock: the training data grades itself, so nothing needs hand-labeling, which is why models could scale up so much.</li>
+      <li>"LLM" isn't a precise threshold, it just means "big," and what counts as big keeps moving.</li>
+      <li>AI engineering means adapting a model you didn't train (prompting, retrieval, finetuning), not building one from scratch.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h2>Try it yourself</h2>
+    <ol>
+      <li class="try-item"><b>Count tokens vs. words.</b> Use a public tokenizer tool or the <code>tiktoken</code> library to tokenize 3 sentences you write. Record token count vs. word count for each.
+        <span class="crit">Done when: you can point to one word that got split into multiple tokens, and you've checked whether the "100 tokens ≈ 75 words" rule of thumb roughly holds.</span></li>
+      <li class="try-item"><b>Build a tiny bigram language model.</b> In any language, take a short text file, count how often each word follows each other word, then write a function that starts from a word and keeps picking a next word from those counts.
+        <span class="crit">Done when: your script generates a 10-word chain from the counts, even if it reads like nonsense. That's next-token prediction at its smallest scale.</span></li>
+      <li class="try-item"><b>Compare autoregressive vs. masked completion.</b> Using a library like <code>transformers</code>, load a small autoregressive model and a small masked model, then have each complete the same sentence: one at the end, one with a gap in the middle.
+        <span class="crit">Done when: you have two completions side by side and can explain in your own words which model did which job.</span></li>
+      <li class="try-item"><b>Recreate a self-supervision table by hand.</b> Pick any short sentence and write out every (context &#8594; next token) pair it generates for training, the way this digest's diagram does.
+        <span class="crit">Done when: your table has one row per token (plus start/end markers) and you can explain why it needed zero human labeling.</span></li>
+      <li class="try-item"><b>Turn a hosted model into a mini classifier.</b> Using any model-as-a-service API or playground you have access to, prompt it to answer "spam or not spam" for 5 short test messages you write yourself.
+        <span class="crit">Done when: you get a clean one-word answer for all 5, and can explain why this is "completion" rather than a purpose-built classifier.</span></li>
+      <li class="try-item"><b>Sketch the parameter-count timeline.</b> Using the figures in this digest (117M in 2018, 1.5B in 2019, 100B+ by the book's writing), plot a simple growth chart, then add today's date as a question mark.
+        <span class="crit">Done when: you have a sketch or chart showing the growth curve, with a note on what "large" might mean by the time you read this.</span></li>
+    </ol>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p>
+    Reread the self-supervision section once more and try to explain out loud, in your own
+    words, why self-supervised isn't the same as unsupervised, the chapter calls this out
+    directly because people mix them up. For a natural next question: Part 2 of this digest
+    covers the chapter's next section, which catalogs what foundation models are actually
+    good and not-yet-good at in the real world, worth reading right after this if you want
+    the concrete use-case picture instead of just the theory.
+  </p>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div class="who">
+      <b>Mayowa</b>
+      <span>learning in public</span>
+    </div>
+  </footer>
+
+  <div class="sources">
+    <h2>Sources &amp; verify</h2>
+    <p>
+      Book: <i>AI Engineering</i> by Chip Huyen. Chapter 1, "Introduction to Building AI
+      Applications with Foundation Models," section "The Rise of AI Engineering." Pages
+      25&ndash;39 (Part 1 of 3; Part 2 covers "Foundation Model Use Cases," starting around
+      page 40).
+    </p>
+    <p>
+      This digest is a teaching draft written to help a beginner get oriented, not a
+      substitute for the book. If you're going to rely on a number, a definition, or a claim
+      from this page, check it against the source chapter yourself.
+    </p>
+    <p>
+      Flagged as uncertain or worth double-checking: the parameter-count figures (117M /
+      1.5B / 100B+) and the investment figures (Goldman Sachs' $100B/$200B estimate) reflect
+      the book's data as of its writing and are almost certainly out of date by mid-2026;
+      treat them as historical waypoints, not current numbers. The companion carousel for
+      this section uses Amazon Q Developer as a fresh, non-book example; that product's
+      existence and IDE-autocomplete feature set were checked against AWS's own product page
+      before use, but its exact internal architecture isn't publicly documented, so the
+      autocomplete analogy is presented as a simplification, not a technical claim about
+      AWS's implementation.
+    </p>
+  </div>
+
+</div>
+</body>
+</html>
