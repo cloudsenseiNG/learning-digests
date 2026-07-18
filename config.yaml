@@ -18,7 +18,7 @@ carousel_fonts: "./.claude/skills/book-digest-carousels/assets/fonts.json"
 digest:
   email_to: "bodunwamayowa@gmail.com"         # EDIT ME: where the link email is sent
   # Full HTML digests are hosted on GitHub Pages; the email is a lightweight link.
-  site_base_url: "https://mayusb.github.io/learning-digests"   # EDIT ME
+  site_base_url: "https://cloudsensei.github.io/learning-digests"   # EDIT ME
   docs_dir: "./docs"                           # GitHub Pages source (main /docs)
 
 carousels:
