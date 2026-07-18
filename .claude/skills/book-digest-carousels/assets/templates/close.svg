@@ -48,14 +48,10 @@
   <circle cx="6.4" cy="6.6" r="2.1" fill="#0A0A0B"/>
   <path d="M11.6 19.5 v-9 h3.2 v1.2 a3.6 3.6 0 0 1 6.3 2.4 v5.4 h-3.4 v-4.9 a1.5 1.5 0 0 0 -3 0 v4.9 Z" fill="#0A0A0B"/>
 </g>
-<text data-field="linkedin" x="252" y="1231" data-box-w="560" data-max-lines="1"
-  data-size="26" data-min-size="22" data-align="left" font-family="JetBrains Mono" font-weight="400"
-  fill="#D8D5CD">{{linkedin}}</text>
+<text x="252" y="1231" font-family="JetBrains Mono" font-weight="400" font-size="26" fill="#D8D5CD">in/mayowa-bodunwa</text>
 <g transform="translate(214,1250)">
   <path d="M15 2 C15 8 15.5 8.6 21 9 L21 12 C17.5 11.8 15.6 11 14 10 L14 18.2 A5 5 0 1 1 10.4 13.4 L11 13.4 L11 2 Z" fill="#C8453A" transform="translate(2.4,-2.2)"/>
   <path d="M15 2 C15 8 15.5 8.6 21 9 L21 12 C17.5 11.8 15.6 11 14 10 L14 18.2 A5 5 0 1 1 10.4 13.4 L11 13.4 L11 2 Z" fill="#F2EFE9"/>
 </g>
-<text data-field="tiktok" x="252" y="1269" data-box-w="560" data-max-lines="1"
-  data-size="26" data-min-size="22" data-align="left" font-family="JetBrains Mono" font-weight="400"
-  fill="#D8D5CD">{{tiktok}}</text>
+<text x="252" y="1269" font-family="JetBrains Mono" font-weight="400" font-size="26" fill="#D8D5CD">@mayowa.bodunwa</text>
 </svg>

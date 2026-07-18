@@ -19,6 +19,9 @@ mono eyebrow (`SYSTEMS · CH.N DIGEST`) -> `<h1>` title (also used as the email 
 -> lead line -> THE BIG IDEA -> KEY TERMS -> the pillars/sections (each a short para plus
 a schematic where useful) -> a bordered "REMEMBER THIS" box -> a footer with the round
 avatar (`assets/brand/logo.png`), the name, and the socials, matching the close slide.
+The footer socials must show the **handle text next to each icon** (not a bare icon):
+LinkedIn `in/mayowa-bodunwa` and TikTok `@mayowa.bodunwa` (from `config.yaml` `brand.socials`),
+in the JetBrains Mono face, muted `#D8D5CD`, same as the carousel close slide.
 
 ## Schematics (the point of the HTML format)
 
