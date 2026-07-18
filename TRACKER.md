@@ -29,10 +29,10 @@ still treated like a chapter: one digest, one carousel.
      after you've read the digest and built its micro-project. Nothing new arrives, and
      GitHub Pages is not updated, until this batch is fully checked. -->
 
-- [ ] DDIA - Ch.1 - Reliable, Scalable, and Maintainable Applications
-- [ ] AI Engineering - Ch.1 - Introduction to Building AI Applications with Foundation Models
-- [ ] High Performance MySQL - Ch.1 - MySQL Architecture
-- [ ] AWS - Core networking (VPC, subnets, route tables)
+- [x] DDIA - Ch.1 - Reliable, Scalable, and Maintainable Applications
+- [x] AI Engineering - Ch.1 - Introduction to Building AI Applications with Foundation Models
+- [x] High Performance MySQL - Ch.1 - MySQL Architecture
+- [x] AWS - Core networking (VPC, subnets, route tables)
 
 ## Track A: Designing Data-Intensive Applications
 
