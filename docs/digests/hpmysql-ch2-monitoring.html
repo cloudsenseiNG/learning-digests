@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>High Performance MySQL Ch.2: Monitoring in a Reliability Engineering World</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0A0A0B; font-family:Inter,-apple-system,sans-serif; color:#C9C7C1; line-height:1.6; }
+  .wrap { max-width:660px; margin:0 auto; padding:48px 22px 64px; }
+  .eyebrow { font-family:'JetBrains Mono',monospace; color:#C8453A; font-size:13px; letter-spacing:3px; }
+  h1 { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; color:#F2EFE9; font-size:34px; line-height:1.15; margin:10px 0 6px; }
+  .lead { color:#7A7A80; font-size:17px; margin:0 0 30px; }
+  h2 { font-family:'Bricolage Grotesque',sans-serif; font-weight:700; color:#F2EFE9; font-size:21px; margin:38px 0 12px; }
+  h3 { font-family:'JetBrains Mono',monospace; color:#C8453A; font-size:13px; letter-spacing:2px; text-transform:uppercase; margin:34px 0 10px; }
+  p { font-size:16px; color:#C9C7C1; margin:0 0 14px; }
+  .card { background:#0E0E10; border:1px solid rgba(242,239,233,0.10); border-radius:12px; padding:20px 22px; margin:16px 0; }
+  .term { margin:0 0 12px; font-size:15px; }
+  .term b { color:#F2EFE9; font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .box { border-radius:12px; padding:22px 24px; margin:26px 0; border-left:3px solid #C8453A; background:#0E0E10; }
+  .box.green { border-left-color:#6FCF97; }
+  .box h3 { margin-top:0; }
+  .box ul, .box ol { margin:0; padding-left:20px; }
+  .box li { margin-bottom:10px; font-size:15.5px; }
+  figure { margin:20px 0; border:1px solid rgba(242,239,233,0.10); border-radius:12px; padding:16px; background:#0E0E10; }
+  figcaption { font-family:'JetBrains Mono',monospace; font-size:12px; color:#7A7A80; text-align:center; margin-top:10px; }
+  code { font-family:'JetBrains Mono',monospace; font-size:13.5px; background:#131316; padding:2px 6px; border-radius:4px; color:#F2EFE9; }
+  pre { font-family:'JetBrains Mono',monospace; font-size:13px; background:#131316; padding:14px 16px; border-radius:8px; overflow-x:auto; color:#D8D5CD; border:1px solid rgba(242,239,233,0.10); }
+  ul, ol { padding-left:20px; }
+  li { margin-bottom:8px; font-size:16px; }
+  .footer { margin-top:56px; padding-top:24px; border-top:1px solid rgba(242,239,233,0.10); display:flex; align-items:center; gap:14px; }
+  .footer img { width:44px; height:44px; border-radius:50%; border:1px solid rgba(242,239,233,0.15); }
+  .footer .name { color:#F2EFE9; font-weight:600; font-size:14.5px; }
+  .footer .handle { color:#7A7A80; font-size:13px; font-family:'JetBrains Mono',monospace; }
+  a { color:#C8453A; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">HIGH PERFORMANCE MYSQL · CH.2 DIGEST</div>
+  <h1>Monitoring in a Reliability Engineering World</h1>
+  <p class="lead">How "is the database okay?" turned from a vague feeling into a number you can actually measure.</p>
+
+  <h3>The big idea</h3>
+  <p>For a long time, watching a database meant a DBA (database administrator) staring at dashboards and jumping in once something looked broken. Site reliability engineering, a discipline Google popularized, flips that around: you decide in advance what "customers are happy" looks like in numbers, then you measure against that target all the time, not just during an incident. This chapter is about turning a fuzzy complaint like "the site feels slow" into a precise, agreed-upon number your whole team can rally around, and about watching the early warning signs (disk space, connection counts, replication delay) long before they turn into an outage.</p>
+
+  <h3>Key terms</h3>
+  <div class="card">
+    <p class="term"><b>SLI (service level indicator)</b> — the specific thing you measure to answer "are my customers having a good experience right now?" For example, the percentage of requests that finish in under 200 milliseconds.</p>
+    <p class="term"><b>SLO (service level objective)</b> — the target you set for that SLI, over a stated time window. "99.5% of requests under 200ms, measured over a month" is an SLO. Without the time window, the number doesn't mean much.</p>
+    <p class="term"><b>SLA (service level agreement)</b> — an SLO you've put in a contract with a paying customer, with a financial penalty attached if you miss it. SLAs are optional and mostly a business call, not an engineering one.</p>
+    <p class="term"><b>Replication lag</b> — MySQL can copy data from one server (the source) to one or more read-only copies (replicas). Replication lag is the delay between a write landing on the source and that same write showing up on a replica.</p>
+    <p class="term"><b>Percentiles (p50 / p95 / p99)</b> — p50 is the midpoint: half of requests were faster, half were slower. p95 means 95% of requests finished at or below that time, only the worst 5% were slower. p99 is stricter still, only the worst 1% get excluded.</p>
+    <p class="term"><b>Connection storm</b> — when the app layer notices things are slow and reacts by opening a flood of new database connections, which piles more load onto an already struggling database and makes things worse.</p>
+    <p class="term"><b>Threads_running / Threads_connected</b> — two MySQL counters. Threads_connected is how many clients are currently connected. Threads_running is how many of those are actively doing work right now. A connected-but-not-running client is just sitting there holding a slot.</p>
+    <p class="term"><b>MTTR (mean time to recovery)</b> — roughly how long it takes, on average, to get back to normal after something breaks.</p>
+    <p class="term"><b>Functional sharding vs. horizontal sharding</b> — functional sharding moves a specific feature's tables onto their own dedicated database cluster. Horizontal sharding splits one huge dataset across multiple clusters, using some key (like a user ID range) to know which cluster holds which rows.</p>
+  </div>
+
+  <h2>SLI, SLO, SLA: the alphabet soup, decoded</h2>
+  <p>Picture an online store during a big sales week. Someone on the team says "the site needs to be fast and reliable." That sentence is useless on its own, because nobody can tell you today whether it's true. SLIs and SLOs exist to turn that vague sentence into something you can check.</p>
+  <p>Start with the SLI: pick the actual number you'll watch. For a database, that's usually some combination of three things: is it up (availability), how fast are queries returning (latency), and are requests failing (errors). Then the SLO puts a bar on that number: "99.5% of database requests finish in under 200 milliseconds, with no errors, measured over a rolling month." Notice this isn't 100%. Chasing 100% is either impossible or absurdly expensive, since every extra "nine" of reliability costs a lot more engineering effort than the one before it. Three nines of uptime (99.9%) still leaves you with under nine hours of downtime a year. Five nines leaves you with only a few minutes. Pick the minimum that actually keeps customers happy, not the maximum you can dream up.</p>
+  <p>The SLA is a different animal entirely. It's what happens when you take that SLO and put it in a contract with a paying customer, with a penalty attached if you break it. Most internal teams never need one. It's a sales and legal conversation more than an engineering one, and it only makes sense once you've already got SLIs and SLOs you trust.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="260" fill="#0E0E10"/>
+      <rect x="20" y="20" width="580" height="220" rx="12" fill="none" stroke="#C8453A" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="36" y="44" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#C8453A">SLA — CONTRACT, OPTIONAL, HAS PENALTIES</text>
+      <rect x="60" y="60" width="500" height="150" rx="10" fill="none" stroke="rgba(242,239,233,0.4)" stroke-width="1.5"/>
+      <text x="76" y="84" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#F2EFE9">SLO — THE TARGET, OVER A TIME WINDOW</text>
+      <rect x="100" y="100" width="420" height="90" rx="8" fill="#131316" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="116" y="124" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#6FCF97">SLI — WHAT YOU ACTUALLY MEASURE</text>
+      <text x="310" y="160" text-anchor="middle" font-family="Inter" font-size="13" fill="#C9C7C1">"99.5% of requests under 200ms,</text>
+      <text x="310" y="180" text-anchor="middle" font-family="Inter" font-size="13" fill="#C9C7C1">no errors, over a rolling month"</text>
+    </svg>
+    <figcaption>Each layer wraps the one inside it. The SLI is the raw measurement, the SLO is the bar you set for it, the SLA is that bar written into a contract.</figcaption>
+  </figure>
+
+  <h2>Watching for trouble before customers notice</h2>
+  <p>SLOs tell you when customers are already unhappy. That's useful, but reactive. The other half of the job is proactive monitoring: watching signals that don't directly hurt anyone yet, but reliably predict trouble if you ignore them.</p>
+  <p>A few of these matter more than most. <b>Disk growth</b> is the classic one nobody thinks about until the disk is nearly full and every write starts failing at once. The fix is boring and cheap if you catch it early (add capacity, clean up old data, split the dataset) and expensive and stressful if you don't. <b>Connection growth</b> is similar: your database can only hold so many connections at once (a setting called <code>max_connections</code>), and as your app grows more instances, they all open more connections. Watch the ratio of connected-to-max, not just the raw count, and watch out for a connection storm, where a slow database causes the app to panic-open even more connections, which makes the database slower still, which opens more connections. It's a feedback loop that can take a whole cluster down.</p>
+  <p><b>I/O utilization</b> (how busy your disks are serving read and write requests) matters too, because once your dataset outgrows what fits comfortably in memory, every query that has to hit disk is competing for a limited resource. A disk running near 100% busy for long stretches, outside of a scheduled backup, is usually a sign of inefficient queries scanning more data than they need to.</p>
+  <p>But the proactive metric that trips people up the most is <b>replication lag</b>. If your app reads from replicas to spread out load (a common and sensible pattern), a lagging replica means a user can write something and then, a split second later, read a version of the world that doesn't have their own change in it yet. Usually that's a minor annoyance. Sometimes it's a genuine crisis.</p>
+  <p>GitHub's public postmortem from October 21, 2018 is a real example of just how bad this can get. A brief network problem between two of their East Coast data centers was enough to confuse their automated database failover system. It promoted a database in a different data center to become the new primary, while the old primary kept accepting a small number of writes that hadn't replicated out yet. Once the network came back, GitHub effectively had two "sources of truth" for the same data, each with writes the other didn't have. Untangling which writes were correct and re-syncing everything safely took about a day of degraded service, and full reconciliation took even longer after that. It's a striking case study for why lag isn't just a performance nuisance. Left unmonitored, it can turn a short network hiccup into a multi-day data integrity crisis.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="220" fill="#0E0E10"/>
+      <rect x="40" y="30" width="160" height="50" rx="8" fill="#131316" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="120" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#F2EFE9">SOURCE (writes)</text>
+      <rect x="420" y="30" width="160" height="50" rx="8" fill="#131316" stroke="rgba(242,239,233,0.4)" stroke-width="1.5"/>
+      <text x="500" y="60" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#F2EFE9">REPLICA (reads)</text>
+      <path d="M200 55 L420 55" stroke="#7A7A80" stroke-width="1.5" fill="none" marker-end="url(#arrowRep)"/>
+      <text x="310" y="42" text-anchor="middle" font-family="Inter" font-size="11" fill="#7A7A80">async copy</text>
+      <line x1="40" y1="150" x2="580" y2="150" stroke="rgba(242,239,233,0.25)" stroke-width="1"/>
+      <circle cx="140" cy="150" r="5" fill="#6FCF97"/>
+      <text x="140" y="130" text-anchor="middle" font-family="Inter" font-size="11" fill="#6FCF97">write happens</text>
+      <rect x="140" y="140" width="220" height="20" fill="#C8453A" opacity="0.25"/>
+      <circle cx="360" cy="150" r="5" fill="#C8453A"/>
+      <text x="360" y="130" text-anchor="middle" font-family="Inter" font-size="11" fill="#C8453A">replica catches up</text>
+      <text x="250" y="188" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#C8453A">LAG WINDOW: replica can serve stale reads here</text>
+      <defs>
+        <marker id="arrowRep" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#7A7A80"/></marker>
+      </defs>
+    </svg>
+    <figcaption>The gap between a write landing on the source and reaching the replica is replication lag. Anyone reading from the replica during that gap sees old data.</figcaption>
+  </figure>
+
+  <h2>Why the average lies to you</h2>
+  <p>Say your dashboard shows "average query time: 40ms." That sounds fine. But averages are easy to fool: if 990 requests take 10ms and 10 requests take 3 seconds, the average barely moves, yet those 10 users are having a miserable time. An average smooths out exactly the pain you're trying to find.</p>
+  <p>This is where percentiles come in. Instead of averaging every value together, you sort all your measurements from fastest to slowest and ask "what value sits at the 95th position out of 100?" That's your p95. It tells you directly: 95% of your users had an experience at least this good, and 5% had it worse. p99 pushes that further, keeping only the worst 1% out of the picture. Most teams pair p50 (the typical experience) with p95 or p99 (the experience of your unluckiest users), because a healthy p50 can hide a genuinely broken p99.</p>
+  <p>There's a second trap worth knowing: a lot of monitoring tools quietly average your data down when they store it long-term, to save space. If you're checking whether disk I/O usage could double over the coming year, a graph that's already been averaged down will hide the actual spikes you care about and give you false confidence. When you're trending anything over months, look for peaks, not averages.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="240" fill="#0E0E10"/>
+      <line x1="40" y1="200" x2="590" y2="200" stroke="rgba(242,239,233,0.25)" stroke-width="1"/>
+      <path d="M40 200 C80 200 95 55 165 48 C230 42 265 120 330 158 C400 192 470 198 590 199 L590 200 Z" fill="#C9C7C1" opacity="0.12"/>
+      <path d="M40 200 C80 200 95 55 165 48 C230 42 265 120 330 158 C400 192 470 198 590 199" fill="none" stroke="#F2EFE9" stroke-width="2"/>
+      <path d="M420 199 C470 198 500 195 590 199 L590 200 L420 200 Z" fill="#C8453A" opacity="0.35"/>
+      <line x1="185" y1="55" x2="185" y2="200" stroke="#6FCF97" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="185" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#6FCF97">p50</text>
+      <line x1="420" y1="195" x2="420" y2="200" stroke="#F2EFE9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <line x1="420" y1="80" x2="420" y2="200" stroke="#F2EFE9" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="420" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#F2EFE9">p95</text>
+      <line x1="520" y1="60" x2="520" y2="200" stroke="#C8453A" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <text x="520" y="220" text-anchor="middle" font-family="JetBrains Mono" font-size="12" fill="#C8453A">p99</text>
+      <text x="60" y="30" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#7A7A80">REQUEST LATENCY, FASTEST TO SLOWEST</text>
+    </svg>
+    <figcaption>Most requests cluster fast on the left. The shaded red tail is the slow minority an average would smooth away, but p95 and p99 catch it.</figcaption>
+  </figure>
+
+  <div class="box">
+    <h3>Remember this</h3>
+    <ul>
+      <li>An SLI is what you measure, an SLO is the target you set for it over a time window, and an SLA is that target turned into a contract with a penalty.</li>
+      <li>Never aim for 100%. Every extra nine of reliability costs disproportionately more engineering time, so pick the minimum bar that keeps customers happy.</li>
+      <li>Proactive monitoring (disk space, connection counts, replication lag, I/O usage) is what catches trouble before it becomes an SLO breach, not after.</li>
+      <li>Averages hide your worst-off users. If you actually care about them, look at p95 or p99, not the mean.</li>
+      <li>Replication lag isn't just a minor delay, it's an early warning that your writes are outrunning what your replicas can keep up with, and GitHub's 2018 incident shows how bad an unmonitored version of that can get.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h3>Try it yourself</h3>
+    <ol>
+      <li><b>Compute percentiles by hand.</b> Spin up MySQL or MariaDB in Docker, run a quick load test with <code>mysqlslap</code> or a small script hitting it a few hundred times, and instead of trusting an average, sort the raw response times yourself and pull out the p50, p95, and p99.</li>
+      <li><b>Write an SLI/SLO for a toy project.</b> Pick any side project or app you already have running and write one real sentence: "I expect X% of requests to finish in under Y ms, measured over Z days." Then figure out how you'd actually check it.</li>
+      <li><b>Simulate replication lag.</b> Set up a source and a replica MySQL container with Docker Compose, then throw a heavy write load at the source (or add an artificial delay) and watch a read against the replica return data that doesn't match the source yet.</li>
+      <li><b>Build a disk-growth watcher.</b> Write a small script that checks free disk space every few minutes and prints a warning once usage crosses a threshold you pick. Notice how much harder it is to pick a good threshold than it sounds.</li>
+      <li><b>Trigger a lock wait timeout on purpose.</b> Open two terminals against the same MySQL instance, start a transaction in one that locks a row and don't commit, then try to update that same row from the other. Watch the timeout and error message appear.</li>
+      <li><b>Check auto-increment headroom.</b> Create a scratch table with a small integer primary key, insert a batch of rows, then query <code>information_schema</code> to see how close you are to running out of key space, and think about what you'd have to do to fix it in a live table.</li>
+    </ol>
+  </div>
+
+  <h3>Go deeper</h3>
+  <p>Chapter 3 goes under the hood with Performance Schema, MySQL's built-in instrumentation for figuring out exactly where a slow query's time is going. Where this chapter was about "are customers happy," that one is about "why is this actually slow."</p>
+
+  <div class="footer">
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="name">Mayowa</div>
+      <div class="handle">~/mayowa/learning · learning in public</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

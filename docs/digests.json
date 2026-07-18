@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "slug": "ddia-ch2-pt1-data-models",
+    "book": "Designing Data-Intensive Applications",
+    "ch": "Ch.2 (Part 1 of 2)",
+    "title": "Data Models and Query Languages: Relational vs. Document",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "ai-eng-ch2-pt1-foundation-models",
+    "book": "AI Engineering",
+    "ch": "Ch.2 (Part 1 of 2)",
+    "title": "Foundation Models: What Went In, and How Big It Got",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "hpmysql-ch2-monitoring",
+    "book": "High Performance MySQL",
+    "ch": "Ch.2",
+    "title": "Monitoring in a Reliability Engineering World",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "aws-transit-gateway",
+    "book": "AWS",
+    "ch": "Topic 2",
+    "title": "Transit Gateway: One Hub Instead of a Web of VPC Peering",
+    "date": "2026-07-18"
+  }
+]

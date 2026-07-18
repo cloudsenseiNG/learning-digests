@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering Ch.2 (Part 1): Understanding Foundation Models</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0A0A0B; font-family:Inter,-apple-system,sans-serif; color:#C9C7C1; line-height:1.6; }
+  .wrap { max-width:660px; margin:0 auto; padding:48px 22px 64px; }
+  .eyebrow { font-family:'JetBrains Mono',monospace; color:#C8453A; font-size:13px; letter-spacing:3px; }
+  h1 { font-family:'Bricolage Grotesque',sans-serif; font-weight:800; color:#F2EFE9; font-size:34px; line-height:1.15; margin:10px 0 6px; }
+  .lead { color:#7A7A80; font-size:17px; margin:0 0 30px; }
+  h2 { font-family:'Bricolage Grotesque',sans-serif; font-weight:700; color:#F2EFE9; font-size:21px; margin:38px 0 12px; }
+  h3 { font-family:'JetBrains Mono',monospace; color:#C8453A; font-size:13px; letter-spacing:2px; text-transform:uppercase; margin:34px 0 10px; }
+  p { font-size:16px; color:#C9C7C1; margin:0 0 14px; }
+  .card { background:#0E0E10; border:1px solid rgba(242,239,233,0.10); border-radius:12px; padding:20px 22px; margin:16px 0; }
+  .term { margin:0 0 12px; font-size:15px; }
+  .term b { color:#F2EFE9; font-family:'JetBrains Mono',monospace; font-weight:500; }
+  .box { border-radius:12px; padding:22px 24px; margin:26px 0; border-left:3px solid #C8453A; background:#0E0E10; }
+  .box.green { border-left-color:#6FCF97; }
+  .box h3 { margin-top:0; }
+  .box ul, .box ol { margin:0; padding-left:20px; }
+  .box li { margin-bottom:10px; font-size:15.5px; }
+  figure { margin:20px 0; border:1px solid rgba(242,239,233,0.10); border-radius:12px; padding:16px; background:#0E0E10; }
+  figcaption { font-family:'JetBrains Mono',monospace; font-size:12px; color:#7A7A80; text-align:center; margin-top:10px; }
+  code { font-family:'JetBrains Mono',monospace; font-size:13.5px; background:#131316; padding:2px 6px; border-radius:4px; color:#F2EFE9; }
+  pre { font-family:'JetBrains Mono',monospace; font-size:13px; background:#131316; padding:14px 16px; border-radius:8px; overflow-x:auto; color:#D8D5CD; border:1px solid rgba(242,239,233,0.10); }
+  ul, ol { padding-left:20px; }
+  li { margin-bottom:8px; font-size:16px; }
+  .footer { margin-top:56px; padding-top:24px; border-top:1px solid rgba(242,239,233,0.10); display:flex; align-items:center; gap:14px; }
+  .footer img { width:44px; height:44px; border-radius:50%; border:1px solid rgba(242,239,233,0.15); }
+  .footer .name { color:#F2EFE9; font-weight:600; font-size:14.5px; }
+  .footer .handle { color:#7A7A80; font-size:13px; font-family:'JetBrains Mono',monospace; }
+  a { color:#C8453A; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">AI ENGINEERING · CH.2 DIGEST · PART 1 OF 2</div>
+  <h1>Foundation Models: What Went In, and How Big It Got</h1>
+  <p class="lead">Before you can reason about why one model is better than another, you need to know what actually shapes it: the data it read and the size of the brain it grew.</p>
+
+  <h3>The big idea</h3>
+  <p>A foundation model is just a big general-purpose model (think GPT-4 or Llama) that gets trained once on a huge pile of data and then gets adapted for lots of different jobs, instead of being built from scratch for each one. Two things decide most of what that model can and can't do before anyone even starts fine-tuning it: what data it was trained on, and how it's built (its architecture and its size). This digest covers those two pieces. Part 2 picks up with how a raw pre-trained model gets turned into something you'd actually want to talk to.</p>
+
+  <h3>Key terms</h3>
+  <div class="card">
+    <p class="term"><b>Foundation model</b> — a large, general-purpose model trained once on a massive dataset, then adapted (via fine-tuning, prompting, and so on) to many different tasks.</p>
+    <p class="term"><b>Pre-training vs. post-training</b> — pre-training is the first, most expensive phase, where the model reads mountains of text and just learns to predict the next token. Post-training comes after and teaches the model to actually behave like an assistant (that's Part 2).</p>
+    <p class="term"><b>Token</b> — the small chunk of text a model actually reads and writes, often a piece of a word rather than a whole one. "Learning" might be one token or split into "learn" and "ing," depending on the tokenizer.</p>
+    <p class="term"><b>Common Crawl / C4</b> — Common Crawl is a free, messy scrape of billions of web pages, updated regularly by a nonprofit. C4 is Google's cleaned-up subset of it. Both show up, in some form, in most major models' training data.</p>
+    <p class="term"><b>Transformer</b> — the neural network architecture behind essentially every major language model since 2017, built around the attention mechanism.</p>
+    <p class="term"><b>Attention mechanism</b> — the part of a transformer that decides, for each piece of text being generated, which earlier pieces of text matter most right now.</p>
+    <p class="term"><b>Prefill vs. decode</b> — the two phases of getting a response out of a model. Prefill reads your whole prompt at once, in parallel. Decode writes the reply one token at a time, in order, which is why generation feels slower than reading.</p>
+    <p class="term"><b>Parameters</b> — the internal numbers a model adjusts during training. Roughly speaking, more parameters means more room to store patterns.</p>
+    <p class="term"><b>FLOPs</b> — floating point operations, a hardware-neutral way to count how much raw computation went into training a model.</p>
+    <p class="term"><b>Scaling law</b> — an empirically discovered formula that predicts how much model performance improves as you add more parameters, more training data, and more compute together.</p>
+    <p class="term"><b>Emergent ability / inverse scaling</b> — an emergent ability only shows up once a model crosses some size threshold and just isn't there in smaller versions. Inverse scaling is the opposite surprise: a bigger model doing worse at a specific task than a smaller one.</p>
+  </div>
+
+  <h2>Training data sets the ceiling</h2>
+  <p>Here's the thing that finally made this click for me: a model can't know what it never read. If a language barely shows up in the training data, the model will be shaky in that language no matter how clever its architecture is. If a domain (say, protein structures, or legal contracts) never appears, the model won't be good at that domain either. Training data isn't just fuel, it's the boundary of what's even possible.</p>
+  <p>Most large models lean on some version of Common Crawl or C4 for bulk text, and it's worth knowing what that actually contains: clickbait, misinformation, forum arguments, and every sketchy corner of the internet, right alongside Wikipedia and news sites. Teams try to filter this down with heuristics (OpenAI, for example, only kept Reddit links that had at least three upvotes when training GPT-2), but filtering the open web is never going to produce a spotless dataset. That's a big reason model developers increasingly reach for curated, higher-quality sources instead of just scraping wider.</p>
+  <p>Quality often beats quantity here. A 2023 paper by Gunasekar and colleagues trained a 1.3-billion-parameter model on just 7 billion tokens of carefully selected, high-quality coding data, and it beat much larger models on several coding benchmarks. More data isn't automatically better if a lot of it is noise.</p>
+  <p>The data mix also creates real gaps. English makes up close to half of Common Crawl, while languages like Telugu, Marathi, and Punjabi make up a tiny fraction relative to how many people actually speak them. That imbalance shows up directly in benchmarks: GPT-4 scores noticeably worse on the MMLU benchmark (a large multiple-choice test covering 57 subjects) when the questions are in an under-represented language. It also shows up in cost: because of how tokenization works, the same sentence can take roughly ten times as many tokens in Burmese as it does in English, which means it's both slower and more expensive to run in that language.</p>
+  <p>For anything genuinely specialized (drug discovery, medical imaging, architectural drawings), general web data won't cut it at all, since that kind of data is rarely public. That's why domain-specific models exist, like DeepMind's AlphaFold, trained specifically on protein structure data rather than internet text.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="300" fill="#0E0E10"/>
+      <text x="20" y="26" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#7A7A80">FROM RAW WEB TO TRAINING MIX</text>
+      <rect x="20" y="48" width="180" height="44" rx="6" fill="#131316" stroke="rgba(242,239,233,0.25)"/>
+      <text x="110" y="66" text-anchor="middle" font-family="Inter" font-size="11" fill="#C9C7C1">Common Crawl</text>
+      <text x="110" y="82" text-anchor="middle" font-family="Inter" font-size="10" fill="#7A7A80">billions of raw pages</text>
+      <path d="M110 92 L110 118" stroke="#C8453A" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="130" y="110" font-family="JetBrains Mono" font-size="10" fill="#C8453A">filter</text>
+      <rect x="20" y="122" width="180" height="44" rx="6" fill="#131316" stroke="#C8453A"/>
+      <text x="110" y="140" text-anchor="middle" font-family="Inter" font-size="11" fill="#F2EFE9">C4 (cleaned)</text>
+      <text x="110" y="156" text-anchor="middle" font-family="Inter" font-size="10" fill="#7A7A80">still noisy, less noisy</text>
+      <path d="M110 166 L110 192" stroke="#C8453A" stroke-width="1.5" marker-end="url(#a1)"/>
+      <text x="145" y="184" font-family="JetBrains Mono" font-size="10" fill="#C8453A">curate + mix</text>
+      <rect x="20" y="196" width="180" height="44" rx="6" fill="#131316" stroke="#6FCF97"/>
+      <text x="110" y="214" text-anchor="middle" font-family="Inter" font-size="11" fill="#F2EFE9">training mix</text>
+      <text x="110" y="230" text-anchor="middle" font-family="Inter" font-size="10" fill="#7A7A80">web + code + domain sets</text>
+      <rect x="260" y="48" width="330" height="192" rx="8" fill="#131316" stroke="rgba(242,239,233,0.15)"/>
+      <text x="280" y="76" font-family="JetBrains Mono" font-size="11" fill="#7A7A80">what shapes the final mix</text>
+      <text x="280" y="104" font-family="Inter" font-size="11" fill="#C9C7C1">- language balance (mostly English)</text>
+      <text x="280" y="130" font-family="Inter" font-size="11" fill="#C9C7C1">- quality filters (upvotes, spam rules)</text>
+      <text x="280" y="156" font-family="Inter" font-size="11" fill="#C9C7C1">- domain coverage (code, law, medicine)</text>
+      <text x="280" y="182" font-family="Inter" font-size="11" fill="#C9C7C1">- deliberate curation for weak spots</text>
+      <text x="280" y="208" font-family="Inter" font-size="11" fill="#7A7A80">whatever's missing here becomes a</text>
+      <text x="280" y="224" font-family="Inter" font-size="11" fill="#7A7A80">blind spot in the model</text>
+      <defs>
+        <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#C8453A"/></marker>
+      </defs>
+    </svg>
+    <figcaption>Raw web data gets filtered and mixed with curated sources. Whatever never makes it into the mix, the model never learns.</figcaption>
+  </figure>
+
+  <h2>What a transformer actually does</h2>
+  <p>Before transformers, the standard approach (called seq2seq) squeezed an entire input into one summary vector, then generated a reply from that summary alone. Picture trying to answer detailed questions about a novel using only its back-cover blurb. It worked, but it lost a lot of detail, and it also had to process everything one word at a time in order, which was slow.</p>
+  <p>The attention mechanism, introduced with the transformer in 2017, fixes both problems. Instead of compressing the whole input into one summary, the model can look back at any earlier piece of text directly while generating each new word, the way you'd flip to any page of the book instead of relying on the blurb. Under the hood, each piece of text gets three vectors: a query (what am I looking for right now), a key (a label on each earlier piece of text, like a page number), and a value (the actual content on that page). The model compares its query against every key to decide how much attention to pay to each value. Do this across many "heads" at once, so the model can track several different relationships in parallel, and you get a transformer block. Stack a few dozen of those blocks and you have a full model.</p>
+  <p>One practical thing worth knowing: generating a response happens in two distinct phases. Prefill reads your entire prompt at once, in parallel, since the model already has the whole thing in front of it. Decode then writes the reply one token at a time, because each new token depends on everything generated so far. That's the actual reason a long prompt often feels fast to submit but the reply still trickles out word by word.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="220" fill="#0E0E10"/>
+      <text x="20" y="26" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#C8453A">PREFILL (parallel)</text>
+      <rect x="20" y="42" width="70" height="30" rx="5" fill="#131316" stroke="#C8453A"/>
+      <text x="55" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">tok 1</text>
+      <rect x="100" y="42" width="70" height="30" rx="5" fill="#131316" stroke="#C8453A"/>
+      <text x="135" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">tok 2</text>
+      <rect x="180" y="42" width="70" height="30" rx="5" fill="#131316" stroke="#C8453A"/>
+      <text x="215" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">tok 3</text>
+      <rect x="260" y="42" width="70" height="30" rx="5" fill="#131316" stroke="#C8453A"/>
+      <text x="295" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">tok 4</text>
+      <path d="M55 72 L160 108" stroke="#C8453A" stroke-width="1" opacity="0.6"/>
+      <path d="M135 72 L160 108" stroke="#C8453A" stroke-width="1" opacity="0.6"/>
+      <path d="M215 72 L160 108" stroke="#C8453A" stroke-width="1" opacity="0.6"/>
+      <path d="M295 72 L160 108" stroke="#C8453A" stroke-width="1" opacity="0.6"/>
+      <text x="30" y="98" font-family="Inter" font-size="10" fill="#7A7A80">all read at once, together</text>
+      <rect x="120" y="108" width="90" height="30" rx="5" fill="#131316" stroke="rgba(242,239,233,0.3)"/>
+      <text x="165" y="127" text-anchor="middle" font-family="Inter" font-size="10" fill="#C9C7C1">prompt state</text>
+
+      <text x="360" y="26" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#6FCF97">DECODE (one at a time)</text>
+      <rect x="360" y="42" width="60" height="30" rx="5" fill="#131316" stroke="#6FCF97"/>
+      <text x="390" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">out 1</text>
+      <path d="M420 57 L450 57" stroke="#6FCF97" marker-end="url(#a2)"/>
+      <rect x="450" y="42" width="60" height="30" rx="5" fill="#131316" stroke="#6FCF97"/>
+      <text x="480" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">out 2</text>
+      <path d="M510 57 L540 57" stroke="#6FCF97" marker-end="url(#a2)"/>
+      <rect x="540" y="42" width="60" height="30" rx="5" fill="#131316" stroke="#6FCF97"/>
+      <text x="570" y="61" text-anchor="middle" font-family="Inter" font-size="10" fill="#F2EFE9">out 3</text>
+      <text x="360" y="98" font-family="Inter" font-size="10" fill="#7A7A80">each token waits on the last one,</text>
+      <text x="360" y="114" font-family="Inter" font-size="10" fill="#7A7A80">so this part can't be parallelized</text>
+      <defs>
+        <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#6FCF97"/></marker>
+      </defs>
+    </svg>
+    <figcaption>Reading your prompt is fast and parallel (prefill). Writing the reply is sequential, one token leaning on the last (decode).</figcaption>
+  </figure>
+
+  <h2>Model size: it's not just the parameter count</h2>
+  <p>Model names like "Llama-13B" tell you the parameter count, and more parameters usually does mean more capacity to learn. But parameter count alone can mislead you. Some models are sparse, meaning a lot of their parameters are effectively switched off for any given input. Mixtral 8x7B, for instance, has 46.7 billion total parameters, but for any single token, only about 12.9 billion of them are actually active. It costs and runs like a 12.9-billion-parameter model even though it stores far more knowledge than that.</p>
+  <p>Because raw parameter count is a slippery measurement, researchers also track FLOPs (floating point operations), a standardized way to measure how much computation training actually took, independent of what hardware you used. This is where the Chinchilla scaling law comes in. In 2022, a DeepMind team led by Jordan Hoffmann trained around 400 models of different sizes and found a clean relationship: for compute-optimal training, you want roughly 20 training tokens for every parameter in the model. A 3-billion-parameter model wants around 60 billion training tokens, and if you double the model size, you should double the token count too. Before that paper, plenty of teams were training models that were too big for the data they fed them, effectively wasting compute. It's part of why some newer, smaller models now outperform older, larger ones: they were trained on proportionally more data.</p>
+  <p>Bigger isn't automatically better, either. There are inverse scaling cases where a larger model does worse on a specific task than a smaller one (researchers ran an actual "Inverse Scaling Prize" in 2023 to hunt for these). And some abilities only show up once a model crosses a certain size, called emergent abilities, which makes it hard to predict a big model's behavior just by studying smaller ones. On top of that, scaling has real physical limits: the internet only has so much usable text left to train on, and data centers only have so much electricity available to run on. Bigger is a strategy, not a guarantee.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="260" fill="#0E0E10"/>
+      <text x="20" y="26" font-family="JetBrains Mono" font-size="12" letter-spacing="1" fill="#7A7A80">COMPUTE VS. TRAINING LOSS</text>
+      <path d="M60 210 L60 40" stroke="rgba(242,239,233,0.25)" stroke-width="1"/>
+      <path d="M60 210 L580 210" stroke="rgba(242,239,233,0.25)" stroke-width="1"/>
+      <text x="20" y="130" font-family="Inter" font-size="10" fill="#7A7A80" transform="rotate(-90 20 130)">loss</text>
+      <text x="300" y="235" text-anchor="middle" font-family="Inter" font-size="10" fill="#7A7A80">compute (FLOPs), more to the right</text>
+      <path d="M60 50 C 180 70, 260 130, 360 168 C 440 190, 500 200, 580 204" fill="none" stroke="#C8453A" stroke-width="2"/>
+      <circle cx="300" cy="150" r="6" fill="#6FCF97"/>
+      <text x="315" y="145" font-family="JetBrains Mono" font-size="11" fill="#6FCF97">compute-optimal</text>
+      <text x="315" y="160" font-family="JetBrains Mono" font-size="10" fill="#7A7A80">(~20 tokens / param)</text>
+      <circle cx="150" cy="88" r="5" fill="#7A7A80"/>
+      <text x="90" y="78" font-family="Inter" font-size="10" fill="#7A7A80">too small, not enough data</text>
+      <circle cx="470" cy="196" r="5" fill="#7A7A80"/>
+      <text x="400" y="188" font-family="Inter" font-size="10" fill="#7A7A80">bigger, but undertrained</text>
+    </svg>
+    <figcaption>As compute goes up, loss keeps falling, but with diminishing returns. Chinchilla found the sweet spot for a given compute budget: about 20 tokens per parameter.</figcaption>
+  </figure>
+
+  <div class="box">
+    <h3>Remember this</h3>
+    <ul>
+      <li>A model can't perform well on data it never saw. Language gaps and domain gaps in training data become capability gaps in the model.</li>
+      <li>Common Crawl and C4 are convenient, not clean. Most teams filter and supplement them rather than trusting them as-is.</li>
+      <li>Attention lets a model reference any earlier token directly instead of relying on one compressed summary, which is the core reason transformers beat older architectures like seq2seq.</li>
+      <li>Prefill (reading your prompt) is fast and parallel. Decode (writing the reply) is sequential and slower, one token at a time.</li>
+      <li>Parameter count alone doesn't tell the whole story: sparsity (like mixture-of-experts) and the ratio of training tokens to parameters (Chinchilla's ~20:1 rule) both matter as much as raw size.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h3>Try it yourself</h3>
+    <ol>
+      <li><b>Build a tiny tokenizer.</b> Take a paragraph of text and split it into subword tokens using a simple byte-pair-encoding library (or write a toy BPE yourself). Compare the token count of the same sentence in English versus a language with more complex word forms, and see the gap for yourself.</li>
+      <li><b>Inspect a slice of a public dataset.</b> Pull a few thousand documents from a small public web dataset (or even a Wikipedia dump) and tag each one by rough language and topic. See how lopsided the mix already looks in a tiny sample.</li>
+      <li><b>Visualize toy attention weights.</b> Write a five-line script with a made-up sentence and hand-picked "attention scores" between words. Plot them as a heatmap and notice how a real attention pattern would concentrate on a few relevant words rather than spreading evenly.</li>
+      <li><b>Plot a mock scaling curve.</b> Make up (or look up) a handful of model-size-versus-loss data points and plot them on a chart. Try fitting a simple curve and see how the "diminishing returns" shape shows up even with rough numbers.</li>
+      <li><b>Compare parameter count to file size.</b> If you have any local open-weight models (even small ones), check their file size against their advertised parameter count and figure out how many bytes per parameter that implies. It's a fast way to feel the difference between storage and compute cost.</li>
+      <li><b>Write your "if I only had 1B params" plan.</b> In a few paragraphs, decide what you'd prioritize training a small 1-billion-parameter model on for one specific job (say, customer support for a niche product), and justify the trade-offs you'd make on data mix versus general knowledge.</li>
+    </ol>
+  </div>
+
+  <h3>Go deeper</h3>
+  <p>Part 2 covers what happens after pre-training: how a raw model gets aligned to human preferences (post-training) and how it actually picks its next word when generating text (sampling), including why that step alone explains a lot of the weirdness people blame on "hallucinations."</p>
+
+  <div class="footer">
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="name">Mayowa</div>
+      <div class="handle">~/mayowa/learning · learning in public</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
