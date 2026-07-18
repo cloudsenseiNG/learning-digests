@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineering — Ch.1: Introduction to Building AI Applications with Foundation Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0B;
+    --card: #0E0E10;
+    --card2: #131316;
+    --hair: rgba(242,239,233,0.10);
+    --ink: #F2EFE9;
+    --body: #C9C7C1;
+    --muted: #7A7A80;
+    --red: #C8453A;
+    --green: #6FCF97;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 48px 20px 64px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--red);
+    margin-bottom: 18px;
+    font-weight: 700;
+  }
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    color: var(--ink);
+    font-size: 34px;
+    line-height: 1.18;
+    margin: 0 0 14px;
+  }
+  .lead {
+    font-size: 17px;
+    color: var(--body);
+    margin: 0 0 34px;
+    border-left: 3px solid var(--hair);
+    padding-left: 16px;
+  }
+  h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 22px;
+    margin: 44px 0 14px;
+  }
+  h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 17px;
+    margin: 26px 0 8px;
+  }
+  p { margin: 0 0 14px; font-size: 15.5px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin: 18px 0;
+  }
+  .terms { list-style: none; margin: 0; padding: 0; }
+  .terms li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 15px;
+  }
+  .terms li:last-child { border-bottom: none; }
+  .terms b { color: var(--ink); font-weight: 600; }
+  figure {
+    margin: 22px 0;
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    background: var(--card2);
+    padding: 18px;
+  }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 12px;
+    letter-spacing: 0.02em;
+  }
+  .box {
+    border: 1px solid var(--hair);
+    border-left: 3px solid var(--red);
+    border-radius: 10px;
+    background: var(--card);
+    padding: 22px 24px;
+    margin: 22px 0;
+  }
+  .box.green { border-left-color: var(--green); }
+  .box h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    margin: 0 0 14px;
+    text-transform: uppercase;
+  }
+  .box ul, .box ol { margin: 0; padding-left: 20px; }
+  .box li { margin-bottom: 10px; font-size: 15px; }
+  .box li:last-child { margin-bottom: 0; }
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  a { color: var(--red); }
+  .sources {
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .sources li { margin-bottom: 8px; }
+  footer {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hair);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  footer img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hair);
+  }
+  footer .who { font-size: 14px; color: var(--ink); font-weight: 600; }
+  footer .social {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #D8D5CD;
+    margin-top: 3px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(242,239,233,0.06);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">AI · CH.1 DIGEST</div>
+  <h1>Introduction to Building AI Applications with Foundation Models</h1>
+  <p class="lead">In one line: this chapter explains why "just call an API" replaced "train your own model" as the default way to build AI products, what people are actually building with that shift, and how to think before you start building.</p>
+
+  <h2>The big idea</h2>
+  <p>Until a few years ago, if you wanted an AI feature, you (or your ML team) usually had to collect data and train a model from scratch for that one job. Today, a handful of companies have already trained enormous, general-purpose models and rent access to them over an API. Building an "AI application" now mostly means <em>adapting</em> one of those models to your problem, not training your own from zero. That shift is what the book calls AI engineering, and this chapter is the setup: what these models are, why they suddenly got so capable, what people are building with them, and how to plan an AI project instead of just diving in and hoping.</p>
+
+  <h2>Key terms</h2>
+  <div class="card">
+    <ul class="terms">
+      <li><b>Foundation model</b> — a large, general-purpose model trained on huge amounts of data that can be pointed at many different tasks, instead of being built for just one. "Foundation" because you build applications on top of it.</li>
+      <li><b>LLM (large language model)</b> — a foundation model trained mainly on text. Every LLM is a foundation model; not every foundation model is an LLM (some also handle images, audio, video).</li>
+      <li><b>Token</b> — the small chunk of text a model actually reads and predicts, one at a time. Often a word piece, not a whole word (e.g. "cooking" might split into "cook" + "ing").</li>
+      <li><b>Self-supervision</b> — a training trick where the raw text supplies its own "correct answers." Feed the model "I love street food" and it learns by trying to predict each next word, no human labeling required.</li>
+      <li><b>Autoregressive model</b> — a model that predicts the next token using only the tokens that came before it, then repeats, one token at a time. This is how ChatGPT-style tools generate text.</li>
+      <li><b>Multimodal model</b> — a model that can take in and/or produce more than one kind of data (text and images, for example), not text only.</li>
+      <li><b>Embedding</b> — a list of numbers that represents the meaning of a piece of text or image, so a computer can measure how similar two things are.</li>
+      <li><b>Model as a service</b> — instead of hosting and running a model yourself, you send it a request over an API and get a response back, the way you'd call any other web service.</li>
+      <li><b>Prompt engineering</b> — shaping what a model does by changing the instructions and context you give it, without touching anything inside the model.</li>
+      <li><b>RAG (retrieval-augmented generation)</b> — connecting a model to an outside source of information (your own documents, a database) so it can look things up instead of relying only on what it memorized during training.</li>
+      <li><b>Fine-tuning</b> — further training an already-trained model on your own examples, so its internal numbers (weights) actually change.</li>
+      <li><b>Agent</b> — an AI system that can plan a sequence of steps and use tools (search a site, send an email, check a calendar) to get something done, rather than just answering one question.</li>
+    </ul>
+  </div>
+
+  <h2>How it works</h2>
+
+  <h3>1. From language models to LLMs</h3>
+  <p>A language model, at its core, just estimates how likely a word is to come next given what came before. Feed it "My favorite color is ___" and a decent English model should rate "blue" more likely than "car." That's it, that's the whole trick underneath tools like ChatGPT: predict the next token, add it to the text, predict the next one again, and stop when a special "end" token comes up.</p>
+  <p>What changed recently is scale, and scale was only possible because of self-supervision. Training a model the old way (supervised learning) means paying humans to label examples, which is slow and expensive: label a million images for a fraud detector, and you're paying for a million judgment calls. Language modeling sidesteps that. Any sentence you already have can be turned into training examples just by hiding the next word and asking the model to guess it. Since text is everywhere (books, articles, comments), this made it possible to train on enormous amounts of data without paying anyone to label it, which is exactly how language models scaled up into "large" language models.</p>
+  <p>One distinction worth having straight: an <b>autoregressive</b> model (the kind behind text generation) only looks backward, predicting what comes next. A <b>masked</b> model (like BERT) can look at words both before and after a gap, which makes it good at "fill in the blank" tasks like classification, but not at generating open-ended text. Almost everything people mean by "generative AI" today is the autoregressive kind.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="600" height="220" fill="#131316" rx="8"/>
+      <text x="20" y="30" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80">AUTOREGRESSIVE GENERATION (ONE TOKEN AT A TIME)</text>
+      <rect x="20" y="50" width="130" height="34" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="85" y="72" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1" text-anchor="middle">"To be or</text>
+      <rect x="20" y="50" width="130" height="34" rx="6" fill="none" stroke="#2A2A2E"/>
+      <text x="85" y="98" font-family="Inter" font-size="10" fill="#7A7A80" text-anchor="middle">prompt tokens</text>
+      <path d="M160 67 H210" stroke="#C8453A" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="215" y="50" width="90" height="34" rx="6" fill="#1a1210" stroke="#C8453A"/>
+      <text x="260" y="72" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">model</text>
+      <path d="M305 67 H355" stroke="#C8453A" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="360" y="50" width="90" height="34" rx="6" fill="#0E0E10" stroke="#6FCF97"/>
+      <text x="405" y="72" font-family="JetBrains Mono, monospace" font-size="12" fill="#6FCF97" text-anchor="middle">"not"</text>
+      <text x="405" y="98" font-family="Inter" font-size="10" fill="#7A7A80" text-anchor="middle">next token</text>
+      <path d="M405 90 C 405 130, 85 130, 85 90" stroke="#7A7A80" stroke-width="1.5" fill="none" stroke-dasharray="3,3" marker-end="url(#arrow2)"/>
+      <text x="245" y="150" font-family="Inter" font-size="11" fill="#7A7A80" text-anchor="middle">predicted token gets appended, then the model predicts the next one again</text>
+      <text x="20" y="190" font-family="JetBrains Mono, monospace" font-size="11" fill="#F2EFE9">repeat -&gt; "To be or not" -&gt; "To be or not to" -&gt; ... -&gt; &lt;end&gt;</text>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#C8453A"/></marker>
+        <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7A7A80"/></marker>
+      </defs>
+    </svg>
+    <figcaption>THE "COMPLETION MACHINE" LOOP BEHIND TEXT GENERATION</figcaption>
+  </figure>
+
+  <h3>2. From LLMs to foundation models</h3>
+  <p>Text-only models were only ever half the picture: we take in the world through sight and sound too. So labs started training models on images, audio, and video alongside text, which is what turns an LLM into a foundation model, a model general enough to be a starting point for lots of different applications, not just text ones. A model that handles more than one kind of data is called multimodal.</p>
+  <p>The other shift is from task-specific to general-purpose. Before, a sentiment-analysis model could only do sentiment analysis; a translation model could only translate. A modern foundation model can attempt both out of the box, plus summarizing, coding, and more, because it learned general patterns in language (and, increasingly, images) rather than one narrow skill. It won't always be great at your specific task straight out of the box (the chapter's example is generic-sounding product descriptions that miss a brand's voice), which is exactly why adaptation techniques like prompt engineering, RAG, and fine-tuning exist: to nudge a general model toward your specific need.</p>
+
+  <h3>3. Why AI engineering became a discipline right now</h3>
+  <p>The chapter names three things that lined up to make this moment happen. First, foundation models got genuinely more capable and general, which means more possible applications and more people who want to build them. Second, investment poured in after ChatGPT's success made the returns look attractive, so companies had budget to actually try. Third, and probably the most practical one: the barrier to entry dropped, because "model as a service" means you don't need a research lab or a stack of GPUs to use a state-of-the-art model, you need an API key and some code (or, increasingly, just plain English instructions, since AI can now help write the code too).</p>
+  <p>Put together: more demand to build AI applications, and a much lower cost to start building them. That gap is why the book treats AI engineering (building on top of existing models) as different enough from traditional ML engineering (building your own models) to deserve its own name.</p>
+
+  <h3>4. What people are actually building</h3>
+  <p>The chapter groups real-world use cases into rough buckets: coding assistants, image/video generation, writing help, education/tutoring, conversational bots (customer support, companions, game characters), summarizing and aggregating information, organizing unstructured data (photos, PDFs, contracts), and automating multi-step workflows. A single application often spans several buckets at once, a support bot both answers questions and can summarize a conversation.</p>
+  <p>A pattern worth noticing: enterprises tend to ship internal-facing tools (employee-only knowledge search) before external-facing ones (customer-facing chatbots), because internal tools are lower risk if something goes wrong. That's a planning decision as much as a technical one, which leads into the next section.</p>
+
+  <h3>5. Planning before you build</h3>
+  <p>The chapter is refreshingly blunt here: a fun demo is easy, a real product is hard, so it's worth thinking before you start. A few questions it says are worth answering up front:</p>
+  <p><b>Why build this at all?</b> The reasons range from "if we don't, competitors with AI make us obsolete" (highest urgency) to "it'll boost profit or productivity" to "we're not sure yet, but we don't want to be left behind." Knowing which one you're in changes how much you should invest and how fast.</p>
+  <p><b>What role does AI actually play?</b> The chapter borrows three useful lenses: is AI <em>critical</em> to the feature working at all, or <em>complementary</em> (nice to have, the product survives without it)? Is it <em>reactive</em> (responds when a user asks) or <em>proactive</em> (surfaces something unprompted, which needs a higher quality bar because nobody asked for it)? Is it <em>static</em> (one shared model, updated occasionally) or <em>dynamic</em> (personalized, updated continuously per user)? The more critical and proactive a feature is, the less room there is for mistakes. Related: how much is a human still in the loop, checking or overriding the AI's output before it reaches a user? A framework the chapter mentions calls this a spectrum, from a human required on every decision, to AI acting only on internal users, to AI acting directly on external customers.</p>
+  <p><b>Can you defend it?</b> Because the barrier to entry is low for you, it's low for competitors too. The chapter frames real moats as technology, data, or distribution (how you reach users), and points out that with foundation models, the technology part is hard to hold onto since everyone can call the same models. Usage data you collect over time is one of the few advantages that compounds.</p>
+  <p><b>How will you know it's working, and how long will it take?</b> Setting a "usefulness threshold" up front (quality, latency, cost targets) keeps you from shipping something half-baked. And a warning worth remembering: because foundation models are already so capable, getting a demo to look good can happen fast, which tricks people into underestimating how long it takes to get from "good demo" to "reliable product." The gap between the two can take many times longer than the initial demo did.</p>
+  <p><b>What happens after launch?</b> AI products need ongoing maintenance in a way that's unusually volatile: the underlying models keep changing (getting cheaper, faster, sometimes better, sometimes different in ways that break your prompts), and rules around data and AI usage are still being written, so what's compliant today might not be tomorrow.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="600" height="200" fill="#131316" rx="8"/>
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80">BUILD ORDER: TRADITIONAL ML VS. AI ENGINEERING</text>
+
+      <text x="20" y="60" font-family="Inter" font-size="11" fill="#F2EFE9">traditional ML</text>
+      <rect x="20" y="70" width="100" height="32" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="70" y="90" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C9C7C1" text-anchor="middle">gather data</text>
+      <path d="M120 86 H160" stroke="#7A7A80" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="165" y="70" width="100" height="32" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="215" y="90" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C9C7C1" text-anchor="middle">train model</text>
+      <path d="M265 86 H305" stroke="#7A7A80" stroke-width="1.5" marker-end="url(#a3)"/>
+      <rect x="310" y="70" width="100" height="32" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="360" y="90" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C9C7C1" text-anchor="middle">build product</text>
+
+      <text x="20" y="140" font-family="Inter" font-size="11" fill="#F2EFE9">AI engineering</text>
+      <rect x="20" y="150" width="100" height="32" rx="6" fill="#1a1210" stroke="#C8453A"/>
+      <text x="70" y="170" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#F2EFE9" text-anchor="middle">use existing</text>
+      <path d="M120 166 H160" stroke="#C8453A" stroke-width="1.5" marker-end="url(#a4)"/>
+      <rect x="165" y="150" width="100" height="32" rx="6" fill="#1a1210" stroke="#C8453A"/>
+      <text x="215" y="170" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#F2EFE9" text-anchor="middle">build product</text>
+      <path d="M265 166 H305" stroke="#C8453A" stroke-width="1.5" marker-end="url(#a4)"/>
+      <rect x="310" y="150" width="120" height="32" rx="6" fill="#0E0E10" stroke="#6FCF97"/>
+      <text x="370" y="170" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#6FCF97" text-anchor="middle">add data/tuning</text>
+      <defs>
+        <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7A7A80"/></marker>
+        <marker id="a4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#C8453A"/></marker>
+      </defs>
+    </svg>
+    <figcaption>MODEL FIRST VS. PRODUCT FIRST: WHY AI ENGINEERS CAN ITERATE FASTER</figcaption>
+  </figure>
+
+  <h3>6. The AI engineering stack, and how it differs from ML engineering</h3>
+  <p>The chapter splits any AI application into three layers: <b>application development</b> (prompting, evaluation, the interface users actually see), <b>model development</b> (training, fine-tuning, dataset work, making inference faster/cheaper), and <b>infrastructure</b> (serving, compute, monitoring, underneath both). Most of the recent explosion in tools and activity has happened in the top layer, because that's the layer anyone can now work in without needing to train anything.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 190" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="600" height="190" fill="#131316" rx="8"/>
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80">THREE LAYERS OF THE AI STACK</text>
+      <rect x="150" y="38" width="300" height="38" rx="6" fill="#1a1210" stroke="#C8453A"/>
+      <text x="300" y="61" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">application development</text>
+      <rect x="150" y="84" width="300" height="38" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="300" y="107" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1" text-anchor="middle">model development</text>
+      <rect x="150" y="130" width="300" height="38" rx="6" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="300" y="153" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1" text-anchor="middle">infrastructure</text>
+      <text x="470" y="61" font-family="Inter" font-size="10" fill="#7A7A80">most AI engineers work here</text>
+    </svg>
+    <figcaption>THE TOP LAYER IS WHERE AI ENGINEERING LIVES MOST OF THE TIME</figcaption>
+  </figure>
+
+  <p>Three concrete differences the chapter draws out between AI engineering and traditional ML engineering: (1) you're adapting a model someone else trained, not training your own, so the emphasis shifts from modeling/training toward evaluation and prompting; (2) the models are bigger and slower, so making inference fast and cheap matters even more; (3) outputs are open-ended (a chatbot can say almost anything) instead of close-ended (spam or not spam), which makes evaluation genuinely harder, since there's no simple "right answer" to check against.</p>
+  <p>That leads to the two-bucket way the chapter organizes adaptation techniques: ones that leave model weights untouched (prompt engineering, RAG) and ones that change them (fine-tuning). Prompt engineering is the cheapest to try and needs the least data, which is why it's usually the first thing to attempt; fine-tuning needs more data and effort but can move quality, latency, and cost further than prompting alone can.</p>
+
+  <figure>
+    <svg viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="600" height="210" fill="#131316" rx="8"/>
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80">THREE WAYS TO ADAPT A FOUNDATION MODEL</text>
+      <rect x="20" y="45" width="170" height="130" rx="8" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="105" y="70" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">prompt</text>
+      <text x="105" y="86" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">engineering</text>
+      <text x="105" y="115" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">better instructions</text>
+      <text x="105" y="132" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">+ examples</text>
+      <text x="105" y="160" font-family="JetBrains Mono, monospace" font-size="10" fill="#6FCF97" text-anchor="middle">weights: unchanged</text>
+
+      <rect x="215" y="45" width="170" height="130" rx="8" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="300" y="70" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">RAG</text>
+      <text x="300" y="115" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">connect to your</text>
+      <text x="300" y="132" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">own documents/data</text>
+      <text x="300" y="160" font-family="JetBrains Mono, monospace" font-size="10" fill="#6FCF97" text-anchor="middle">weights: unchanged</text>
+
+      <rect x="410" y="45" width="170" height="130" rx="8" fill="#1a1210" stroke="#C8453A"/>
+      <text x="495" y="70" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">fine-tuning</text>
+      <text x="495" y="115" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">retrain on your</text>
+      <text x="495" y="132" font-family="Inter" font-size="10.5" fill="#C9C7C1" text-anchor="middle">own examples</text>
+      <text x="495" y="160" font-family="JetBrains Mono, monospace" font-size="10" fill="#C8453A" text-anchor="middle">weights: change</text>
+    </svg>
+    <figcaption>MORE EFFORT AND DATA NEEDED AS YOU MOVE LEFT TO RIGHT</figcaption>
+  </figure>
+
+  <h2>Why it matters</h2>
+  <p>This chapter is the "why now" for basically the rest of the book. If you're learning to build with AI today, you're almost certainly doing AI engineering (adapting an existing model) rather than classic ML engineering (training your own), and that changes what skills matter: less linear algebra and gradient descent, more prompt design, evaluation, and knowing when a general model is good enough versus when you actually need to fine-tune or build retrieval on top of it. It also explains why the "planning" half of the chapter matters just as much as the technical half: because the barrier to entry is so low, the bottleneck for a lot of AI products isn't "can we build it," it's "should we, and can we tell if it's actually working."</p>
+
+  <h3>A real example: Notion AI</h3>
+  <p>Notion AI, the writing assistant built into the Notion workspace app, launched in February 2023. It's a clean real-world example of "application development" sitting on top of someone else's foundation model rather than a home-grown one: Notion's own product page currently markets it as "model agnostic," letting a workflow switch to a different model or provider without losing context. That's the model-as-a-service idea from this chapter in practice: the application layer (the writing UI, the prompts, the workspace integration) is Notion's work, while the underlying language model is developed and hosted by someone else and swapped in over an API. (I couldn't verify which specific model(s) power it today, that detail isn't published, so I'm not stating one.)</p>
+
+  <div class="box">
+    <h3>Remember this</h3>
+    <ul>
+      <li>Foundation models are trained once, by a few well-resourced organizations, then rented out as a service, so most people building AI now adapt an existing model instead of training their own.</li>
+      <li>Self-supervision (predicting the next word in text that already exists) is why language models could scale up without needing expensive human-labeled data.</li>
+      <li>Three ways to adapt a model, in order of effort: prompt engineering (just change the instructions), RAG (connect it to your own data), fine-tuning (actually retrain it on your examples).</li>
+      <li>Open-ended outputs are what make foundation models flexible and what make them hard to evaluate: there's rarely one "correct" answer to check against.</li>
+      <li>A good demo says almost nothing about how hard the rest of the journey to a reliable product will be; that last stretch usually takes far longer than getting the first version working.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h3>Try it yourself</h3>
+    <ol>
+      <li>Call an LLM API of your choice (or a hosted playground) with the same request twice: once with a bare-bones prompt, once with detailed instructions and an example of the output you want. <b>Done when:</b> you can point to one specific way the detailed prompt changed the output.</li>
+      <li>Write a small script that logs every prompt and response you send/receive during testing (even a plain text or CSV file with a timestamp is fine). <b>Done when:</b> you have at least 10 real logged prompt/response pairs from your own experiments.</li>
+      <li>Pick a toy AI application idea and write a one-page plan answering: why build it (existential risk / opportunity / just curious), is AI critical or complementary to it, and is a human checking its output before a user sees it. <b>Done when:</b> your one-pager has a clear answer to all three questions.</li>
+      <li>Paste a paragraph of your own writing into a public tokenizer visualizer (many model providers offer one) and compare the token count to the word count. <b>Done when:</b> you can state your text's token-to-word ratio and one example of a word that got split into more than one token.</li>
+      <li>Take one small task (like labeling 10 short pieces of text as positive/negative) and sketch two plans side by side: how you'd do it with prompt engineering alone, versus roughly what fine-tuning would require (how many labeled examples you'd want). <b>Done when:</b> you've written down which approach you'd pick for this task and why.</li>
+      <li>Map an AI product you use regularly onto the three-layer stack (application development / model development / infrastructure), guessing what the company likely built versus bought. <b>Done when:</b> you've written at least one item under each layer.</li>
+    </ol>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p>If one part of this chapter is worth rereading closely, it's the "Planning AI Applications" section: the critical-vs-complementary / reactive-vs-proactive / static-vs-dynamic framework is a genuinely useful checklist to run any AI feature idea through, including ones you're not building for work.</p>
+
+  <h2>Sources & verify</h2>
+  <ul class="sources">
+    <li>Primary source: <em>AI Engineering</em> by Chip Huyen, Chapter 1 "Introduction to Building AI Applications with Foundation Models," pages 25-72 (<code>books/AI Engineering.pdf</code>).</li>
+    <li>Notion AI facts checked externally: launch date (February 2023) via Wikipedia's "Notion (productivity software)" article, and the "model agnostic / switch model or provider" claim via Notion's own product page (notion.com/product/ai), both accessed July 2026. I could not verify which specific model(s) currently power Notion AI, so that detail is left unstated rather than guessed.</li>
+      <li>Several numbers in the chapter itself (funding rounds, revenue figures, survey percentages, GitHub star counts) are point-in-time snapshots from 2023-2024 and will be stale by the time you read this; treat them as illustrating a trend, not as current facts.</li>
+      <li>The book itself flags one claim as disputed: whether ML knowledge is "nice-to-have, not must-have" for AI engineering today is presented with a footnote noting many people disagree.</li>
+    <li>This digest is a teaching draft written from my own notes and understanding, not a replacement for the chapter. If you're going to rely on a specific number or claim from it, check it against the source pages above.</li>
+  </ul>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="who">Mayowa</div>
+      <div class="social">LinkedIn: in/mayowa-bodunwa</div>
+      <div class="social">TikTok: @mayowa.bodunwa</div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

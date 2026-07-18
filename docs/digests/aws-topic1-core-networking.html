@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS — Topic 1: Core Networking</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0B;
+    --card: #0E0E10;
+    --card-2: #131316;
+    --hairline: rgba(242,239,233,0.10);
+    --ink: #F2EFE9;
+    --body: #C9C7C1;
+    --muted: #7A7A80;
+    --accent: #C8453A;
+    --green: #6FCF97;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+  .lead {
+    font-size: 17px;
+    color: var(--body);
+    margin: 0 0 36px;
+  }
+  h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: var(--ink);
+    margin: 40px 0 12px;
+  }
+  h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--ink);
+    margin: 22px 0 8px;
+  }
+  p { margin: 0 0 14px; font-size: 15.5px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 22px 22px;
+    margin: 18px 0;
+  }
+  .terms dt {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 13.5px;
+    margin-top: 12px;
+  }
+  .terms dt:first-child { margin-top: 0; }
+  .terms dd {
+    margin: 4px 0 0;
+    font-size: 15px;
+    color: var(--body);
+  }
+  figure {
+    background: var(--card-2);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 22px 0;
+  }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .box {
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 30px 0;
+  }
+  .box.green { border-left-color: var(--green); }
+  .box h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+  .box ul, .box ol { margin: 0; padding-left: 20px; }
+  .box li { margin-bottom: 10px; font-size: 15px; }
+  .box li:last-child { margin-bottom: 0; }
+  .proj-title { color: var(--ink); font-weight: 600; }
+  .done { color: var(--green); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .cost-flag { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  code, .code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(242,239,233,0.06);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13.5px;
+    color: var(--ink);
+  }
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--card-2);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 12.5px;
+    color: var(--body);
+    line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; }
+  ul.plain li { margin-bottom: 8px; font-size: 15.5px; }
+  .sources li { margin-bottom: 10px; font-size: 14.5px; word-break: break-word; }
+  footer {
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  footer img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+  }
+  footer .name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 15px;
+  }
+  footer .socials {
+    font-family: 'JetBrains Mono', monospace;
+    color: #D8D5CD;
+    font-size: 12.5px;
+    margin-top: 3px;
+  }
+  footer .socials span { display: block; }
+  .caveat {
+    font-size: 13.5px;
+    color: var(--muted);
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">AWS · TOPIC 1 DIGEST</div>
+  <h1>🧭 AWS — Topic 1: Core Networking</h1>
+  <p class="lead">VPCs, subnets, route tables, NAT gateways, and internet gateways: the five pieces that decide whether a server can be reached from the internet, and whether it can reach out to it.</p>
+
+  <h2>In one line</h2>
+  <p>A VPC is your own private slice of AWS network, and everything else in this topic (subnets, route tables, gateways) is just the plumbing that decides which parts of that slice can talk to the internet, and how.</p>
+
+  <h2>The big idea</h2>
+  <p>Before you can put a server on AWS, you need somewhere to put it. That "somewhere" is a VPC (Virtual Private Cloud): a private network you define yourself, sitting inside AWS's infrastructure. On its own, a VPC is just an empty, sealed-off address space. You carve it into subnets, and then you use route tables to tell traffic where to go. Whether a subnet can reach the internet (and whether the internet can reach it back) comes down entirely to what's in its route table, not to anything inherent about the subnet itself.</p>
+
+  <h2>Key terms</h2>
+  <div class="card terms">
+    <dl>
+      <dt>VPC (Virtual Private Cloud)</dt>
+      <dd>A logically isolated network you define inside AWS. Think of it as your own data center's network, minus the physical hardware.</dd>
+
+      <dt>CIDR block</dt>
+      <dd>The range of IP addresses assigned to a VPC or subnet, written like <span class="code">10.0.0.0/24</span>. Every subnet you create is carved out of the VPC's CIDR block.</dd>
+
+      <dt>Subnet</dt>
+      <dd>A slice of IP addresses inside your VPC. Every subnet lives entirely inside one Availability Zone (AWS's term for an isolated data center within a Region), it can't span two.</dd>
+
+      <dt>Availability Zone (AZ)</dt>
+      <dd>One of several isolated locations within an AWS Region. Spreading subnets across AZs is how you avoid one data center outage taking your whole app down.</dd>
+
+      <dt>Route table</dt>
+      <dd>A set of rules attached to a subnet (or a gateway) that says "traffic headed to this destination goes out through this target." It's the actual traffic controller, subnets don't route anything on their own.</dd>
+
+      <dt>Local route</dt>
+      <dd>The route every route table gets automatically, for traffic staying inside the VPC. It's what lets two subnets in the same VPC talk to each other by default.</dd>
+
+      <dt>Main route table</dt>
+      <dd>The route table your VPC comes with automatically. Any subnet you don't explicitly attach to a different route table uses this one.</dd>
+
+      <dt>Internet gateway (IGW)</dt>
+      <dd>A component you attach to a VPC that lets resources with a public IP talk directly to the internet, in both directions.</dd>
+
+      <dt>NAT gateway</dt>
+      <dd>A managed service that sits in a public subnet and lets instances in a private subnet start connections out to the internet, without allowing anything from the internet to start a connection back in.</dd>
+
+      <dt>Elastic IP address</dt>
+      <dd>A static, public IPv4 address AWS gives you, that you attach to something like a NAT gateway so it has a fixed public address to translate traffic through.</dd>
+    </dl>
+  </div>
+
+  <h2>How it works</h2>
+
+  <h3>A VPC is an empty network until you add subnets</h3>
+  <p>When you create a VPC, you give it a CIDR block, a range of private IP addresses, and that's basically it. It has no servers, no internet access, nothing. To actually run anything, you divide that CIDR block into subnets, and each subnet has to live entirely within a single Availability Zone. A common pattern is one public subnet and one private subnet per AZ, so if you're spreading across two AZs for redundancy, that's four subnets total.</p>
+
+  <h3>What makes a subnet "public" or "private" isn't the subnet, it's the route table</h3>
+  <p>This is the part that took me a minute to really get. A subnet doesn't have a "public" or "private" flag you toggle. According to the AWS docs, a subnet is public if its route table has a route pointing to an internet gateway, and private if it doesn't. That's the whole definition. Two subnets can have identical CIDR ranges and settings, and the only thing making one public and the other private is what's written in their route tables.</p>
+  <p>Every route table also gets a "local" route automatically, for traffic addressed to somewhere inside the VPC itself. That's a simplification worth flagging: the docs note this local route exists for both IPv4 and IPv6 if the VPC has both, but the mechanics of dual-stack routing go beyond what this digest covers.</p>
+
+  <h3>Internet gateways: the door for public subnets</h3>
+  <p>An internet gateway attaches to the whole VPC (not to a specific subnet), and it's what makes internet access possible at all. But attaching one to your VPC isn't enough on its own. A subnet only becomes "public" once its route table has a route sending internet-bound traffic (conventionally written as destination <span class="code">0.0.0.0/0</span>, meaning "anywhere") to that internet gateway as the target. And the instance itself still needs a public IP address, or the internet gateway has nothing to translate traffic to.</p>
+  <p>Worth noting: AWS's docs point out that even if an instance in a subnet has a public IP, it still can't reach the internet if its route table has no route to an IGW. The route table is what actually gates the traffic, the public IP alone doesn't do it.</p>
+
+  <h3>NAT gateways: outbound-only access for private subnets</h3>
+  <p>Instances in a private subnet don't get public IPs and their route table has no route to an internet gateway, so nothing from the outside can reach them directly. But they often still need to reach out, say, to download a software update or call an external API. That's what a NAT gateway is for.</p>
+  <p>A NAT gateway is created inside a public subnet (not the private one), and it gets its own Elastic IP address. You then add a route in the private subnet's route table sending outbound traffic to the NAT gateway instead of an IGW. Traffic flows: private instance to NAT gateway (still inside the VPC) to internet gateway (because the NAT gateway lives in a subnet that does have that route) to the internet. The NAT gateway swaps the instance's private IP for its own address on the way out, and swaps it back on the way in, but it will only let a connection through if the private instance started it. Nothing on the internet can initiate a new connection to the private instance through the NAT gateway.</p>
+  <p>Two things flagged directly from the docs: a NAT gateway lives in one Availability Zone, so if you want resilience across AZs you need a separate NAT gateway per AZ (with routing set up so each private subnet uses the one in its own AZ). And a NAT gateway is a paid resource, you're billed for the hours it runs plus the data it processes, unlike an internet gateway, which has no charge itself (though data transfer through it can still be billed elsewhere).</p>
+
+  <figure>
+    <svg viewBox="0 0 640 430" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="640" height="430" fill="#131316"/>
+      <rect x="16" y="16" width="608" height="398" rx="10" fill="none" stroke="#F2EFE9" stroke-opacity="0.18" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <text x="30" y="40" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80">VPC · 10.0.0.0/16</text>
+
+      <!-- public subnet -->
+      <rect x="36" y="56" width="270" height="150" rx="8" fill="#0E0E10" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="48" y="76" font-family="JetBrains Mono, monospace" font-size="11" fill="#6FCF97">PUBLIC SUBNET · 10.0.1.0/24</text>
+      <rect x="52" y="88" width="90" height="48" rx="6" fill="#1A1A1D" stroke="#F2EFE9" stroke-opacity="0.25"/>
+      <text x="97" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#F2EFE9">EC2</text>
+      <text x="97" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#C9C7C1">public IP</text>
+      <rect x="168" y="88" width="120" height="48" rx="6" fill="#1A1A1D" stroke="#F2EFE9" stroke-opacity="0.25"/>
+      <text x="228" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#F2EFE9">NAT gateway</text>
+      <text x="228" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#C9C7C1">Elastic IP</text>
+      <text x="52" y="165" font-family="JetBrains Mono, monospace" font-size="9" fill="#7A7A80">route table:</text>
+      <text x="52" y="180" font-family="JetBrains Mono, monospace" font-size="9" fill="#C9C7C1">local  -&gt; VPC</text>
+      <text x="52" y="193" font-family="JetBrains Mono, monospace" font-size="9" fill="#6FCF97">0.0.0.0/0 -&gt; IGW</text>
+
+      <!-- private subnet -->
+      <rect x="334" y="56" width="270" height="150" rx="8" fill="#0E0E10" stroke="#C8453A" stroke-width="1.5"/>
+      <text x="346" y="76" font-family="JetBrains Mono, monospace" font-size="11" fill="#C8453A">PRIVATE SUBNET · 10.0.2.0/24</text>
+      <rect x="350" y="88" width="90" height="48" rx="6" fill="#1A1A1D" stroke="#F2EFE9" stroke-opacity="0.25"/>
+      <text x="395" y="108" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#F2EFE9">EC2</text>
+      <text x="395" y="122" text-anchor="middle" font-family="Inter, sans-serif" font-size="9" fill="#C9C7C1">no public IP</text>
+      <text x="350" y="165" font-family="JetBrains Mono, monospace" font-size="9" fill="#7A7A80">route table:</text>
+      <text x="350" y="180" font-family="JetBrains Mono, monospace" font-size="9" fill="#C9C7C1">local  -&gt; VPC</text>
+      <text x="350" y="193" font-family="JetBrains Mono, monospace" font-size="9" fill="#C8453A">0.0.0.0/0 -&gt; NAT gw</text>
+
+      <!-- IGW -->
+      <rect x="130" y="240" width="120" height="42" rx="6" fill="#1A1A1D" stroke="#6FCF97" stroke-width="1.2"/>
+      <text x="190" y="266" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#F2EFE9">Internet Gateway</text>
+
+      <text x="190" y="330" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-size="15" font-weight="700" fill="#F2EFE9">Internet</text>
+      <circle cx="190" cy="345" r="3" fill="#7A7A80"/>
+
+      <!-- arrows -->
+      <path d="M97 136 L97 200 M97 200 L190 200 M190 200 L190 240" fill="none" stroke="#6FCF97" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+      <path d="M190 282 L190 310" fill="none" stroke="#6FCF97" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+
+      <path d="M395 136 L395 220 L228 220 L228 136" fill="none" stroke="#C8453A" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+      <path d="M228 88 L228 200 L250 200 L250 261" fill="none" stroke="#6FCF97" stroke-width="1.3" stroke-dasharray="3 2" marker-end="url(#arrowGreen)"/>
+
+      <defs>
+        <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#6FCF97"/>
+        </marker>
+        <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#C8453A"/>
+        </marker>
+      </defs>
+    </svg>
+    <figcaption>Public subnet routes straight to the internet gateway. Private subnet routes to the NAT gateway first, which then rides the public subnet's IGW route out.</figcaption>
+  </figure>
+
+  <h3>Route tables: the one thing actually deciding all of this</h3>
+  <p>It's worth restating because it's the whole mental model: a route table is a list of "if traffic is headed here, send it out through this target" rules. Every route table gets a local route for free (traffic staying inside the VPC). Beyond that, you add routes yourself: a route to an internet gateway makes a subnet public, a route to a NAT gateway gives a private subnet outbound-only internet access, and no matching route at all (beyond local) makes a subnet fully isolated. AWS also has the idea of a "main route table" (the one your VPC starts with) versus custom route tables you create yourself. Any subnet you don't explicitly associate with a custom route table just uses the main one.</p>
+
+  <figure>
+    <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="640" height="260" fill="#131316"/>
+      <text x="24" y="34" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80">A route table is just a lookup: destination -&gt; target</text>
+
+      <rect x="24" y="54" width="592" height="36" fill="#0E0E10" stroke="#F2EFE9" stroke-opacity="0.15"/>
+      <text x="36" y="77" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9">DESTINATION</text>
+      <text x="330" y="77" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9">TARGET</text>
+
+      <rect x="24" y="90" width="592" height="40" fill="#161618"/>
+      <text x="36" y="115" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">10.0.0.0/16 (inside the VPC)</text>
+      <text x="330" y="115" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">local</text>
+
+      <rect x="24" y="130" width="592" height="40" fill="#0E0E10"/>
+      <text x="36" y="155" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">0.0.0.0/0 (everywhere else)</text>
+      <text x="330" y="155" font-family="JetBrains Mono, monospace" font-size="12" fill="#6FCF97">igw-xxxxxxxx (public subnet)</text>
+
+      <rect x="24" y="170" width="592" height="40" fill="#161618"/>
+      <text x="36" y="195" font-family="JetBrains Mono, monospace" font-size="12" fill="#C9C7C1">0.0.0.0/0 (everywhere else)</text>
+      <text x="330" y="195" font-family="JetBrains Mono, monospace" font-size="12" fill="#C8453A">nat-xxxxxxxx (private subnet)</text>
+
+      <text x="24" y="240" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80">Same shape of table, different target in the last row, is the entire public vs. private distinction.</text>
+    </svg>
+    <figcaption>A public subnet's route table and a private subnet's route table look almost identical, the target for 0.0.0.0/0 is the only real difference.</figcaption>
+  </figure>
+
+  <h2>Why it matters</h2>
+  <p>This is the layer underneath almost everything else on AWS. A web server that needs to be reachable from the internet goes in a public subnet. A database that should never be reachable directly (only from your app servers) goes in a private subnet, reaching out through a NAT gateway only when it needs to, say, pull a security patch. Getting this wrong is a classic AWS security misstep: putting a database in a public subnet with a public IP and an open route to an IGW is one of the more common ways people accidentally expose data. Once you've got this mental model (route table decides everything), later topics like Transit Gateway, load balancers, and VPC peering are really just "more sophisticated things you can point a route at."</p>
+
+  <div class="box">
+    <h3>REMEMBER THIS</h3>
+    <ul>
+      <li>A VPC is just an address range until you add subnets, route tables, and gateways to it.</li>
+      <li>"Public" and "private" aren't subnet settings, they're a consequence of what's in the subnet's route table. A route to an internet gateway is what makes a subnet public.</li>
+      <li>Every route table gets a free "local" route for traffic inside the VPC; everything else you add yourself.</li>
+      <li>A NAT gateway lives in a public subnet and gives a private subnet outbound-only internet access, connections can't be started from the internet side.</li>
+      <li>NAT gateways are billed by the hour plus data processed; internet gateways have no charge of their own.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h3>TRY IT YOURSELF</h3>
+    <ol>
+      <li>
+        <span class="proj-title">Build a VPC with one public and one private subnet.</span>
+        In the VPC console, use "Create VPC" -&gt; "VPC and more," pick a CIDR block, and choose 1 public + 1 private subnet across 1 AZ (skip NAT gateway for now to avoid charges). Open the "Resource map" tab and trace how the console has wired the route tables.<br>
+        <span class="done">Done when: you can point at each subnet's route table and say why it's public or private.</span>
+      </li>
+      <li>
+        <span class="proj-title">Recreate it with the CLI, one command at a time.</span>
+        Run <span class="code">aws ec2 create-vpc</span>, <span class="code">create-subnet</span> (x2), <span class="code">create-internet-gateway</span>, <span class="code">attach-internet-gateway</span>, <span class="code">create-route-table</span>, <span class="code">create-route --gateway-id &lt;igw-id&gt; --destination-cidr-block 0.0.0.0/0</span>, and <span class="code">associate-route-table</span> for the public subnet. Compare what you typed to what the console did in project 1.<br>
+        <span class="done">Done when: <span class="code">aws ec2 describe-route-tables</span> shows your public subnet's route table with a route to the IGW.</span>
+      </li>
+      <li>
+        <span class="proj-title">Launch an instance in the private subnet and confirm it's unreachable.</span>
+        Launch a small EC2 instance into the private subnet (no public IP). Try to SSH to it directly from your laptop.<br>
+        <span class="done">Done when: the connection times out, and you can explain why (no public IP, no route to an IGW) instead of just observing it fails.</span>
+      </li>
+      <li>
+        <span class="proj-title">Add a NAT gateway and watch outbound-only access appear.</span>
+        Create a NAT gateway in the public subnet with a new Elastic IP, then add a route in the private subnet's route table: <span class="code">0.0.0.0/0 -&gt; nat-gateway-id</span> (CLI: <span class="code">create-route --nat-gateway-id &lt;nat-id&gt;</span>). From a bastion or Session Manager into the private instance, run <span class="code">curl</span> against any public site.<br>
+        <span class="cost-flag">Cost flag: a NAT gateway is billed hourly plus per-GB processed for as long as it exists, delete it (and release the Elastic IP) right after this project.</span><br>
+        <span class="done">Done when: the private instance can <span class="code">curl</span> out successfully, but you still can't reach it from the outside.</span>
+      </li>
+      <li>
+        <span class="proj-title">Break it on purpose, then fix it.</span>
+        Delete the public subnet's route to the internet gateway (leave the local route alone). Confirm outbound access from a public-subnet instance now fails. Re-add the route and confirm it recovers.<br>
+        <span class="done">Done when: you've watched the exact same subnet flip from "internet-reachable" to "not" purely by editing a route table entry, nothing else changed.</span>
+      </li>
+      <li>
+        <span class="proj-title">Draw your own route table by hand.</span>
+        On paper (or in a notes app), sketch a VPC with 2 AZs, 1 public + 1 private subnet per AZ, and write out what each of the 4 route tables should contain (local route, plus IGW or NAT target). No AWS console needed.<br>
+        <span class="done">Done when: your sketch has 4 distinct route tables and you can explain why the private subnets in each AZ shouldn't share one NAT gateway in production.</span>
+      </li>
+    </ol>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p>The AWS docs have a "VPC examples" section covering more advanced layouts (multiple public/private subnet pairs, VPN-only subnets, isolated subnets). A natural next question once this clicks: what happens when you need two separate VPCs to talk to each other, without either one exposing itself to the public internet? That's VPC peering and Transit Gateway territory, which is exactly where Topic 2 in this track is headed.</p>
+
+  <h2>Sources &amp; verify</h2>
+  <div class="card sources">
+    <ul>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html" target="_blank" rel="noopener">What is Amazon VPC?</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html" target="_blank" rel="noopener">Subnets for your VPC</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html" target="_blank" rel="noopener">Configure route tables</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/RouteTables.html" target="_blank" rel="noopener">Route table concepts</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html" target="_blank" rel="noopener">Enable internet access for a VPC using an internet gateway</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/working-with-igw.html" target="_blank" rel="noopener">Add internet access to a subnet</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat.html" target="_blank" rel="noopener">Connect to the internet or other networks using NAT devices</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-basics.html" target="_blank" rel="noopener">NAT gateway basics</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateway-pricing.html" target="_blank" rel="noopener">Pricing for NAT gateways</a> — Amazon VPC User Guide</li>
+      <li><a href="https://docs.aws.amazon.com/vpc/latest/userguide/create-vpc.html" target="_blank" rel="noopener">Create a VPC</a> — Amazon VPC User Guide (source for the CLI commands in "Try it yourself")</li>
+      <li><a href="https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html" target="_blank" rel="noopener">create-route</a> — AWS CLI Command Reference (used to verify the exact <span class="code">--gateway-id</span> vs <span class="code">--nat-gateway-id</span> flag names)</li>
+    </ul>
+    <p class="caveat">This digest is a teaching draft written by a fellow learner, not a replacement for the docs above. Before you run anything against a real AWS account, double-check the exact steps and current console layout against those pages, they change. One thing worth flagging: the exact CIDR block sizing conventions and AZ-count recommendations vary by use case, this digest kept the numbers illustrative rather than prescriptive since the docs frame them as "it depends on your setup," not fixed rules.</p>
+  </div>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="name">Mayowa</div>
+      <div class="socials">
+        <span>LinkedIn: in/mayowa-bodunwa</span>
+        <span>TikTok: @mayowa.bodunwa</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

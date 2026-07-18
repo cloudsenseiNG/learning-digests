@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "slug": "ddia-ch1-reliable-scalable-maintainable",
+    "book": "Designing Data-Intensive Applications",
+    "ch": "Ch.1",
+    "title": "Reliable, Scalable, and Maintainable Applications",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "ai-engineering-ch1-foundation-models-intro",
+    "book": "AI Engineering",
+    "ch": "Ch.1",
+    "title": "Introduction to Building AI Applications with Foundation Models",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "hpmysql-ch1-mysql-architecture",
+    "book": "High Performance MySQL",
+    "ch": "Ch.1",
+    "title": "MySQL Architecture",
+    "date": "2026-07-18"
+  },
+  {
+    "slug": "aws-topic1-core-networking",
+    "book": "AWS",
+    "ch": "Topic 1",
+    "title": "Core Networking: VPC, Subnets, Route Tables, NAT & Internet Gateways",
+    "date": "2026-07-18"
+  }
+]
