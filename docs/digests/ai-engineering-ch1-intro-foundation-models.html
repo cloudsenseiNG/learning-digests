@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Engineering, Ch.1 (Part 1): From Language Models to Foundation Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0B;
+    --card: #0E0E10;
+    --card-2: #131316;
+    --hairline: rgba(242,239,233,0.10);
+    --ink: #F2EFE9;
+    --body: #C9C7C1;
+    --muted: #7A7A80;
+    --muted-2: #D8D5CD;
+    --red: #C8453A;
+    --green: #6FCF97;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding: 48px 20px 80px;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 660px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 38px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0 0 18px;
+  }
+  .lead {
+    font-size: 19px;
+    color: var(--ink);
+    line-height: 1.55;
+    margin-bottom: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 52px 0 16px;
+  }
+  h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: var(--ink);
+    margin: 30px 0 10px;
+  }
+  p { margin: 0 0 14px; }
+  .big-idea p { font-size: 17px; color: var(--body); }
+  ul, ol { padding-left: 22px; margin: 0 0 14px; }
+  li { margin-bottom: 10px; }
+  .key-terms li { margin-bottom: 14px; }
+  .key-terms b { color: var(--ink); }
+  .concept { margin-bottom: 34px; }
+  .concept p { font-size: 16px; }
+  figure {
+    margin: 22px 0 30px;
+    padding: 22px 20px 16px;
+    background: var(--card-2);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+  }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 14px;
+    text-align: center;
+  }
+  .box {
+    border-left: 3px solid var(--red);
+    background: var(--card);
+    border-radius: 8px;
+    padding: 24px 26px;
+    margin: 40px 0;
+  }
+  .box.green { border-left-color: var(--green); }
+  .box h2 {
+    margin-top: 0;
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .box.green h2 { color: var(--green); }
+  .box ul { margin-bottom: 0; }
+  .box li { color: var(--ink); font-size: 15.5px; }
+  .box.green li { color: var(--body); }
+  .try-item b { color: var(--ink); }
+  .done { color: var(--muted); font-size: 14px; }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(242,239,233,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .sources {
+    font-size: 14.5px;
+    color: var(--muted);
+  }
+  .sources li { margin-bottom: 10px; }
+  footer {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  footer img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--hairline);
+  }
+  footer .name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  footer .socials {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted-2);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  footer .socials span { display: inline-flex; align-items: center; gap: 8px; }
+  footer .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: rgba(242,239,233,0.08);
+    color: var(--muted-2);
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="eyebrow">AI ENGINEERING · CH.1 DIGEST</div>
+  <h1>From Language Models to Foundation Models (Part 1)</h1>
+  <div class="lead">
+    How today's AI models learned to read practically the whole internet without a single human labeling anything, and why that turned building AI apps into a brand new job.
+  </div>
+
+  <h2>The big idea</h2>
+  <div class="big-idea">
+    <p>For most of AI's history, teaching a model anything meant paying humans to label examples by hand, which is slow, expensive, and caps how big a model can realistically get. Language models found a shortcut: ordinary text already contains its own right answers, so a model can train on huge piles of writing without anyone labeling a thing.</p>
+    <p>That shortcut is called self-supervision, and it's the real reason models scaled from small, single-task tools into the huge, general-purpose "foundation models" you can bend toward almost any task. Because those models are now rented by the API call instead of built from scratch, a new job appeared almost overnight: AI engineering, which is about adapting an existing model rather than training your own.</p>
+  </div>
+
+  <h2>Key terms</h2>
+  <ul class="key-terms">
+    <li><b>Token</b>: the small chunk of text a model actually reads and writes. Sometimes a whole word, sometimes a piece of one. A long or unusual word often gets split into two or three tokens; a common short word is usually just one.</li>
+    <li><b>Tokenization</b>: the step where text gets chopped into tokens before a model can do anything with it.</li>
+    <li><b>Autoregressive model</b>: a model that predicts the next token using only the tokens that came before it, then repeats. This is how chat-style tools write, one token at a time.</li>
+    <li><b>Masked language model</b>: a model trained to fill in a missing piece of text using context from both before and after it, more like a fill-in-the-blank than a predict-what's-next.</li>
+    <li><b>Self-supervision</b>: a way of training where the training data supplies its own correct answers, so no human has to sit down and label anything.</li>
+    <li><b>Foundation model</b>: a large, general-purpose model, usually trained mostly through self-supervision, that you adapt to many different jobs instead of building a new model per job.</li>
+    <li><b>Multimodal model</b>: a model that works with more than one kind of data, like text and images together, not just text.</li>
+    <li><b>Model as a service</b>: using a powerful model through an API call instead of hosting and running it yourself.</li>
+    <li><b>AI engineering</b>: the work of building an application on top of an existing foundation model, instead of training a model from scratch.</li>
+  </ul>
+
+  <h2>How it works</h2>
+
+  <div class="concept">
+    <h3>1. A language model is a completion machine, not an oracle</h3>
+    <p>At its core, a language model just estimates how likely a given chunk of text is to come next after some other text. Give it "To be or not to be" and it'll likely continue with something like "that is the question," not because it understands Shakespeare, but because that pattern of words showed up constantly in whatever it was trained on.</p>
+    <p>Why it matters: this reframes what's actually happening when you use one of these tools. It's pattern completion based on probabilities, not a lookup of verified facts. That's why a model can sound completely confident while being wrong: fluent and correct are two different properties, and only one of them is guaranteed.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#C9C7C1"/>
+        </marker>
+      </defs>
+      <rect x="1" y="1" width="618" height="248" rx="10" fill="none" stroke="#1A1A1D"/>
+      <rect x="24" y="90" width="150" height="66" rx="8" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="99" y="118" text-anchor="middle" fill="#F2EFE9" font-family="JetBrains Mono" font-size="12">Your prompt</text>
+      <text x="99" y="140" text-anchor="middle" fill="#7A7A80" font-family="JetBrains Mono" font-size="10">"To be or not to be"</text>
+
+      <line x1="174" y1="123" x2="222" y2="123" stroke="#C9C7C1" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <rect x="226" y="78" width="168" height="90" rx="8" fill="#131316" stroke="#C8453A"/>
+      <text x="310" y="118" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-weight="600" font-size="14">Language model</text>
+      <text x="310" y="140" text-anchor="middle" fill="#7A7A80" font-family="Inter" font-size="11">predicts likely next token</text>
+
+      <line x1="394" y1="123" x2="442" y2="123" stroke="#C9C7C1" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+      <rect x="446" y="90" width="150" height="66" rx="8" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="521" y="115" text-anchor="middle" fill="#F2EFE9" font-family="JetBrains Mono" font-size="12">"that"</text>
+      <text x="521" y="135" text-anchor="middle" fill="#7A7A80" font-family="JetBrains Mono" font-size="10">best next token</text>
+
+      <path d="M521,90 C521,40 320,40 310,78" fill="none" stroke="#6FCF97" stroke-width="1.5" marker-end="url(#arrow1)"/>
+      <text x="415" y="45" text-anchor="middle" fill="#6FCF97" font-family="JetBrains Mono" font-size="11">append + repeat</text>
+    </svg>
+    <figcaption>An autoregressive model generates one token, appends it to the input, and repeats until it stops.</figcaption>
+  </figure>
+
+  <div class="concept">
+    <h3>2. Tokens, not words, are what a model actually reads</h3>
+    <p>Before a model can process anything, your text gets chopped into tokens. Common, short words often become a single token. Longer or less common words tend to get split into pieces (a word like "unbelievable" might become something like "un" + "believ" + "able", exactly where the split falls depends on the specific model's tokenizer, so treat this as illustrative rather than a fixed rule).</p>
+    <p>Why it matters: tokens are the unit a model's context window is measured in, and the unit API pricing is usually based on. When someone says a model "remembers" the last so-many-thousand tokens of a conversation, that's tokens, not words or sentences, and the two counts aren't the same.</p>
+  </div>
+
+  <div class="concept">
+    <h3>3. Two flavors of prediction: autoregressive vs. masked</h3>
+    <p>An autoregressive model predicts the next token using only what came before it, the way you'd guess the end of a sentence someone is still typing. A masked model instead gets a sentence with a gap in the middle and has to fill it in using context from both sides, more like a crossword clue.</p>
+    <p>Why it matters: autoregressive models are what power today's chat and writing tools, because generating text one token at a time, left to right, is exactly what "writing a reply" requires. Masked models are better suited to understanding tasks, like deciding whether a piece of code has a bug, where seeing the whole picture at once helps more than writing left to right.</p>
+  </div>
+
+  <div class="concept">
+    <h3>4. The real unlock: self-supervision</h3>
+    <p>Before this trick caught on, training a model meant supervised learning: humans hand-label a big pile of examples (this photo is a "cat", this email is "spam"), and the model learns from those labels. That works, but it's slow and expensive, and it puts a hard ceiling on how much training data you can realistically afford. One of the deep learning field's early landmark results, a 2012 image-classification model called AlexNet, was trained this way, on roughly a million hand-labeled photos sorted into a thousand categories. Getting that many labels took real money and real people.</p>
+    <p>Self-supervision skips the human labeler entirely. Take an ordinary sentence: "I finally get it now." Split it up, and each fragment already predicts the next word: "I" points to "finally", "I finally" points to "get", "I finally get it" points to "now". Nobody labeled any of that. The sentence already contained its own answer key, just by existing. Multiply that by every book, article, and blog post a model can get its hands on, and you get an enormous amount of free training data.</p>
+    <p>Why it matters: this is the actual reason language models could scale up the way they did. Training data stopped being something you had to pay a labeling team to produce, and became something you could gather essentially anywhere text already existed.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1" y="1" width="618" height="318" rx="10" fill="none" stroke="#1A1A1D"/>
+
+      <text x="150" y="34" text-anchor="middle" fill="#C8453A" font-family="JetBrains Mono" font-size="13" letter-spacing="2">SUPERVISED</text>
+      <rect x="40" y="52" width="220" height="50" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="150" y="82" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">Raw photos, no labels</text>
+      <line x1="150" y1="102" x2="150" y2="126" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="40" y="126" width="220" height="54" rx="7" fill="#0E0E10" stroke="#C8453A"/>
+      <text x="150" y="150" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">A person labels each one</text>
+      <text x="150" y="168" text-anchor="middle" fill="#7A7A80" font-family="Inter" font-size="10.5">slow, and costs real money</text>
+      <line x1="150" y1="180" x2="150" y2="204" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="40" y="204" width="220" height="50" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="150" y="234" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">Model trained on labels</text>
+
+      <line x1="310" y1="20" x2="310" y2="300" stroke="#1A1A1D" stroke-width="1"/>
+
+      <text x="470" y="34" text-anchor="middle" fill="#6FCF97" font-family="JetBrains Mono" font-size="13" letter-spacing="2">SELF-SUPERVISED</text>
+      <rect x="360" y="52" width="220" height="50" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="470" y="82" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">Raw text found anywhere</text>
+      <line x1="470" y1="102" x2="470" y2="126" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="360" y="126" width="220" height="54" rx="7" fill="#0E0E10" stroke="#6FCF97"/>
+      <text x="470" y="150" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">Each sentence hides its</text>
+      <text x="470" y="168" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">own next word as the label</text>
+      <line x1="470" y1="180" x2="470" y2="204" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="360" y="204" width="220" height="50" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="470" y="234" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">Model trained by guessing</text>
+
+      <text x="470" y="270" text-anchor="middle" fill="#6FCF97" font-family="JetBrains Mono" font-size="11">✓ no manual labeling needed</text>
+    </svg>
+    <figcaption>Same goal, two very different cost structures. Self-supervision turns "free" text into training data.</figcaption>
+  </figure>
+
+  <div class="concept">
+    <h3>5. From language models to foundation models: adding more senses, and more uses</h3>
+    <p>Once a model isn't only trained on text but also on other kinds of data, like images, using a similar self-supervised idea, it becomes multimodal: it can work with more than one type of input. Stack enough scale and generality on top of that, and you get what this book calls a foundation model: a base you build many different things on top of, rather than a single-purpose tool.</p>
+    <p>The practical difference shows up in reuse. A single general-purpose foundation model can translate a paragraph, summarize a document, and judge whether a message sounds like spam, without being retrained for any of those three jobs individually. Older, task-specific models generally couldn't cross over like that: a model built for sentiment analysis stayed a sentiment-analysis model.</p>
+    <p>Why it matters: this generality is exactly what makes an app builder's job different today. Instead of training a purpose-built model for your task, you nudge a general one toward it. The chapter names three ways to do that: prompt engineering (crafting good instructions), retrieval-augmented generation or RAG (giving the model extra reference material to work from), and finetuning (further training the existing model on your own examples). Each gets its own deep dive later in the book; for now it's enough to know these three levers exist.</p>
+  </div>
+
+  <div class="concept">
+    <h3>6. Why "AI engineering" showed up as a distinct job, almost overnight</h3>
+    <p>Three things lined up at once. First, general-purpose capability: a single foundation model can now do far more than any one older task-specific model could, so the same base model can power wildly different products. Second, a wave of investment followed the success of consumer chat tools; the chapter cites Goldman Sachs Research's estimate that AI investment could approach roughly $100 billion in the US and $200 billion globally by 2025 (a book-sourced forecast, treat it as ballpark, not a guarantee). Third, and maybe most practically, the barrier to entry dropped: instead of hosting and running your own model, you can call a hosted model through an API, "model as a service," and start building the same day.</p>
+    <p>Why it matters: put those three together, and building on top of an existing model became dramatically cheaper and faster than training your own, which is exactly why a new job description appeared. The author considered calling this ML engineering or one of the "Ops" terms (MLOps, LLMOps) before settling on AI engineering, mainly because the day-to-day work leans more toward adapting and evaluating an existing model than toward the operations-heavy work those other terms implied.</p>
+  </div>
+
+  <figure>
+    <svg viewBox="0 0 620 230" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#7A7A80"/>
+        </marker>
+      </defs>
+      <rect x="1" y="1" width="618" height="228" rx="10" fill="none" stroke="#1A1A1D"/>
+
+      <text x="30" y="34" fill="#7A7A80" font-family="JetBrains Mono" font-size="12">TRADITIONAL ML</text>
+      <rect x="30" y="46" width="150" height="48" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="105" y="75" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11.5">Collect + label data</text>
+      <line x1="180" y1="70" x2="206" y2="70" stroke="#7A7A80" marker-end="url(#arrow2)"/>
+      <rect x="210" y="46" width="180" height="48" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="300" y="75" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11.5">Train a model from scratch</text>
+      <line x1="390" y1="70" x2="416" y2="70" stroke="#7A7A80" marker-end="url(#arrow2)"/>
+      <rect x="420" y="46" width="150" height="48" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="495" y="75" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11.5">Deploy</text>
+      <text x="30" y="118" fill="#7A7A80" font-family="JetBrains Mono" font-size="10.5">weeks to months, one model per task</text>
+
+      <line x1="20" y1="140" x2="600" y2="140" stroke="#1A1A1D" stroke-width="1"/>
+
+      <text x="30" y="168" fill="#6FCF97" font-family="JetBrains Mono" font-size="12">AI ENGINEERING</text>
+      <rect x="30" y="180" width="150" height="40" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="105" y="205" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11">Call a model API</text>
+      <line x1="180" y1="200" x2="206" y2="200" stroke="#7A7A80" marker-end="url(#arrow2)"/>
+      <rect x="210" y="180" width="180" height="40" rx="7" fill="#0E0E10" stroke="#6FCF97"/>
+      <text x="300" y="205" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11">Prompt / RAG / finetune</text>
+      <line x1="390" y1="200" x2="416" y2="200" stroke="#7A7A80" marker-end="url(#arrow2)"/>
+      <rect x="420" y="180" width="150" height="40" rx="7" fill="#0E0E10" stroke="#2A2A2E"/>
+      <text x="495" y="205" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="11">Deploy</text>
+    </svg>
+    <figcaption>Same end goal, a shorter and cheaper path when you adapt an existing model instead of building one.</figcaption>
+  </figure>
+
+  <h2>Why it matters</h2>
+  <p>Every AI product you've probably touched this year, a chat assistant, an image generator, a coding autocomplete tool, sits on top of a foundation model trained this exact way. The same base model can be repurposed into wildly different products without retraining, which is exactly why the last few years saw an explosion of AI tools built by people who never trained a model themselves. Understanding self-supervision and what "foundation model" actually means isn't trivia: it's the reason your job, adapting a model, looks completely different from the ML engineering job that came before it.</p>
+
+  <div class="box">
+    <h2>Remember this</h2>
+    <ul>
+      <li>A language model just predicts the next likely chunk of text. It isn't reasoning or fact-checking, so verify anything you actually plan to rely on.</li>
+      <li>"Token" matters because that's the unit models actually read, write, and get billed by, not "words."</li>
+      <li>Self-supervision is why language models could scale: ordinary text supplies its own labels, so paying humans to label data stopped being the bottleneck.</li>
+      <li>"Foundation model" means one general base you adapt (through prompts, retrieval, or finetuning), not a model you build from scratch for every new task.</li>
+      <li>AI engineering is a different job from ML engineering: less "train a model," more "adapt and evaluate someone else's."</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h2>Try it yourself</h2>
+    <ol>
+      <li class="try-item"><b>Tokenizer explorer.</b> Run any tokenizer you can get your hands on (an open-source BPE tokenizer library, or a hosted tokenizer demo page) against five sentences of your own writing.<br><span class="done">Done when: you have a small table of sentence, word count, and token count for all five, and can say whether the token-to-word ratio stayed roughly consistent.</span></li>
+      <li class="try-item"><b>Build your own self-supervision generator.</b> Write a short script, any language, that takes one sentence and prints every (context → next word) training pair the way a language model would see it.<br><span class="done">Done when: it correctly handles at least three sentences of different lengths, punctuation included as its own token.</span></li>
+      <li class="try-item"><b>Completion vs. conversation demo.</b> Send any chat AI tool a bare sentence fragment, no question, no instruction, and see whether it completes it or tries to "answer" it. Then rewrite the same idea as a clear question and compare.<br><span class="done">Done when: you've written two or three sentences describing exactly what changed in the response style.</span></li>
+      <li class="try-item"><b>Feel the labeling bottleneck.</b> Pick a mini task (say, tagging 20 photos of your own as "indoors" or "outdoors"). Time yourself labeling all 20 by hand, then do the math for what labeling 1,000 and 1,000,000 would take at that rate.<br><span class="done">Done when: you have a real minutes-per-label number and a rough total time for all three scales.</span></li>
+      <li class="try-item"><b>Same model, two jobs.</b> Pick one general-purpose AI tool you have access to and give it two very different tasks back to back (translate a sentence, then judge whether a short message sounds like spam) without changing any settings.<br><span class="done">Done when: you've recorded both outputs and noted whether the same model handled both reasonably well.</span></li>
+    </ol>
+  </div>
+
+  <h2>Go deeper (optional)</h2>
+  <p>Reread the "From Large Language Models to Foundation Models" section and sit with this question: of the three adaptation levers mentioned here, prompt engineering, RAG, and finetuning, which one would fit a small idea you'd actually want to build? You don't need the full answer yet (the book covers each in its own dedicated chapter later on), just a guess is enough to make the next digest land harder.</p>
+
+  <h2>Sources & verify</h2>
+  <ul class="sources">
+    <li>Book: <i>AI Engineering</i> by Chip Huyen (O'Reilly). Chapter 1, "Introduction to Building AI Applications with Foundation Models." Pages covered in this digest: 25–39 of the chapter's full 25–72 range.</li>
+    <li>This is part 1 of a multi-part digest of a dense, 48-page chapter. The rest of Chapter 1 (foundation model use cases, planning an AI application, and the AI engineering stack) is covered in later digests so nothing gets thinned out.</li>
+    <li>This is a teaching draft meant to help a beginner get the gist, not a substitute for reading the book yourself, especially before relying on any specific number or claim for a real decision.</li>
+    <li>Flagged uncertainty: the investment estimate (Goldman Sachs Research, cited in the book) and the AlexNet/ImageNet labeling scale are repeated here as the book's own illustrative figures, not independently re-verified in this digest; treat them as ballpark. Exact tokenization behavior (how many pieces a given word splits into) varies by model and tokenizer, so this digest describes tokens generally rather than claiming one fixed example. The New York Times v. OpenAI/Microsoft lawsuit facts referenced on the companion carousel (filed Dec 27, 2023; core copyright claims allowed to proceed in 2025) come from outside the book and were checked against public reporting, not from Chapter 1 itself.</li>
+  </ul>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <div class="name">Mayowa</div>
+      <div class="socials">
+        <span><i class="icon">in</i>in/mayowa-bodunwa</span>
+        <span><i class="icon">♪</i>@mayowa.bodunwa</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
