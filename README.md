@@ -36,7 +36,7 @@ TRACKER.md                              reading plan + the "Current batch" check
 
    | Secret | What it is |
    |--------|------------|
-   | `ANTHROPIC_API_KEY` | Powers the Claude Code agent (console.anthropic.com). |
+   | `CLAUDE_CODE_OAUTH_TOKEN` | Powers the Claude Code agent using your Max/Pro subscription. Generate with `claude setup-token` (1-year token). Use this **or** `ANTHROPIC_API_KEY` (API credits) — if both are set, the API key wins. |
    | `GDRIVE_SA_JSON` | The service account JSON key, full contents. |
    | `SMTP_HOST` / `SMTP_PORT` | e.g. `smtp.gmail.com` / `587`. |
    | `SMTP_USER` / `SMTP_PASS` | Mailbox login. For Gmail, `SMTP_PASS` is a Google **App Password** (needs 2-Step Verification). |

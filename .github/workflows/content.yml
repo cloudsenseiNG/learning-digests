@@ -68,7 +68,10 @@ jobs:
       - name: Produce the next batch (4 tracks)
         if: steps.gate.outputs.send == 'true'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Uses the Max/Pro subscription via a long-lived OAuth token (claude setup-token),
+          # NOT pay-as-you-go API credits. If ANTHROPIC_API_KEY is also set it takes
+          # precedence, so we intentionally do not set it here.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           SITE_BASE_URL: ${{ vars.SITE_BASE_URL }}
         run: |
           claude -p "Use the book-digest-carousels skill. Read TRACKER.md. Produce the NEXT unit for \
