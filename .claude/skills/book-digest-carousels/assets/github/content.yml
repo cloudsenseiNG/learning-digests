@@ -58,7 +58,8 @@ jobs:
 
       - name: Pull the books folder
         if: steps.gate.outputs.send == 'true'
-        run: rclone copy gdrive: ./books --fast-list
+        run: |
+          rclone copy gdrive: ./books --fast-list
 
       - name: Install Claude Code
         if: steps.gate.outputs.send == 'true'
