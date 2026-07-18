@@ -19,10 +19,11 @@ so there's nothing to attribute. Just never copy the source's exact wording.
 
 ## Length
 
-**4–8 slides, matched to complexity.** A simple idea is a tight 4; a meatier one earns
-the full 7–8 so the arc can breathe. Don't compress a rich idea to hit a low count, and
-don't pad a thin one: give the idea the length it deserves. It should never feel
-overwhelming, but **depth wins** over brevity.
+**6–10 slides.** Never ship a scanty carousel: **6 is the floor** so the topic actually
+gets explained, and a rich idea runs to **10** so the arc can breathe. Give the idea the
+length it deserves inside that range. Every deck keeps its three anchors: a real
+**explanation** of the topic, the **visual-proof** slide, and a **real case study**.
+Depth wins over brevity, but it should still never feel padded.
 
 - Slide 1 hooks: a promise, a surprising number, or "I kept getting this wrong."
 - One thought per slide. Short lines. No paragraphs — this is glanceable.
@@ -61,12 +62,11 @@ this arc (each numbered beat is one `concept` slide unless noted):
 topic-based ("aws · route tables") with the `@mayowa` handle. Every track (DDIA, AI
 Engineering, MySQL, AWS) follows this same arc — it is not AWS-only.
 
-**Length stays flexible, 4–8 — the arc is a menu, not a fixed seven.** The beats above
-are the full-length shape. For a simpler idea, merge beats (fold "orient" into the crux,
-or "bring it home" into the close) and run as tight as **4**: cover → crux + visual
-proof → case study or takeaway → close. Scale toward 8 only when the idea genuinely has
-that much to show. The one visual-proof slide (and a real case study, when the concept
-has one worth telling) fit inside that range. **Never pad slides to hit a number.**
+**Length is 6–10 — the arc is a menu, not a fixed count.** The beats above are the
+shape; order and combine them to fit the topic. Even the tightest deck stays at **6**
+and keeps all three anchors — a real explanation, the visual-proof slide, and a real
+case study — so it never reads scanty. Scale toward **10** when the idea genuinely has
+that much to show. **Never pad to hit a number, and never drop below 6.**
 
 ## The visual-proof slide (required, one per deck)
 
