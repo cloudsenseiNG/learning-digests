@@ -24,16 +24,15 @@ still treated like a chapter: one digest, one carousel.
 
 ## Current batch: tick each when you've studied it
 
-- [ ] DDIA — Ch.1: Reliable, Scalable, and Maintainable Applications (digest + carousel)
-- [ ] AI Engineering — Ch.1 (Part 1 of 3): The Rise of AI Engineering (digest + carousel)
-- [ ] High Performance MySQL — Ch.1: MySQL Architecture (digest + carousel)
-- [ ] AWS — Topic 1: Core networking, VPCs/subnets/route tables/NAT/IGW (digest + carousel)
+<!-- Re-generating Chapter 1: this list is empty, so the completion gate is CLEAR and the
+     next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) fresh,
+     then writes the new "Current batch" checklist here for you to tick. -->
 
 ## Track A: Designing Data-Intensive Applications
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | 2026-07-18 | 2026-07-18 | Full chapter done in one unit. |
+| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | | | |
 | 2 | Data Models and Query Languages | 49–90 | | | |
 | 3 | Storage and Retrieval | 91–132 | | | |
 | 4 | Encoding and Evolution | 133–166 | | | |
@@ -51,7 +50,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | IN PROGRESS — Part 1 of 3 digested 2026-07-18 (pages 25–39, "The Rise of AI Engineering": language models → LLMs → foundation models → why "AI engineering"). Next: "Foundation Model Use Cases" section, starting ~PDF p.40. |
+| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | |
 | 2 | Understanding Foundation Models | 73-136 | | | |
 | 3 | Evaluation Methodology | 137-182 | | | |
 | 4 | Evaluate AI Systems | 183-234 | | | |
@@ -66,7 +65,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | MySQL Architecture | 23-40 | 2026-07-18 | 2026-07-18 | Full chapter done in one unit. |
+| 1 | MySQL Architecture | 23-40 | | | |
 | 2 | Monitoring in a Reliability Engineering World | 41-62 | | | |
 | 3 | Performance Schema | 63-96 | | | |
 | 4 | Operating System and Hardware Optimization | 97-120 | | | |
@@ -84,7 +83,7 @@ still treated like a chapter: one digest, one carousel.
 
 | # | Topic | Source | Digested | Carousel | Notes |
 |--:|-------|--------|----------|----------|-------|
-| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | 2026-07-18 | 2026-07-18 | Sources: VPC User Guide pages (what-is-amazon-vpc, subnet-basics, route tables, IGW, NAT gateway). |
+| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | | | |
 | 2 | Transit Gateway & multi-VPC connectivity | docs.aws.amazon.com | | | |
 | 3 | EC2 (instances, AMIs, ASGs, load balancing) | docs.aws.amazon.com | | | |
 | 4 | S3 (storage classes, lifecycle, security) | docs.aws.amazon.com | | | |
