@@ -17,6 +17,27 @@ short fragments are good. **Don't name the source book on the slides** (chrome s
 topic-based like "SYSTEMS · 01"); the concepts are common knowledge in your own words,
 so there's nothing to attribute. Just never copy the source's exact wording.
 
+**Never reveal that a book (or course, or any study material) is behind the post.** The
+slides are Mayowa's own take on a **topic**, full stop. Naming the book is only half the
+rule: **no source-shaped words anywhere in the copy**, including the cover title and
+subtitle. Banned: "chapter", "this chapter", "the book", "this book", "the author",
+"the text", "the course", "reading", "Ch.1", "pages", "the material". These are tells
+even when the title is never mentioned.
+
+Rewrite the tell as a claim about the subject itself:
+
+| ❌ Tell | ✅ Topic-first |
+|--------|----------------|
+| "That rule explains half this chapter." | "That rule explains half of how MySQL behaves." |
+| "This chapter covers three qualities." | "Three qualities decide whether a system is any good." |
+| "The author calls this a fault." | "This is what people mean by a fault." |
+| "What I'm reading about replication…" | "What finally made replication click for me…" |
+
+First-person learning framing is welcome ("what finally made this click for me", "this
+one tripped me up") because that's Mayowa's voice. Pointing at *study material* is not.
+(Digests are the opposite: they **must** cite the source in "Sources & verify". This
+no-tells rule is **carousels only**.)
+
 ## Length
 
 **7–10 slides.** Never ship a scanty carousel. **7 is the floor** — the best idea gets
