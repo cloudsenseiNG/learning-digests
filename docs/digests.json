@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "slug": "ddia-ch01-reliable-scalable-maintainable",
+    "book": "Designing Data-Intensive Applications",
+    "ch": "Ch.1",
+    "title": "Reliable, Scalable, and Maintainable Applications",
+    "date": "2026-07-19"
+  },
+  {
+    "slug": "ai-engineering-ch01-part1-intro-foundation-models",
+    "book": "AI Engineering",
+    "ch": "Ch.1 (Part 1 of 2)",
+    "title": "Nobody Labeled the Internet: How Foundation Models Actually Learn",
+    "date": "2026-07-19"
+  },
+  {
+    "slug": "hpmysql-ch01-mysql-architecture",
+    "book": "High Performance MySQL",
+    "ch": "Ch.1",
+    "title": "MySQL Architecture: The Layers Underneath Every Query",
+    "date": "2026-07-19"
+  },
+  {
+    "slug": "aws-01-core-networking",
+    "book": "AWS",
+    "ch": "Topic 1",
+    "title": "VPC Core Networking: The Route Table Row That Decides Public vs Private",
+    "date": "2026-07-19"
+  }
+]
