@@ -109,7 +109,8 @@ If `config.yaml` does not exist in the working directory, create it from
   read PDFs as ordinary files. A plain repo folder or downloaded PDFs work too.
 - `output_dir` — where digests and rendered slides are written.
 - `tracker` — path to the `TRACKER.md` progress file (create from `assets/TRACKER.example.md`).
-- `carousel_template` — path to the `template.json` describing the user's slide design.
+- `carousel_templates` / `carousel_fonts` — the SVG templates directory and the fonts
+  map for the slides (both ship inside the skill under `assets/`).
 - `digest.email_to` — the address the digest email is addressed to.
 
 If any path is missing, ask before guessing. Never invent a books folder.
