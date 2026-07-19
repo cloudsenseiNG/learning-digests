@@ -21,11 +21,18 @@ Subject: 📘 <Book short title> — Ch.<N>: <Chapter title>
 - <Term> — <one plain-language line>.
 
 **How it works** (the core of the chapter — do not thin this out)
-Explain each main concept in turn. For every concept:
+Open with a short **grounding paragraph** that orients the beginner before the details:
+what the chapter's subject actually *is* and why it exists (e.g. a "What 'data-intensive'
+actually means" opener). Then explain each main concept in turn, each in its own labelled
+sub-section. For every concept:
 - State it simply.
 - Give a concrete example the reader can picture.
 - Note the "why" — what problem it solves or where it shows up.
-Keep the important detail; this is where a beginner actually learns.
+- Add a small inline-SVG schematic where a picture explains faster than words.
+This is the heaviest section of the digest and where a beginner actually learns: be
+**thorough and complete**, define every term as it appears, and never compress it to save
+space. Match the depth of a full teaching write-up — several sub-sections, real detail in
+each. If in doubt, longer and clearer beats shorter.
 
 **Why it matters**
 Where this shows up in the real world / how it connects to what they'll do next.
@@ -58,7 +65,10 @@ One pointer, like a section to reread or a natural next question to explore.
   "it's not X, it's Y" and forced rule-of-three phrasing, use contractions.
 - Short paragraphs. Prefer a clear sentence over a clever one.
 - Never assume prior knowledge; when in doubt, define it.
-- Length follows the chapter: a dense chapter earns a longer "How it works".
+- **Err on the side of thoroughness.** A full teaching digest runs long (multiple
+  screens) and that's correct; completeness beats brevity. Never drop important detail
+  to be concise, and never shorten a digest below the depth a beginner needs to actually
+  understand the chapter.
 - Don't copy sentences from the book; explain in your own words.
 
 ## Worked example (abridged)
