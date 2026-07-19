@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySQL Architecture — High Performance MySQL, Ch.1 Digest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0B;
+    --card: #0E0E10;
+    --card2: #131316;
+    --hairline: rgba(242,239,233,0.10);
+    --ink: #F2EFE9;
+    --body: #C9C7C1;
+    --muted: #7A7A80;
+    --accent: #C8453A;
+    --green: #6FCF97;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding: 48px 20px 96px;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 660px; margin: 0 auto; }
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+  .lead {
+    font-size: 17px;
+    color: var(--body);
+    margin: 0 0 40px;
+    max-width: 56ch;
+  }
+  h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    color: var(--ink);
+    margin: 52px 0 14px;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
+    margin: 30px 0 8px;
+  }
+  p { margin: 0 0 14px; }
+  ul, ol { padding-left: 20px; margin: 0 0 14px; }
+  li { margin-bottom: 8px; }
+  strong { color: var(--ink); font-weight: 600; }
+  code, .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+    color: var(--ink);
+    background: var(--card2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--hairline);
+  }
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--body);
+    background: var(--card2);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    line-height: 1.5;
+    margin: 0 0 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 20px 0;
+  }
+  .term { margin-bottom: 12px; }
+  .term .t { color: var(--ink); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+  figure {
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 18px;
+    margin: 18px 0 24px;
+  }
+  figure svg { width: 100%; height: auto; display: block; }
+  figcaption {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: center;
+  }
+  .box {
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 24px 0;
+    background: var(--card);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+  }
+  .box.green { border-left: 3px solid var(--green); }
+  .box h2 { margin-top: 0; font-size: 15px; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'JetBrains Mono', monospace; color: var(--ink); }
+  .box.green h2 { color: var(--green); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 20px;
+    font-size: 13.5px;
+  }
+  th, td {
+    border: 1px solid var(--hairline);
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th { color: var(--ink); font-family: 'JetBrains Mono', monospace; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .sources { font-size: 14px; color: var(--muted); }
+  .sources a { color: var(--body); }
+  footer {
+    margin-top: 64px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  footer img {
+    width: 46px; height: 46px; border-radius: 50%;
+    object-fit: cover; border: 1px solid var(--hairline);
+  }
+  footer .name { color: var(--ink); font-weight: 600; font-size: 14px; font-family: 'Inter', sans-serif; }
+  footer .socials {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #D8D5CD;
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">SQL · CH.1 DIGEST</div>
+  <h1>MySQL Architecture</h1>
+  <p class="lead">Why MySQL is really two databases stacked on top of each other, and why almost everything about how it behaves under load traces back to that split.</p>
+
+  <h2>In one line</h2>
+  <p>MySQL hands your query to the same query-processing brain no matter what, but the actual reading and writing of data is done by a swappable "storage engine" underneath, and that engine is what decides how locking, transactions, and crash recovery actually behave.</p>
+
+  <h2>The big idea</h2>
+  <p>Most databases you've heard of are one solid block: one way of storing data, one way of locking rows, one way of handling a crash. MySQL isn't built that way. It's split into a top half that's the same for every query (parsing your SQL, deciding how to run it) and a bottom half, the storage engine, that's pluggable. InnoDB is the one you'll use almost all the time today, but the server itself doesn't know or care that it's talking to InnoDB specifically, it just calls a generic interface. Once that separation clicks, a lot of "why does MySQL do it that way" questions answer themselves.</p>
+
+  <h2>Key terms</h2>
+  <div class="card">
+    <div class="term"><span class="t">Storage engine</span> — the component actually responsible for storing and retrieving your data on disk. e.g. InnoDB is a storage engine; MySQL itself is not.</div>
+    <div class="term"><span class="t">Storage engine API</span> — the fixed, low-level interface the server uses to talk to whatever storage engine a table uses (things like "begin a transaction" or "fetch the row with this primary key"). This is what makes engines swappable.</div>
+    <div class="term"><span class="t">Transaction</span> — a group of SQL statements treated as a single all-or-nothing unit of work.</div>
+    <div class="term"><span class="t">ACID</span> — Atomicity, Consistency, Isolation, Durability. The four properties a transaction system needs before you can call it "safe."</div>
+    <div class="term"><span class="t">Isolation level</span> — a setting that controls how much of one transaction's in-progress work another concurrent transaction is allowed to see.</div>
+    <div class="term"><span class="t">Dirty read</span> — reading a change another transaction made but hasn't committed yet (and might still roll back).</div>
+    <div class="term"><span class="t">Nonrepeatable read</span> — running the exact same SELECT twice inside one transaction and getting two different answers, because someone else committed a change in between.</div>
+    <div class="term"><span class="t">Phantom read</span> — you SELECT a range of rows, someone else inserts a new row that fits that range and commits, you run the same SELECT again and a "phantom" row has appeared.</div>
+    <div class="term"><span class="t">Deadlock</span> — two transactions each hold a lock the other one is waiting for, so neither can ever finish.</div>
+    <div class="term"><span class="t">MVCC (multiversion concurrency control)</span> — a technique where the engine keeps older versions of a row around so a reader can see a consistent snapshot without ever needing to lock anything.</div>
+    <div class="term"><span class="t">Write-ahead logging</span> — writing a record of a change to a sequential on-disk log first (fast), and updating the actual table data on disk later (slower), instead of doing the slow part on every single change.</div>
+    <div class="term"><span class="t">AUTOCOMMIT</span> — MySQL's default mode, where every single statement is automatically its own tiny transaction that commits immediately.</div>
+    <div class="term"><span class="t">Source / replica</span> — the modern MySQL terms for the one server writes originate from, and the servers that receive a streamed copy of those writes.</div>
+    <div class="term"><span class="t">Clustered index</span> — how InnoDB physically stores a table: the rows themselves are sorted and stored by primary key, not stored separately from the index.</div>
+  </div>
+
+  <h2>How it works</h2>
+  <p>Before any of the individual pieces make sense, it helps to see the whole shape at once: a query comes in from a client, gets handled by server-side code that's identical regardless of what's storing your data, and only right at the very end does it touch a specific storage engine that actually reads or writes bytes. Everything below is really an elaboration of that one idea, plus what happens once more than one query wants to touch the same data at the same time.</p>
+
+  <h3>The three-layer architecture</h3>
+  <p>MySQL is organized in three layers stacked on top of each other. The top layer is <strong>clients</strong>: this is generic network server stuff, not specific to databases at all, connection handling, authentication, security. The middle layer is the <strong>server</strong> itself, and this is where most of MySQL's "brains" live: parsing your SQL into an internal structure, deciding how to optimize and run it, and all the built-in functions (dates, math, encryption). Anything that works the same no matter which storage engine you're using, like stored procedures, triggers, and views, lives here too. The bottom layer is the <strong>storage engines</strong>, responsible for actually storing and retrieving the data. The server talks to whichever engine a table uses through the storage engine API, a set of low-level operations like "begin a transaction" or "fetch the row with this primary key." Storage engines don't parse SQL and don't talk to each other, they just respond to what the server asks of them.</p>
+  <p>The "why" here matters: because the top two layers don't care which engine is underneath, MySQL can offer very different storage engines (each with different trade-offs) without you having to relearn SQL or query behavior every time you pick one.</p>
+  <figure>
+    <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="620" height="300" fill="none"/>
+      <rect x="40" y="16" width="540" height="56" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="60" y="40" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9" font-weight="700">CLIENTS</text>
+      <text x="60" y="60" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">connection handling · authentication · security</text>
+      <line x1="310" y1="72" x2="310" y2="98" stroke="#7A7A80" stroke-width="1.5"/>
+      <polygon points="304,96 316,96 310,106" fill="#7A7A80"/>
+      <rect x="40" y="108" width="540" height="72" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="60" y="132" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9" font-weight="700">SERVER (the brains)</text>
+      <text x="60" y="152" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">query parsing · optimizer · built-in functions</text>
+      <text x="60" y="168" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">stored procedures · triggers · views</text>
+      <line x1="310" y1="180" x2="310" y2="204" stroke="#C8453A" stroke-width="1.5"/>
+      <polygon points="304,202 316,202 310,212" fill="#C8453A"/>
+      <text x="330" y="198" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C8453A">storage engine API</text>
+      <rect x="40" y="214" width="540" height="72" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+      <text x="60" y="236" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9" font-weight="700">STORAGE ENGINES</text>
+      <rect x="60" y="248" width="110" height="26" rx="5" fill="#0E0E10" stroke="rgba(242,239,233,0.10)"/>
+      <text x="115" y="265" font-family="JetBrains Mono, monospace" font-size="11" fill="#C9C7C1" text-anchor="middle">InnoDB</text>
+      <rect x="182" y="248" width="110" height="26" rx="5" fill="#0E0E10" stroke="rgba(242,239,233,0.10)"/>
+      <text x="237" y="265" font-family="JetBrains Mono, monospace" font-size="11" fill="#C9C7C1" text-anchor="middle">MyISAM</text>
+      <rect x="304" y="248" width="140" height="26" rx="5" fill="#0E0E10" stroke="rgba(242,239,233,0.10)"/>
+      <text x="374" y="265" font-family="JetBrains Mono, monospace" font-size="11" fill="#C9C7C1" text-anchor="middle">others…</text>
+    </svg>
+    <figcaption>Same query brain on top, swappable storage on the bottom.</figcaption>
+  </figure>
+
+  <h3>Connections, threads, and security</h3>
+  <p>Each client connection gets its own thread inside the server process, and that connection's queries all run on that one thread. Creating and destroying a thread for every new connection would be wasteful, so the server keeps a cache of ready-to-use threads instead. When a client connects, MySQL authenticates it based on username, the host it's connecting from, and its password (or an X.509 certificate over TLS). After that, every single query the client sends gets checked against that client's privileges, for example, whether it's even allowed to SELECT from a particular table.</p>
+
+  <h3>The optimizer, and the query cache that disappeared</h3>
+  <p>MySQL parses your query into an internal "parse tree" and then applies a set of optimizations: rewriting the query, deciding what order to read tables in, choosing which indexes to use. You can nudge this with optimizer hints in the query itself, and you can ask the server to explain its decisions, which gives you a starting point for reworking a slow query. The optimizer doesn't care which storage engine a table uses, but the choice of engine absolutely affects the optimizer's decisions, because it asks the engine what it's capable of and roughly how expensive certain operations will be. One historical note worth knowing: older MySQL versions had a built-in query cache that tried to serve repeat queries straight from memory, but it became a bottleneck as concurrency grew, was deprecated as of MySQL 5.7.20, and was fully removed in 8.0. If you need that kind of caching today, it's typically done outside MySQL entirely (an external cache like Redis or memcached), which the chapter mentions but doesn't cover in depth.</p>
+
+  <h3>Why concurrency needs locks at all</h3>
+  <p>Picture a spreadsheet that only you can open: no conflicts possible, because you're the only writer. Now put that same spreadsheet on a shared server with a whole team editing it. Reading isn't really a problem, multiple people can look at it at once with nothing going wrong. But if someone deletes a cell while others are reading, a reader could end up seeing a corrupted or half-changed view. A database table has exactly this same problem. The standard fix is two kinds of locks: <strong>read (shared) locks</strong>, which don't block each other, so many clients can read at once, and <strong>write (exclusive) locks</strong>, which block everything else, both other writes and other reads, because the only safe way to change something is to be the only one touching it at that moment.</p>
+
+  <h3>Lock granularity: table locks vs. row locks</h3>
+  <p>Locking has a "how much do you lock at once" dial, and where you set it is a genuine trade-off. A <strong>table lock</strong> locks the entire table: cheap to manage (low overhead), but it means only one write can happen anywhere in that table at a time. A <strong>row lock</strong> locks just the specific rows being changed, so unrelated writes to other rows can happen at the same time, but the engine now has to track who holds which row lock, for how long, and clean it all up, which is real overhead. Locks aren't free: every lock, check, and release costs something, so if a system spends more time managing locks than actually doing work, performance suffers. MySQL's different storage engines can each pick their own locking strategy and granularity here, which is exactly why the choice of engine matters so much for how a table behaves under concurrent load.</p>
+  <figure>
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" font-weight="700">TABLE LOCK</text>
+      <rect x="20" y="40" width="270" height="180" rx="8" fill="#131316" stroke="#C8453A" stroke-width="1.5"/>
+      <text x="155" y="135" font-family="Inter, sans-serif" font-size="13" fill="#C9C7C1" text-anchor="middle">whole table</text>
+      <text x="155" y="153" font-family="Inter, sans-serif" font-size="13" fill="#C8453A" text-anchor="middle">locked for 1 writer</text>
+      <text x="155" y="200" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#7A7A80" text-anchor="middle">everyone else waits</text>
+      <text x="330" y="26" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" font-weight="700">ROW LOCK</text>
+      <rect x="330" y="40" width="270" height="180" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+      <rect x="348" y="56" width="234" height="26" rx="4" fill="#0E0E10" stroke="#C8453A" stroke-width="1.5"/>
+      <text x="465" y="73" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C8453A" text-anchor="middle">row 2 — locked</text>
+      <rect x="348" y="90" width="234" height="26" rx="4" fill="#0E0E10" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="465" y="107" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#6FCF97" text-anchor="middle">row 3 — free, writable</text>
+      <rect x="348" y="124" width="234" height="26" rx="4" fill="#0E0E10" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="465" y="141" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#6FCF97" text-anchor="middle">row 4 — free, writable</text>
+      <rect x="348" y="158" width="234" height="26" rx="4" fill="#0E0E10" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="465" y="175" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#6FCF97" text-anchor="middle">row 5 — free, writable</text>
+      <text x="465" y="204" font-family="Inter, sans-serif" font-size="11" fill="#7A7A80" text-anchor="middle">others only wait on row 2</text>
+    </svg>
+    <figcaption>Same table, two granularities: MyISAM-style vs. InnoDB-style locking.</figcaption>
+  </figure>
+
+  <h3>Transactions and the ACID properties</h3>
+  <p>A transaction groups several SQL statements into one all-or-nothing unit: either the whole group succeeds, or none of it does. The classic example is moving money between two accounts: check the source balance is high enough, subtract from it, then add to the destination. If your app did those as three separate, un-grouped statements and the process crashed between step two and step three, money would simply vanish. Wrapping it in a transaction (<code>START TRANSACTION</code> ... <code>COMMIT</code>, or <code>ROLLBACK</code> to cancel) means either all three steps land or none of them do. For a transaction system to actually be trustworthy, it needs to satisfy four properties, ACID:</p>
+  <ul>
+    <li><strong>Atomicity</strong> — the whole transaction is one indivisible unit; there's no such thing as "half applied."</li>
+    <li><strong>Consistency</strong> — the database moves from one valid state straight to the next valid state; a crash mid-transaction can't leave the money missing.</li>
+    <li><strong>Isolation</strong> — other transactions can't see this one's in-progress changes until it commits (with some nuance, see isolation levels below).</li>
+    <li><strong>Durability</strong> — once committed, the change survives, even a crash right afterward. The chapter is honest that "durable" is fuzzy in practice: no storage is ever 100% durable, which is exactly why backups exist on top of durability guarantees.</li>
+  </ul>
+
+  <h3>Isolation levels: how much can transactions see of each other</h3>
+  <p>Isolation sounds simple until you ask "invisible to what degree, exactly." The ANSI SQL standard defines four levels, and lower levels generally mean more concurrency but weaker guarantees. MySQL's default is <strong>REPEATABLE READ</strong>, which is worth noting because plenty of other database systems default to READ COMMITTED instead, so don't assume MySQL behaves like whatever you used last.</p>
+  <table>
+    <tr><th>Level</th><th>Dirty reads?</th><th>Nonrepeatable reads?</th><th>Phantom reads?</th></tr>
+    <tr><td>READ UNCOMMITTED</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>READ COMMITTED</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+    <tr><td>REPEATABLE READ (MySQL default)</td><td>No</td><td>No</td><td>Yes, in theory*</td></tr>
+    <tr><td>SERIALIZABLE</td><td>No</td><td>No</td><td>No</td></tr>
+  </table>
+  <p style="font-size:13px;color:var(--muted);margin-top:-10px;">*InnoDB specifically closes this phantom-read gap at REPEATABLE READ using MVCC plus "next-key locking" (more on both below), so in practice InnoDB avoids phantoms too, even though the ANSI standard says REPEATABLE READ alone doesn't guarantee that.</p>
+  <p>READ UNCOMMITTED lets you see another transaction's changes before it even commits (a "dirty read") and is rarely used because the performance upside isn't big enough to justify the risk. SERIALIZABLE is the strictest: it locks every row it reads, which can cause a lot of lock waits and timeouts, and the book notes it's rarely used in practice. REPEATABLE READ sits in the middle and is what you'll actually be running by default with InnoDB.</p>
+
+  <h3>Deadlocks</h3>
+  <p>A deadlock happens when two transactions each hold a lock the other one needs, so both wait forever unless something intervenes. Picture two transactions touching the same two rows in opposite order: Transaction 1 updates row A then tries to update row B; Transaction 2 has already updated row B and now tries to update row A. Each is waiting on a lock the other is holding, a cycle with no way out on its own. InnoDB detects this and breaks the cycle immediately by rolling back whichever transaction is holding the fewest exclusive row locks (a rough proxy for "cheapest to undo"), rather than letting both hang forever. Some other systems just wait for a timeout instead, which is worse because a real deadlock then looks like a slow query instead of a clear error. The practical takeaway from the chapter: deadlocks are a fact of life in any system with concurrent writes, and applications should be built to simply retry a failed transaction from the top.</p>
+
+  <h3>Transaction logging (write-ahead logging)</h3>
+  <p>Updating a table's on-disk data on every single change would mean constant, scattered ("random") disk I/O, which is slow. Instead, the storage engine changes its in-memory copy of the data (fast) and appends a record of that change to a transaction log on disk (also fast, because it's sequential writing to one small area, not scattered writing across the whole table). The actual table data on disk gets updated later. This means most engines using this approach, known as <strong>write-ahead logging</strong>, end up writing every change twice: once to the log, once eventually to the table. The payoff is crash safety: if the server crashes after a change hits the log but before the table itself is updated, the engine can replay the log on restart and recover the change. The exact recovery process differs by storage engine.</p>
+
+  <h3>Transactions in MySQL: AUTOCOMMIT, and never mixing engines mid-transaction</h3>
+  <p>By default MySQL runs in <strong>AUTOCOMMIT</strong> mode: every single INSERT, UPDATE, or DELETE is implicitly its own transaction, committed immediately. Turning AUTOCOMMIT off (or explicitly starting with <code>START TRANSACTION</code>) lets you group several statements into one transaction that you commit or roll back yourself. A few DDL-style commands (like <code>ALTER TABLE</code>, or <code>LOCK TABLES</code>) will force-commit whatever transaction is currently open before they run, so it's worth checking your version's docs for the full list. You can also set the isolation level per session or server-wide with <code>SET SESSION TRANSACTION ISOLATION LEVEL ...</code>.</p>
+  <p>One sharp edge worth calling out clearly: MySQL doesn't manage transactions at the server level at all, each storage engine manages its own. That means if you mix a transactional table (InnoDB) and a non-transactional table (like MyISAM) inside one transaction, everything looks fine as long as nothing goes wrong. But if a rollback is ever needed, the non-transactional table's changes simply can't be undone, leaving your data in an inconsistent, hard-to-recover state, often with no warning at all. The chapter is blunt about this: don't mix storage engines within a single transaction.</p>
+
+  <h3>MVCC: how InnoDB lets most reads skip locking entirely</h3>
+  <p>Row-level locking alone still means a reader can end up waiting on a writer. MVCC (multiversion concurrency control) is a technique for avoiding that in most cases by keeping multiple historical versions of a row around, so a reader can see a consistent snapshot from a specific point in time, without taking a lock at all. InnoDB does this by giving every transaction a transaction ID, assigned the first time it reads anything. When a row is modified, InnoDB writes an "undo record" (basically: instructions for how to reverse this exact change) to an undo log, and points the transaction at that record. When a different session reads a row, InnoDB compares the row's transaction ID to that session's own view: if the row's current version isn't supposed to be visible yet (because the transaction that changed it hasn't committed), InnoDB walks backward through the undo log until it finds a version that is visible to that reader. The result is that most reads never need to acquire a lock at all, they just read as fast as they can. The cost is real too: more data stored per row, more work when scanning, and extra bookkeeping. One important limit: MVCC only works with REPEATABLE READ and READ COMMITTED. READ UNCOMMITTED always reads the newest version regardless of version history, and SERIALIZABLE locks every row it reads, so neither one is compatible with MVCC's whole premise.</p>
+  <figure>
+    <svg viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg">
+      <rect x="410" y="30" width="180" height="56" rx="8" fill="#131316" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="500" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#6FCF97" text-anchor="middle">current row</text>
+      <text x="500" y="70" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C9C7C1" text-anchor="middle">txn 108 (uncommitted)</text>
+      <rect x="210" y="30" width="170" height="56" rx="8" fill="#131316" stroke="rgba(242,239,233,0.10)" stroke-width="1.5"/>
+      <text x="295" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#C9C7C1" text-anchor="middle">undo log entry</text>
+      <text x="295" y="70" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#7A7A80" text-anchor="middle">version as of txn 105</text>
+      <rect x="20" y="30" width="170" height="56" rx="8" fill="#131316" stroke="#C8453A" stroke-width="1.5"/>
+      <text x="105" y="52" font-family="JetBrains Mono, monospace" font-size="11" fill="#C8453A" text-anchor="middle">undo log entry</text>
+      <text x="105" y="70" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#C9C7C1" text-anchor="middle">version as of txn 100</text>
+      <line x1="410" y1="58" x2="382" y2="58" stroke="#7A7A80" stroke-width="1.5"/>
+      <polygon points="384,53 384,63 376,58" fill="#7A7A80"/>
+      <line x1="210" y1="58" x2="192" y2="58" stroke="#7A7A80" stroke-width="1.5"/>
+      <polygon points="194,53 194,63 186,58" fill="#7A7A80"/>
+      <text x="140" y="130" font-family="JetBrains Mono, monospace" font-size="11" fill="#F2EFE9">reader's read view: transaction 100</text>
+      <line x1="105" y1="86" x2="105" y2="118" stroke="#C8453A" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <polygon points="99,112 111,112 105,122" fill="#C8453A"/>
+      <text x="105" y="152" font-family="Inter, sans-serif" font-size="11" fill="#C9C7C1" text-anchor="middle">this is the version</text>
+      <text x="105" y="167" font-family="Inter, sans-serif" font-size="11" fill="#C9C7C1" text-anchor="middle">the reader actually sees</text>
+    </svg>
+    <figcaption>A reader walks the undo log backward until it finds the version its snapshot is allowed to see.</figcaption>
+  </figure>
+
+  <h3>Replication</h3>
+  <p>MySQL only accepts writes on one node at a time. That node is called the <strong>source</strong>, and it can distribute those writes out to one or more <strong>replicas</strong>. The source runs a dedicated thread per connected replica; that thread wakes up when a write happens and sends the new data along. This is the backbone of how MySQL scales reads and survives a server going down: the book recommends that any production setup use replication with at least three replicas, ideally spread across different physical locations, for disaster recovery.</p>
+  <figure>
+    <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+      <rect x="225" y="16" width="170" height="52" rx="8" fill="#131316" stroke="#C8453A" stroke-width="1.5"/>
+      <text x="310" y="38" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle" font-weight="700">SOURCE</text>
+      <text x="310" y="56" font-family="Inter, sans-serif" font-size="10.5" fill="#C8453A" text-anchor="middle">accepts writes</text>
+      <line x1="310" y1="68" x2="310" y2="92" stroke="#7A7A80" stroke-width="1.5"/>
+      <line x1="130" y1="92" x2="490" y2="92" stroke="#7A7A80" stroke-width="1.5"/>
+      <line x1="130" y1="92" x2="130" y2="116" stroke="#7A7A80" stroke-width="1.5"/>
+      <line x1="490" y1="92" x2="490" y2="116" stroke="#7A7A80" stroke-width="1.5"/>
+      <polygon points="124,114 136,114 130,124" fill="#7A7A80"/>
+      <polygon points="484,114 496,114 490,124" fill="#7A7A80"/>
+      <rect x="45" y="126" width="170" height="52" rx="8" fill="#131316" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="130" y="148" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle" font-weight="700">REPLICA A</text>
+      <text x="130" y="166" font-family="Inter, sans-serif" font-size="10.5" fill="#6FCF97" text-anchor="middle">reads only</text>
+      <rect x="405" y="126" width="170" height="52" rx="8" fill="#131316" stroke="#6FCF97" stroke-width="1.5"/>
+      <text x="490" y="148" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle" font-weight="700">REPLICA B</text>
+      <text x="490" y="166" font-family="Inter, sans-serif" font-size="10.5" fill="#6FCF97" text-anchor="middle">reads only</text>
+      <text x="310" y="204" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#7A7A80" text-anchor="middle">one thread per replica, wakes on write, can lag</text>
+    </svg>
+    <figcaption>A source distributes writes; replicas find out about them after the fact.</figcaption>
+  </figure>
+
+  <h3>Inside InnoDB</h3>
+  <p>InnoDB is now MySQL's default, general-purpose storage engine, and the book is explicit that it's worth understanding deeply rather than spreading your attention across every engine equally. A few specifics worth knowing: InnoDB stores its data in files collectively called a <strong>tablespace</strong>, which it manages internally. Tables are built on a <strong>clustered index</strong>, meaning the rows themselves are physically stored sorted by primary key, which makes primary-key lookups fast, but it also means every secondary (non-primary-key) index has to carry a copy of the primary key value, so a large primary key makes all your other indexes larger too. InnoDB defaults to REPEATABLE READ and uses "next-key locking" to close the phantom-read gap at that level: instead of only locking the rows a query actually touched, it also locks the gaps between index entries, so a new row can't sneak into a range that was just queried. As of MySQL 8.0, table metadata itself moved into an InnoDB-backed data dictionary (replacing the old separate <code>.frm</code> files with serialized <code>.sdi</code> files per table), which brings the same crash-safety and transactional guarantees to schema changes themselves, this is also what enables <strong>atomic DDL</strong>: a schema change (like adding a column) now either fully completes or fully rolls back, backed by its own dedicated undo and redo log, instead of possibly leaving a table half-altered after a crash. Separately, since MySQL 5.7, InnoDB also supports a native JSON column type with built-in validation and storage optimized for fast reads (an upgrade over storing JSON as a plain BLOB), and as of 8.0.7 you can even build multivalued indexes directly on values inside a JSON array.</p>
+
+  <h2>Why it matters</h2>
+  <p>The single-writer replication model in this chapter is the exact design behind a real, dated incident: on October 21, 2018, a 43-second network blip inside GitHub's data centers caused their automated failover tooling to promote a West Coast MySQL replica to become a second writer, while the original East Coast source kept accepting writes too. For a short window, two servers both believed they were "the" source, and both took writes the other never saw. GitHub chose to prioritize not losing any data over getting back online fast, and full recovery took just over 24 hours. That's the practical stakes behind "MySQL only accepts writes on one node at a time": the moment tooling around it can be fooled into believing two nodes are both writable, you get exactly this kind of split-brain mess. Beyond replication, everything else in this chapter (locking, isolation levels, MVCC, transaction logging) is the machinery that makes a single MySQL server safe to write to concurrently in the first place, and it's exactly what you'll be tuning later in the book when performance problems show up as lock waits, replication lag, or a query that "used to be fast."</p>
+
+  <div class="box">
+    <h2>Remember this</h2>
+    <ul>
+      <li>MySQL is layered: a client layer handles connections and auth, a server "brain" parses and optimizes every query the same way, and a swappable storage engine underneath actually reads and writes the bytes.</li>
+      <li>InnoDB, the default engine, combines row-level locking with MVCC, which is why most reads never have to wait on a lock at all.</li>
+      <li>MySQL's default isolation level is REPEATABLE READ, not READ COMMITTED like a lot of other databases assume by default, so don't carry assumptions over from another database blindly.</li>
+      <li>A transaction isn't automatically safe just because you wrapped it in START TRANSACTION / COMMIT: mixing a transactional table with a non-transactional one in the same transaction can leave you half-committed with no warning at all.</li>
+      <li>Deadlocks are an expected outcome of concurrent writes, not a bug. Design your app to retry a failed transaction from the top instead of assuming it'll never happen.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h2>Try it yourself</h2>
+    <ul>
+      <li><strong>Reproduce the transfer example.</strong> Install MySQL or MariaDB locally (or via Docker). Create a table with a checking and a savings balance, run START TRANSACTION, subtract from one, add to the other, COMMIT. Then run it again and kill the client mid-transaction before COMMIT, reconnect, and confirm nothing changed. That's atomicity, not a promise, an observable behavior.</li>
+      <li><strong>Cause a deadlock on purpose.</strong> Open two terminal sessions against a table with at least two rows. In each session, without committing, update the two rows in opposite order. Watch InnoDB detect the cycle and kill one of your transactions with a deadlock error.</li>
+      <li><strong>Compare table locks vs. row locks.</strong> Create the same table twice, once as MyISAM and once as InnoDB. From two sessions, write to different rows of each at the same time and time how long the second write waits in each engine.</li>
+      <li><strong>Watch a nonrepeatable read happen.</strong> Open two sessions. Set one to READ COMMITTED, SELECT a row, have the other session UPDATE and COMMIT that same row, then SELECT again in the first session and watch the value change mid-transaction. Repeat at REPEATABLE READ and watch it stay put instead.</li>
+      <li><strong>See MVCC give you a nonlocking read.</strong> Start a transaction, UPDATE a row, don't commit yet. From a second session, run a plain SELECT on that row. Confirm it returns immediately (no blocking) and shows the old, committed value, not your uncommitted change.</li>
+      <li><strong>Build a two-node replication pair.</strong> Two MySQL containers work fine: one source, one replica. Write a row on the source and measure how long it takes to show up on the replica. Then disconnect the replica, write more rows on the source, reconnect, and watch it catch up, that's replication lag made visible.</li>
+    </ul>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p>The chapter repeatedly defers the fine print on InnoDB's own locking behavior to the MySQL manual's "InnoDB Locking and Transaction Model" page, and says it's worth reading directly if you're building anything serious on InnoDB, since the subtleties of MVCC mean "consistent for everyone" doesn't always mean "the same view for everyone." That's the natural next read once the concepts here feel solid.</p>
+
+  <h2>Sources & verify</h2>
+  <p class="sources">
+    Primary source: <em>High Performance MySQL</em>, 4th edition, Chapter 1, "MySQL Architecture," pages 23–40 (book-internal pages 1–18).<br><br>
+    This digest is a teaching draft written to help a beginner build a mental model quickly. It is not a substitute for the chapter itself, verify anything you plan to rely on (especially exact version numbers and locking behavior) against the source and the current MySQL manual before using it in production.<br><br>
+    Flagged uncertainty: version-specific details (query cache deprecated in 5.7.20 and removed in 8.0, JSON multivalued indexes added in 8.0.7) are taken directly from the chapter text as stated; they weren't independently re-verified against MySQL's own release notes. The GitHub October 21–22, 2018 incident referenced under "Why it matters" is not from the book, it's a separately verified, real, dated case study used to illustrate the replication concept: <a href="https://github.blog/2018-10-30-oct21-post-incident-analysis/" target="_blank" rel="noopener">github.blog/2018-10-30-oct21-post-incident-analysis</a>.
+  </p>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa Bodunwa">
+    <div>
+      <div class="name">Mayowa Bodunwa</div>
+      <div class="socials">
+        <span>in/mayowa-bodunwa</span>
+        <span>@mayowa.bodunwa</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
