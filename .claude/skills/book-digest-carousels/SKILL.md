@@ -68,6 +68,27 @@ them, hold and surface the gap rather than shipping something that violates them
   the important caveat.
 - Prefer "here's the mental model" over unsupported certainty. If the source is
   unclear or insufficient, **flag the uncertainty** instead of filling the gap.
+- **Never teach a false universal.** Simplifying for a beginner is fine; implying a
+  claim is universal when it only holds for one common setup is not.
+
+**Bounded claims (how to simplify without lying).** Before writing an absolute, ask:
+*is this true generally, or only under a particular configuration, version, architecture,
+workflow, or convention?* The tells are **always, never, only, every, must, can't,
+guarantees**. Keep the simple mental model, but **name the boundary**: "usually", "in
+most setups", "by default", "in a common pattern", "in this architecture", "for
+beginners, think of it as".
+
+| ❌ False universal | ✅ Bounded, still simple |
+|---|---|
+| "SQL has one writer." | "In a common MySQL source-replica setup, one server handles writes." |
+| "MySQL will only let one server take writes." | "Replicas are copies that catch up by replaying changes." |
+| "Every table lives on one server." | "Two uncoordinated writers can create conflicts." |
+
+Note the error in the first one: **SQL is the language, not the topology**. Never let a
+language, tool, framework, or protocol be described as if it always behaves the way one
+common deployment does (MySQL, for instance, also has multi-writer configurations). One
+bounding word is usually enough — bound the claim once, clearly, and don't bury the
+reader in caveats.
 
 **2. Copyright and originality**
 - Never reproduce substantial book passages, tables, illustrations, diagrams,
