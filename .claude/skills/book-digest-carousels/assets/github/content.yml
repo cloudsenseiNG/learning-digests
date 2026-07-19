@@ -86,7 +86,10 @@ jobs:
           Ground all claims in the source, invent nothing (no fake commands, APIs, numbers, pricing, or \
           limits), label any beginner simplification with its caveat, keep all wording and diagrams \
           original, and END EACH DIGEST WITH A 'Sources & verify' SECTION (book, chapter, pages; AWS doc \
-          links). For each unit: write the HTML digest to docs/digests/<slug>.html, append \
+          links). For each unit: write a THOROUGH, beginner-complete HTML digest to docs/digests/<slug>.html \
+          following references/digest-template.md exactly (a full 'How it works' that opens with a grounding \
+          section, one labelled sub-section per concept with inline-SVG schematics, every term defined, and a \
+          4-6 item 'Try it yourself'); do NOT thin it out or shorten it - err long. Append \
           docs/digests.json, and render its carousel PNGs to build/carousels/<book>/<slug>/ where <book> \
           is a clean folder name (DDIA, AI-Engineering, High-Performance-MySQL, AWS) so the zip is \
           foldered per book. Do NOT write the email yourself; a later step builds a Gmail-safe one \
