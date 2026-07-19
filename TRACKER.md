@@ -24,20 +24,16 @@ still treated like a chapter: one digest, one carousel.
 
 ## Current batch: tick each when you've studied it
 
-- [ ] DDIA — Ch.1: Reliable, Scalable, and Maintainable Applications (full chapter)
-- [ ] AI Engineering — Ch.1, Part 1 of 2: The Rise of AI Engineering + Foundation Model Use Cases (pp.25-51)
-- [ ] High Performance MySQL — Ch.1: MySQL Architecture (full chapter)
-- [ ] AWS — Topic 1: Core networking (VPC, subnets, route tables, IGW, NAT gateway)
-
-<!-- Gate: next run is blocked until every box above is checked. Once cleared, the next
-     run finishes AI Engineering Ch.1 Part 2 (pp.52-72, cached below) and starts DDIA Ch.2,
-     High Performance MySQL Ch.2, and AWS Topic 2. -->
+<!-- Fresh start from Chapter 1: this list is empty, so the completion gate is CLEAR and
+     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) with
+     the full carousel spec (7-10 slides, visual proof, no book tells) and the fuller,
+     more detailed digest, then writes the new checklist here for you to tick. -->
 
 ## Track A: Designing Data-Intensive Applications
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | 2026-07-19 | 2026-07-19 | Fault vs failure, load parameters/percentiles (Twitter fan-out), operability/simplicity/evolvability. Case study: AWS S3 Feb 2017 outage. Digest: `ddia-ch1-reliable-scalable-maintainable` |
+| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | | | |
 | 2 | Data Models and Query Languages | 49–90 | | | |
 | 3 | Storage and Retrieval | 91–132 | | | |
 | 4 | Encoding and Evolution | 133–166 | | | |
@@ -55,7 +51,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | in progress (Part 1: 2026-07-19) | 2026-07-19 (Part 1) | Split 2 parts (dense chapter, depth over speed). Part 1 done: pp.25-51, "The Rise of AI Engineering" + "Foundation Model Use Cases". **Next: Part 2, pp.52-72** — "Planning AI Applications" + "The AI Engineering Stack". Case study: Getty Images v. Stability AI. Digest: `ai-engineering-ch1-part1-introduction-foundation-models` |
+| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | |
 | 2 | Understanding Foundation Models | 73-136 | | | |
 | 3 | Evaluation Methodology | 137-182 | | | |
 | 4 | Evaluate AI Systems | 183-234 | | | |
@@ -70,7 +66,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | MySQL Architecture | 23-40 | 2026-07-19 | 2026-07-19 | Source/replica single-writer model, storage engine layer, transactions/ACID/MVCC. Case study: GitHub Oct 21-22 2018 incident. Digest: `high-performance-mysql-ch1-architecture` |
+| 1 | MySQL Architecture | 23-40 | | | |
 | 2 | Monitoring in a Reliability Engineering World | 41-62 | | | |
 | 3 | Performance Schema | 63-96 | | | |
 | 4 | Operating System and Hardware Optimization | 97-120 | | | |
@@ -88,7 +84,7 @@ still treated like a chapter: one digest, one carousel.
 
 | # | Topic | Source | Digested | Carousel | Notes |
 |--:|-------|--------|----------|----------|-------|
-| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | 2026-07-19 | 2026-07-19 | Grounded in 11 fetched AWS doc pages (VPC, subnets, route tables, IGW, NAT gateway). NAT throughput/connection numbers flagged as time-sensitive. Case study: Dec 7 2021 AWS US-EAST-1 event. Digest: `aws-01-core-networking` |
+| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | | | |
 | 2 | Transit Gateway & multi-VPC connectivity | docs.aws.amazon.com | | | |
 | 3 | EC2 (instances, AMIs, ASGs, load balancing) | docs.aws.amazon.com | | | |
 | 4 | S3 (storage classes, lifecycle, security) | docs.aws.amazon.com | | | |
