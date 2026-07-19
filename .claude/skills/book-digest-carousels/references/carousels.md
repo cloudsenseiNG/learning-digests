@@ -38,6 +38,22 @@ one tripped me up") because that's Mayowa's voice. Pointing at *study material* 
 (Digests are the opposite: they **must** cite the source in "Sources & verify". This
 no-tells rule is **carousels only**.)
 
+**Punchy, but never a false universal.** A hook can be bold without stating one common
+setup as a universal law. Watch the absolutes (**always, never, only, every, must,
+can't, guarantees**) and ask whether the claim is true generally or only in a particular
+configuration, version, or architecture. Keep the punch, and carry the boundary in the
+line itself or the subtitle instead of stacking caveats:
+
+| ❌ Universal (wrong) | ✅ Bounded (still punchy) |
+|---|---|
+| "Every MySQL write goes through ONE server." | "In the usual MySQL setup, every write goes through ONE server." |
+| "One server takes the writes. Period." | "One server takes the writes, in the common source-replica setup." |
+| "SQL has one writer." | "A typical MySQL cluster has one writer." |
+
+One bounding word ("usually", "by default", "in a common pattern") is normally enough.
+Bound the claim once, clearly, then get on with the story — **never bury the deck in
+caveats**. Full rule: see "Bounded claims" in the skill's Content guardrails.
+
 ## Length
 
 **7–10 slides.** Never ship a scanty carousel. **7 is the floor** — the best idea gets
