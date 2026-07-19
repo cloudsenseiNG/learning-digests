@@ -10,8 +10,9 @@ material**. It reads a chapter from a book PDF and produces:
 
 1. A **daily digest** — a plain-language email that teaches the chapter without
    assuming prior knowledge and without dropping important detail.
-2. **Weekly carousels** — 5 sets (Mon–Fri) of ready-to-post image slides that
-   distill the week's chapters, rendered to match a template the user supplies.
+2. **Carousels** — one on-brand set of ready-to-post image slides per track each batch
+   (7–10 slides), distilling that unit's key idea, rendered on the user's dark brand
+   templates and ready for TikTok or LinkedIn.
 
 It also keeps a **tracker** so you always know what's been covered and what's next.
 
@@ -178,31 +179,33 @@ Trigger phrases: "today's digest", "digest chapter N of <book>", "catch me up on
 
 ---
 
-## Workflow B — Weekly carousels (Mon–Fri)
+## Workflow B — Carousels (one per track/unit, on demand)
 
-Trigger phrases: "this week's carousels", "make the carousels", "5 carousels from chapters X–Y".
+Trigger phrases: "make the carousels", "carousel for <chapter/track>", "this batch's carousels".
 
-1. Read `config.yaml` and `TRACKER.md`. Identify the chapters to cover this week
-   (from the reading plan or the user's request).
-2. For each of the 5 weekday posts, pick the single most **post-worthy thread** from
-   the assigned chapter — not the whole digest. One clear idea per carousel.
-3. Write the slide copy following `references/carousels.md`. Each carousel is **4–8
-   slides, sized to the idea's complexity** — keep it from feeling overwhelming. Use
-   the editable SVG templates in `assets/templates/` (`cover`, `concept`, `code`,
-   `close`). Save each carousel as a `deck.json` (schema in that reference) under
-   `output_dir/carousels/<day>/`.
+1. Read `config.yaml` and `TRACKER.md`. Identify the unit(s) to cover: normally the
+   current batch's next unit for each track, or a specific chapter/track the user names.
+   **One carousel per unit** (`carousels.per_batch_per_track: 1`).
+2. For each unit, take the single most **post-worthy idea** from that chapter (not the
+   whole digest) and build one carousel. One clear idea per carousel.
+3. Write the slide copy following `references/carousels.md`: the signature arc at
+   **7–10 slides** (7 is the floor), with the required **visual-proof** slide, a **real
+   case study**, and the **fixed per-track chrome** (terminal + counter prefix). Use the
+   editable SVG templates in `assets/templates/` (`cover`, `concept`, `code`, `close`).
+   Save each carousel as a `deck.json` (schema in that reference) under
+   `output_dir/carousels/<book>/<slug>/`.
 4. Render each carousel to PNGs:
    ```bash
    python scripts/render_carousels.py \
      --templates assets/templates --fonts assets/fonts.json \
-     --content output_dir/carousels/<day>/deck.json \
-     --out output_dir/carousels/<day>/
+     --content output_dir/carousels/<book>/<slug>/deck.json \
+     --out output_dir/carousels/<book>/<slug>/
    ```
    This produces `slide_01.png … slide_NN.png` sized and styled per the template.
-5. Present all five sets to the user so their week is queued. Update the tracker:
-   mark the chapters as "carousels made" with the week's date.
+5. Present the carousel(s) to the user. Update the tracker: mark each unit's carousel
+   made with today's date.
 
-The user posts one set per weekday manually — the skill just prepares the whole week.
+The user posts each carousel manually — the skill just prepares them.
 
 ---
 

@@ -23,7 +23,7 @@ digest:
 
 carousels:
   per_batch_per_track: 1
-  slides_per_carousel: "4-8"
+  slides_per_carousel: "7-10"   # signature arc; see references/carousels.md (7 is the floor)
 
 # Personal-brand social handles shown on the carousel close slide and the digest footer.
 # The close slide (assets/templates/close.svg) has these baked in as static text so they
