@@ -26,5 +26,5 @@ digest:
   # can span several days (tracked as "in progress").
 
 carousels:
-  per_week: 5          # Mon–Fri
-  slides_per_carousel: "6-9"
+  per_batch_per_track: 1        # one carousel per track, per batch
+  slides_per_carousel: "7-10"   # signature arc; see references/carousels.md (7 is the floor)
