@@ -31,6 +31,14 @@ Mayowa's own words, so no attribution is needed on a social post. Just never rep
 the source's exact wording or its signature examples verbatim. Keep the chrome
 topic-based (e.g. "SYSTEMS · 01"), not book-based.
 
+**And never hint that a book exists at all.** Not naming it isn't enough: keep every
+source-shaped word out of the slide copy, including titles and subtitles. No "chapter",
+"this chapter", "the book", "the author", "the text", "reading", "Ch.1", "pages". Write
+about the **topic** ("that rule explains half of how MySQL behaves"), never about the
+material it came from ("that rule explains half this chapter"). First-person learning
+voice is fine, pointing at study material is not. Digests are the opposite and must
+cite their source in "Sources & verify" — this rule is **carousels only**.
+
 **Use fresh, real examples, not the book's.** When a point needs an illustration,
 reach for a true real-world example from outside the source (verify it with a quick
 web search first), and prefer ones that tie into Mayowa's own tracks. For instance, to
