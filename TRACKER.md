@@ -25,9 +25,9 @@ still treated like a chapter: one digest, one carousel.
 ## Current batch: tick each when you've studied it
 
 <!-- Fresh start from Chapter 1: this list is empty, so the completion gate is CLEAR and
-     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) using
-     the current carousel style (signature arc + one visual-proof slide, 4-8 slides), then
-     writes the new "Current batch" checklist here for you to tick. -->
+     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) with
+     the current carousel style AND the fuller, more detailed digest, then writes the new
+     "Current batch" checklist here for you to tick. -->
 
 ## Track A: Designing Data-Intensive Applications
 
