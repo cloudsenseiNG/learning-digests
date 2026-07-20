@@ -24,16 +24,16 @@ still treated like a chapter: one digest, one carousel.
 
 ## Current batch: tick each when you've studied it
 
-<!-- Fresh start from Chapter 1: this list is empty, so the completion gate is CLEAR and
-     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1).
-     Font paths now resolve independently of the working directory, so slide text wraps
-     correctly instead of overflowing. It then writes the new checklist here to tick. -->
+- [ ] DDIA — Ch.1: Reliable, Scalable, and Maintainable Applications (digest + carousel)
+- [ ] AI Engineering — Ch.1: Introduction to Building AI Applications with Foundation Models (digest + carousel)
+- [ ] High Performance MySQL — Ch.1: MySQL Architecture (digest + carousel)
+- [ ] AWS — Topic 1: Core networking (VPC, subnets, route tables, NAT, IGW) (digest + carousel)
 
 ## Track A: Designing Data-Intensive Applications
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | | | |
+| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | 2026-07-20 | 2026-07-20 | |
 | 2 | Data Models and Query Languages | 49–90 | | | |
 | 3 | Storage and Retrieval | 91–132 | | | |
 | 4 | Encoding and Evolution | 133–166 | | | |
@@ -51,7 +51,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | |
+| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | 2026-07-20 | 2026-07-20 | |
 | 2 | Understanding Foundation Models | 73-136 | | | |
 | 3 | Evaluation Methodology | 137-182 | | | |
 | 4 | Evaluate AI Systems | 183-234 | | | |
@@ -66,7 +66,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | MySQL Architecture | 23-40 | | | |
+| 1 | MySQL Architecture | 23-40 | 2026-07-20 | 2026-07-20 | |
 | 2 | Monitoring in a Reliability Engineering World | 41-62 | | | |
 | 3 | Performance Schema | 63-96 | | | |
 | 4 | Operating System and Hardware Optimization | 97-120 | | | |
@@ -84,7 +84,7 @@ still treated like a chapter: one digest, one carousel.
 
 | # | Topic | Source | Digested | Carousel | Notes |
 |--:|-------|--------|----------|----------|-------|
-| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | | | |
+| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | 2026-07-20 | 2026-07-20 | Sources: what-is-amazon-vpc, configure-subnets, vpc-cidr-blocks, VPC_Route_Tables, RouteTables, VPC_Internet_Gateway, vpc-nat-gateway (all docs.aws.amazon.com/vpc/latest/userguide/) |
 | 2 | Transit Gateway & multi-VPC connectivity | docs.aws.amazon.com | | | |
 | 3 | EC2 (instances, AMIs, ASGs, load balancing) | docs.aws.amazon.com | | | |
 | 4 | S3 (storage classes, lifecycle, security) | docs.aws.amazon.com | | | |

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering, Ch.1: Introduction to Building AI Applications with Foundation Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0B; --panel:#0E0E10; --panel2:#131316; --hairline:rgba(242,239,233,0.10);
+    --ink:#F2EFE9; --body:#C9C7C1; --muted:#7A7A80; --red:#C8453A; --green:#6FCF97; --mutedfooter:#D8D5CD;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6}
+  .wrap{max-width:660px;margin:0 auto;padding:48px 22px 64px}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--red);font-size:13px;letter-spacing:3px;text-transform:uppercase}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:var(--ink);font-size:34px;line-height:1.15;margin:10px 0 10px}
+  .lead{color:var(--body);font-size:17px;margin:0 0 34px}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:22px;margin:40px 0 12px;border-top:1px solid var(--hairline);padding-top:28px}
+  section:first-of-type h2{border-top:none;padding-top:0}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:17px;margin:22px 0 8px}
+  p{font-size:15.5px;margin:0 0 14px}
+  ul{margin:0 0 14px;padding-left:20px}
+  li{font-size:15.5px;margin:0 0 8px}
+  .key-terms li{margin:0 0 10px}
+  .key-terms b{color:var(--ink);font-weight:600}
+  .note{background:var(--panel2);border:1px solid var(--hairline);border-radius:8px;padding:14px 16px;margin:0 0 16px;font-size:14.5px;color:var(--body)}
+  .note b{color:var(--ink)}
+  figure.schematic{background:var(--panel);border:1px solid var(--hairline);border-radius:10px;padding:18px 16px 14px;margin:18px 0}
+  figure.schematic svg{width:100%;height:auto;display:block}
+  figcaption{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:12px;margin-top:10px;line-height:1.5}
+  .remember{border-left:3px solid var(--red);background:var(--panel);border-radius:0 8px 8px 0;padding:18px 20px;margin:20px 0}
+  .remember h2{margin:0 0 10px;border:none;padding:0;font-size:18px}
+  .try{border-left:3px solid var(--green);background:var(--panel);border-radius:0 8px 8px 0;padding:18px 20px;margin:20px 0}
+  .try h2{margin:0 0 10px;border:none;padding:0;font-size:18px}
+  .try li{margin:0 0 12px}
+  .try b{color:var(--ink)}
+  .go-deeper{background:var(--panel2);border:1px solid var(--hairline);border-radius:8px;padding:16px 18px;margin:18px 0}
+  .sources{font-size:14px;color:var(--muted)}
+  .sources li{font-size:14px;color:var(--muted)}
+  code, .mono{font-family:'JetBrains Mono',monospace}
+  footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--hairline);display:flex;align-items:center;gap:14px}
+  footer img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--hairline)}
+  footer .who{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--mutedfooter)}
+  footer .name{color:var(--ink);font-weight:500;margin-bottom:4px}
+  footer .socials span{display:inline-block;margin-right:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">AI · CH.1 DIGEST</div>
+  <h1>Introduction to Building AI Applications with Foundation Models</h1>
+  <p class="lead">What a foundation model actually is, why one training trick let these models scale past anything before them, and what changes about the job of building AI applications now that you're adapting a model instead of building one from scratch.</p>
+
+  <section>
+    <h2>In one line</h2>
+    <p>You used to have to train a model to build an AI application. Now you mostly adapt one that already exists, and that single shift is what created the discipline people are calling AI engineering.</p>
+  </section>
+
+  <section>
+    <h2>The big idea</h2>
+    <p>For most of AI's history, if you wanted a model to do something, you built and trained a model for that exact thing. Foundation models broke that pattern. They're trained once, at huge scale, on huge amounts of ordinary data, and then anyone can adapt the same model to a wide range of different jobs. That's possible because of a training trick called self-supervision, which let models learn from raw text and images instead of needing every example hand-labeled by a person. The result: building an AI application today usually means prompting, retrieving context for, or lightly finetuning an existing model, rather than training one yourself. That's a genuinely different job from traditional machine learning (ML) engineering, and this chapter is about what that job looks like.</p>
+  </section>
+
+  <section>
+    <h2>Key terms</h2>
+    <ul class="key-terms">
+      <li><b>Language model</b> — a model that encodes statistical information about a language, so it can predict how likely a word is to appear in a given context. Example: given "My favorite color is __", it should predict "blue" more often than "car".</li>
+      <li><b>Token / tokenization / vocabulary</b> — a token is the basic unit a language model works with (a character, a word, or a piece of a word). Tokenization is the process of splitting text into tokens, and the vocabulary is the full set of tokens a model knows. GPT-4 splits "I can't wait to build AI applications" into 9 tokens, and its vocabulary has 100,256 of them.</li>
+      <li><b>Autoregressive language model</b> — predicts the next token using only the tokens that came before it. This is what almost every text-generating model today is (including the models behind ChatGPT-style tools).</li>
+      <li><b>Masked language model</b> — predicts a missing token using context from both before and after it (fill-in-the-blank). BERT is the well-known example. Used more for classification-style tasks than for generating open-ended text.</li>
+      <li><b>Generative AI</b> — a model that produces open-ended output by combining a fixed vocabulary in new ways, instead of picking from a fixed list of answers.</li>
+      <li><b>Supervision</b> — training a model on data that a human has labeled (for example, transactions tagged "fraud" or "not fraud").</li>
+      <li><b>Self-supervision</b> — training where the labels come from the data itself instead of a human. A sentence can supply its own "next word" labels. Not the same as unsupervised learning, where there's no label at all.</li>
+      <li><b>Parameter</b> — a variable inside a model that gets adjusted during training. Roughly, a model's "size" is measured by how many of these it has.</li>
+      <li><b>LLM (large language model)</b> — a language model that's gotten big by training on huge, mostly unlabeled text datasets. "Large" is a moving target: 117 million parameters was considered large in 2018 and small a year later.</li>
+      <li><b>Multimodal model</b> — a model that works with more than one kind of data (for example text and images) instead of only one.</li>
+      <li><b>Foundation model</b> — a large language or large multimodal model that's general-purpose enough, and meant, to be built on top of for many different applications. "Foundation" points at both its importance and the fact that it's a base layer, not a finished product.</li>
+      <li><b>Embedding</b> — a vector (list of numbers) that's meant to capture the meaning of a piece of data, so that similar things end up as similar vectors.</li>
+      <li><b>Model as a service</b> — the practice of a few organizations training expensive foundation models and then exposing them to everyone else through an API, so you don't have to train your own model to use one.</li>
+      <li><b>AI engineering</b> — the process of building applications on top of an existing foundation model, as opposed to training a model yourself.</li>
+      <li><b>Model adaptation</b> — the general term for techniques that make a general-purpose model behave the way you need for your specific task. The three common ones: prompt engineering, retrieval-augmented generation (RAG), and finetuning.</li>
+      <li><b>Prompt engineering</b> — adapting a model's behavior through instructions and context in the input, without changing its weights.</li>
+      <li><b>Retrieval-augmented generation (RAG)</b> — connecting a model to an external source of information (like a database) that it can pull from when generating a response.</li>
+      <li><b>Finetuning</b> — continuing to train an already-trained model on your own data, which does change its weights.</li>
+      <li><b>Pre-training</b> — training a model from scratch, starting from randomly initialized weights. This is the most resource-intensive stage by far.</li>
+      <li><b>Inference / inference optimization</b> — inference is the process of a trained model computing an output for a given input. Inference optimization is the work of making that faster and cheaper.</li>
+      <li><b>Agent</b> — an AI system that can plan a sequence of steps and use external tools to carry them out, rather than just answering a single prompt.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p>Before getting into the specific ideas, it helps to have one grounding picture in your head: a foundation model is a single, very large model that was trained once, on a very broad slice of the world's data, and then handed off (often through an API) for anyone to build on. That's different from the older pattern, where a team trained a smaller model that was only good at the one job they built it for. The rest of this section walks through how we got from "a model that predicts the next word" to "a general-purpose base layer that a whole new engineering discipline gets built on top of."</p>
+
+    <h3>From language models to LLMs</h3>
+    <p>A language model, at its core, is just something that has learned the statistics of a language well enough to guess what word is likely to come next. This isn't a new idea: Sherlock Holmes used letter-frequency statistics to crack a substitution cipher in an 1905 story, and Claude Shannon formalized how to model English statistically in a 1951 paper. What's changed is scale.</p>
+    <p>Models don't work with whole words directly, they work with tokens, pieces of text that can be a whole word, a character, or a fragment like "-tion". Breaking text into tokens is tokenization, and the full set of tokens a model can use is its vocabulary. As a rough rule of thumb, one token is about three-quarters of a word, so 100 tokens is roughly 75 words. Tokens exist as a middle ground: they're more efficient than tracking every possible whole word (fewer unique units to manage), but they keep more meaning than single characters, and they let a model handle made-up or unfamiliar words by splitting them into familiar pieces.</p>
+    <p>There are two broad families of language models, and they differ in what information they're allowed to use when predicting a token. A masked language model (BERT is the well-known example) predicts a missing token using context from both sides, so it's good at fill-in-the-blank style tasks like classification. An autoregressive language model predicts the next token using only what came before it, which is exactly what you need for generating text one token at a time. Autoregressive models are the ones behind almost all modern text generation, because "keep predicting the next token" is a simple, repeatable loop you can run indefinitely.</p>
+    <p>It's worth being precise about what a language model is actually doing: it's a completion machine. Give it "To be or not to be" and it might complete it with ", that is the question." That sounds simple, but completion is a surprisingly general tool. Frame a translation as "How are you in French is …" and the completion is a translation. Frame a yes/no question as a completion prompt ("Is this email spam? Answer:") and the completion is a classification. The catch is that a completion is a probabilistic guess, not a guarantee, and a model trained purely to complete text isn't automatically good at holding a conversation (later stages of training exist specifically to fix that).</p>
+
+    <h3>Self-supervision: the trick that let language models scale</h3>
+    <p>Language modeling is one of many kinds of machine learning, alongside things like object detection or demand forecasting. What made language models special enough to kick off the current scaling race is that they can be trained with self-supervision, while most other ML approaches need supervision.</p>
+    <p>With supervision, a human labels every training example. Train a fraud detector and someone has tagged a pile of transactions "fraud" or "not fraud" by hand. This works, and it's how the deep learning boom of the 2010s largely got started (AlexNet, trained on over a million hand-labeled ImageNet photos sorted into 1,000 categories, is the textbook example). But hand labeling is expensive and slow, and the cost grows with the number of categories and the difficulty of the task: labeling everyday objects is cheap because almost anyone can do it, but labeling whether a CT scan shows cancer requires expensive specialist time. As of September 2024, for comparison, Amazon SageMaker Ground Truth charged roughly 8 cents per image for smaller labeling jobs and about 2 cents per image at larger scale, and that's just for ordinary photo labels, not anything specialized.</p>
+    <p>Self-supervision sidesteps the labeling bottleneck entirely. Instead of a human supplying the label, the label is inferred from the data itself. A plain sentence already contains its own "next word" labels: everything before a given word is context, and the word itself is the thing to predict. That means any ordinary text (books, articles, forum posts) becomes usable training data with zero manual labeling. This is a genuine simplification worth flagging: self-supervision isn't the same as unsupervised learning. Unsupervised learning has no labels at all; self-supervision still trains on labels, it just gets them for free from the structure of the data instead of paying someone to write them.</p>
+    <p>Because self-supervision removes the biggest cost of scaling up training data, it's the reason language models could grow the way they have. A model that OpenAI released in mid-2018 had 117 million parameters and was considered large at the time; a follow-up about eight months later had 1.5 billion parameters, which immediately made the earlier one look small. As of this chapter's writing, a 100-billion-parameter model was considered large, and that bar keeps moving. More parameters generally (though not always, this is a real exception, not a rounding error) means more capacity to learn, and a bigger model needs more training data to make good use of that capacity, which is exactly what self-supervision made affordable.</p>
+    <figure class="schematic">
+      <svg viewBox="0 0 600 236" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A sentence breaking into its own next-token training pairs">
+        <rect x="0" y="0" width="600" height="236" rx="10" fill="#0E0E10"/>
+        <text x="24" y="30" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80" letter-spacing="1">ONE SENTENCE, FREE TRAINING LABELS</text>
+        <text x="24" y="56" font-family="JetBrains Mono, monospace" font-size="15" fill="#F2EFE9">"curiosity built this project"</text>
+
+        <g font-family="JetBrains Mono, monospace" font-size="13">
+          <rect x="24" y="78" width="150" height="30" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="98" fill="#C9C7C1">curiosity</text>
+          <text x="188" y="98" fill="#7A7A80">→</text>
+          <rect x="210" y="78" width="90" height="30" rx="6" fill="rgba(111,207,151,0.12)" stroke="#6FCF97"/>
+          <text x="222" y="98" fill="#6FCF97">built</text>
+
+          <rect x="24" y="120" width="150" height="30" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="140" fill="#C9C7C1">…built</text>
+          <text x="188" y="140" fill="#7A7A80">→</text>
+          <rect x="210" y="120" width="90" height="30" rx="6" fill="rgba(111,207,151,0.12)" stroke="#6FCF97"/>
+          <text x="222" y="140" fill="#6FCF97">this</text>
+
+          <rect x="24" y="162" width="150" height="30" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="182" fill="#C9C7C1">…this</text>
+          <text x="188" y="182" fill="#7A7A80">→</text>
+          <rect x="210" y="162" width="90" height="30" rx="6" fill="rgba(111,207,151,0.12)" stroke="#6FCF97"/>
+          <text x="222" y="182" fill="#6FCF97">project</text>
+        </g>
+        <text x="330" y="98" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">each green box is a label</text>
+        <text x="330" y="118" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">no human wrote it, it was</text>
+        <text x="330" y="138" font-family="Inter, sans-serif" font-size="12" fill="#7A7A80">already sitting in the sentence</text>
+      </svg>
+      <figcaption>Self-supervision: every prefix of a sentence is a training input, and the next word is a free label. Do this across huge amounts of ordinary text and you get a massive labeled dataset without paying anyone to label it.</figcaption>
+    </figure>
+
+    <h3>From large language models to foundation models</h3>
+    <p>People perceive the world through more than text, so language models are being extended to handle other kinds of data too. Models that understand both images and text (GPT-4V and Claude 3 are named in this chapter as examples) can do things a text-only model can't. A model that works with more than one data type is a multimodal model, and a generative one is sometimes called a large multimodal model (LMM).</p>
+    <p>This is the point where the term "large language model" stops being accurate enough, and "foundation model" takes over. The word points at two things at once: these models matter enough to be foundational to a huge range of applications, and they're explicitly meant to be built upon, not used as a finished, single-purpose product. Before foundation models, AI research was split by data type: natural language processing dealt only with text, computer vision only with images, and so on, with each producing narrow, task-specific models (a translation model couldn't also do sentiment analysis, and vice versa). Self-supervision made scaling up multimodal training possible too. OpenAI's CLIP, for example, learned to jointly represent images and text by scraping 400 million naturally occurring (image, text) pairs from the internet instead of paying for labels, producing a dataset 400 times bigger than ImageNet with no manual labeling cost. CLIP itself isn't generative, it's an embedding model, meaning it turns images and text into vectors that capture their meaning, and those embeddings underpin later generative multimodal models.</p>
+    <p>The practical upshot is a shift from task-specific models to general-purpose ones. A single foundation model can do translation and sentiment analysis and summarization reasonably well out of the box, something that simply wasn't true of the narrow models that came before it. That doesn't mean an out-of-the-box model is optimal for your specific job (a retailer's product descriptions might come back generic and full of marketing cliches rather than matching the brand's voice), which is exactly why model adaptation techniques exist: prompt engineering (better instructions and examples), RAG (connecting the model to your own data, like a database of customer reviews), and finetuning (further training the model on your own high-quality examples). Adapting an existing model this way is generally far less work than training a model of your own from nothing, though task-specific models still have real advantages: they can be much smaller, and therefore faster and cheaper to run.</p>
+
+    <h3>From foundation models to AI engineering</h3>
+    <p>"AI engineering," as used in this chapter, means building applications on top of a foundation model someone else trained, distinct from "ML engineering," the older, broader discipline that includes training your own models. Three things came together to make AI engineering explode as a discipline:</p>
+    <ul>
+      <li><b>General-purpose capability.</b> Because one model can do many tasks, and does more of them well every year, the pool of buildable applications keeps growing, which pulls in more builders and more demand.</li>
+      <li><b>A sharp rise in investment.</b> Goldman Sachs Research estimated AI investment could approach $100 billion in the US and $200 billion globally by 2025 (a projection, not a guarantee), and by Q2 2023 about one in three S&amp;P 500 companies mentioned AI on earnings calls, three times the year before, according to FactSet.</li>
+      <li><b>A much lower barrier to entry.</b> The "model as a service" pattern means you don't need infrastructure to host a model, you call an API. Combined with AI itself being able to write code and being usable through plain English instructions, building a first AI application no longer requires a software engineering background.</li>
+    </ul>
+    <p>The result, per this chapter, is that AI engineering has become one of the fastest-growing engineering disciplines: within about two years, four open source AI tools (AutoGPT, Stable Diffusion web UI, LangChain, and Ollama) had already out-starred Bitcoin on GitHub and were closing in on frameworks like React and Vue.</p>
+    <p>Here's a simple way to picture what actually changed structurally: where you used to have to build the whole pipeline yourself, you now sit on top of someone else's already-trained model and add an adaptation layer.</p>
+    <figure class="schematic">
+      <svg viewBox="0 0 620 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Classic ML pipeline compared to a foundation model based pipeline">
+        <rect x="0" y="0" width="620" height="210" rx="10" fill="#0E0E10"/>
+        <text x="20" y="26" font-family="JetBrains Mono, monospace" font-size="11" fill="#7A7A80" letter-spacing="1">CLASSIC ML PIPELINE</text>
+        <g font-family="Inter, sans-serif" font-size="12" fill="#C9C7C1">
+          <rect x="20" y="36" width="150" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="61" fill="#C9C7C1">your labeled data</text>
+          <text x="176" y="61" fill="#7A7A80">→</text>
+          <rect x="196" y="36" width="180" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="210" y="61" fill="#C9C7C1">train a model from scratch</text>
+          <text x="382" y="61" fill="#7A7A80">→</text>
+          <rect x="402" y="36" width="180" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="416" y="61" fill="#C9C7C1">your application</text>
+        </g>
+
+        <text x="20" y="112" font-family="JetBrains Mono, monospace" font-size="11" fill="#C8453A" letter-spacing="1">FOUNDATION-MODEL PIPELINE</text>
+        <g font-family="Inter, sans-serif" font-size="11.5" fill="#F2EFE9">
+          <rect x="20" y="122" width="120" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="32" y="140" fill="#C9C7C1">your prompt</text>
+          <text x="32" y="156" fill="#C9C7C1">/ context</text>
+          <text x="146" y="147" fill="#7A7A80">→</text>
+          <rect x="164" y="122" width="150" height="42" rx="6" fill="rgba(200,69,58,0.12)" stroke="#C8453A"/>
+          <text x="176" y="140" fill="#F2EFE9">pretrained</text>
+          <text x="176" y="156" fill="#F2EFE9">foundation model</text>
+          <text x="320" y="147" fill="#7A7A80">→</text>
+          <rect x="338" y="122" width="150" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="350" y="140" fill="#C9C7C1">adapt: prompt ·</text>
+          <text x="350" y="156" fill="#C9C7C1">RAG · finetune</text>
+          <text x="494" y="147" fill="#7A7A80">→</text>
+          <rect x="510" y="122" width="90" height="42" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="524" y="147" fill="#C9C7C1">your app</text>
+        </g>
+        <text x="20" y="192" font-family="Inter, sans-serif" font-size="11.5" fill="#7A7A80">Same end goal, but the model already exists, so the work moves from training to adapting.</text>
+      </svg>
+      <figcaption>Building on a foundation model swaps out "collect labels, train a model" for "adapt an existing model," which is why the job changed.</figcaption>
+    </figure>
+
+    <h3>What AI engineers actually do differently from ML engineers</h3>
+    <p>This chapter frames AI engineering as having evolved out of ML engineering rather than replacing it, and lays out three structural differences:</p>
+    <ol>
+      <li>You use a model someone else trained instead of training your own, so the work shifts away from modeling and toward adaptation.</li>
+      <li>The models involved are bigger and more compute-hungry, which raises the importance of efficient training and inference, and increases the need for engineers who can work with large GPU clusters.</li>
+      <li>The models produce open-ended output (not a fixed set of possible answers), which makes evaluation a much bigger and harder problem than it was for close-ended tasks like spam classification, where there's a clear right answer to check against.</li>
+    </ol>
+    <p>It helps to be precise about "training" here, because the word gets used loosely. Training always changes model weights, but not every change to weights counts as training (quantization, which reduces the precision of stored weights to make a model smaller and faster, changes weight values without being training). Within training, pre-training means starting from randomly initialized weights and is by far the most resource-intensive step (for one well-known model, pre-training was reported to use up to 98% of the total compute and data). Finetuning means continuing to train a model that's already been trained once, which is typically far cheaper since the model already has a head start. "Post-training" is used mostly by model developers (the people who build the base model) for the training work they do after pre-training, while "finetuning" is used mostly by application developers doing further training on a model someone else already post-trained; conceptually they're the same operation, just applied by different people at different points. None of this is the same as prompt engineering, even though people sometimes casually say they "trained" a chatbot when what they actually did was write it a good prompt.</p>
+    <p>Zooming out, this chapter organizes the whole AI application stack into three layers, and traditional ML engineering and AI engineering divide up the responsibility for each layer differently.</p>
+    <figure class="schematic">
+      <svg viewBox="0 0 600 246" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three layers of the AI engineering stack">
+        <rect x="0" y="0" width="600" height="246" rx="10" fill="#0E0E10"/>
+        <g font-family="Inter, sans-serif">
+          <rect x="20" y="18" width="560" height="62" rx="6" fill="rgba(200,69,58,0.10)" stroke="#C8453A"/>
+          <text x="34" y="40" font-family="JetBrains Mono, monospace" font-size="12" fill="#C8453A" letter-spacing="1">APPLICATION DEVELOPMENT</text>
+          <text x="34" y="62" font-size="12.5" fill="#C9C7C1">evaluation · prompt engineering · AI interface</text>
+
+          <rect x="20" y="92" width="560" height="62" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="114" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" letter-spacing="1">MODEL DEVELOPMENT</text>
+          <text x="34" y="136" font-size="12.5" fill="#C9C7C1">modeling &amp; training · dataset engineering · inference optimization</text>
+
+          <rect x="20" y="166" width="560" height="62" rx="6" fill="#131316" stroke="rgba(242,239,233,0.10)"/>
+          <text x="34" y="188" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80" letter-spacing="1">INFRASTRUCTURE</text>
+          <text x="34" y="210" font-size="12.5" fill="#C9C7C1">model serving · managing data &amp; compute · monitoring</text>
+        </g>
+      </svg>
+      <figcaption>Application development is where most of the recent growth and change has happened; infrastructure needs (serving, compute, monitoring) have stayed comparatively stable.</figcaption>
+    </figure>
+    <p>In model development, ML knowledge (gradient descent, loss functions, model architectures) is described in this chapter as a "nice to have, not a must-have" now, rather than a requirement, though it's still described as valuable for troubleshooting and for widening the set of tools you can reach for. Dataset engineering shifts too: close-ended tasks with tabular data (traditional ML) give way to unstructured data and challenges like deduplication, tokenization, and quality filtering (removing toxic or sensitive content). Inference optimization, already important in traditional ML, becomes more important still, partly because autoregressive models generate one token at a time, so getting a response out fast (getting anywhere near typical web-app latency) is a genuinely hard engineering problem.</p>
+    <p>In application development, evaluation becomes both more necessary and harder, precisely because outputs are open-ended: there's no fixed list of correct chatbot replies to check against, the way there is for a fraud/not-fraud label. This chapter uses a real example to show how much technique, not just the model, can change an evaluation result: when Google reported that Gemini beat GPT-4 on the MMLU benchmark in December 2023, that comparison used a prompting technique (Gemini given 32 examples) that wasn't matched against GPT-4 (only 5 examples); when both were tested with 5 examples, GPT-4 actually scored higher. Prompt engineering alone moved Gemini Ultra's own reported MMLU score from 83.7% to 90.04% depending on the technique used. AI interface work also grows in importance, since foundation models put app-building within reach of far more people, and those apps need somewhere for users to actually interact with them (standalone apps, browser extensions, chat integrations, or plug-ins into existing products).</p>
+
+    <h3>Planning before you build</h3>
+    <p>This chapter is clear that a fun demo is not the same thing as a good reason to ship a product, so it lays out a few questions worth answering first.</p>
+    <p><b>Why build this at all?</b> The chapter frames use-case motivation on a rough spectrum from highest to lowest urgency: an existential competitive threat (in a 2023 Gartner survey, 7% of executives cited "business continuity," meaning the business could suffer if it didn't adopt generative AI), a clear profit or productivity opportunity, or a fuzzier "we don't want to be left behind" instinct (with Kodak, Blockbuster, and BlackBerry cited as the classic cautionary tales of waiting too long).</p>
+    <p><b>What role should AI actually play?</b> A few small distinctions here change how strict the requirements need to be. Is AI <i>critical</i> to the product, meaning it stops working without it (Face ID), or <i>complementary</i>, meaning the product still works if the AI part is removed (Gmail without Smart Compose)? The more critical it is, the higher the accuracy bar. Is it <i>reactive</i>, responding to a specific user action (a chatbot), or <i>proactive</i>, surfacing something unprompted (a traffic alert)? Proactive features get judged more harshly because users didn't ask for them. Is it <i>dynamic</i>, continually updated from a specific user's ongoing feedback (a personalization feature), or <i>static</i>, shared across a group of users and updated only when the whole model is updated? On top of this, it's worth deciding upfront how much of a role humans play in the decision loop, an idea this chapter calls human-in-the-loop, and a framework it cites from Microsoft (2023), Crawl-Walk-Run, gives a simple way to phase that in: Crawl means a human must be involved, Walk means AI can interact directly with internal employees, and Run means AI can interact directly with external users.</p>
+    <p><b>Can you actually defend this product?</b> Because the barrier to entry is low for you, it's low for competitors too. This chapter names three broad kinds of competitive advantage in AI: technology, data, and distribution (the ability to get your product in front of users). With foundation models, the underlying technology tends to look similar across competitors, and distribution tends to favor companies that already have a large user base. That leaves data, which is more nuanced: a startup that gets to market first and gathers real usage data can turn that into a genuine moat, even where the data can't be used to directly retrain a model, because it still reveals what users actually want and where the product falls short.</p>
+    <p><b>How will you know if it's working?</b> The chapter recommends tying the application to a concrete business metric (for a support chatbot: percent of messages automated, response time, human labor saved) and separately defining a "usefulness threshold": the bar the product has to clear before it's shown to real users. That threshold usually spans a few metric groups: quality of the output itself, latency (including TTFT, time to first token, and TPOT, time per output token), cost per request, and sometimes other concerns like interpretability or fairness.</p>
+    <p><b>How much work is actually left after the demo works?</b> This is where this chapter's most useful caution sits: a good first demo tells you almost nothing about how much work remains. As one paper on training chat models put it, the early progress is easy and the later progress is "exceedingly challenging" (Ding et al., 2023). This chapter shares a concrete illustration: one company reported reaching about 80% of the experience it wanted within a month, then needing four more months of work to get past 95%, much of it spent chasing down inconsistent behavior. Set expectations accordingly: the gap between "impressive demo" and "shippable product" is usually the hardest and slowest part, not the fastest.</p>
+    <p><b>What happens after launch?</b> AI products need ongoing maintenance in a way that's shaped by how fast the field moves. Some of that change is good news you still have to react to: model providers cutting prices, or one provider's pricing shift making an in-house build suddenly cheaper (or more expensive) than you planned. Some of it is regulatory and harder to predict: the chapter notes the EU's GDPR was estimated to cost businesses around $9 billion to comply with, and that a US executive order in October 2023 shows how quickly compute access itself can become a regulated resource. And some of it touches intellectual property in ways that are still legally unsettled, which is a real concern this chapter raises for IP-heavy businesses building on models trained on other people's data.</p>
+
+    <h3>Where this shows up: what people are actually building</h3>
+    <p>This chapter surveys use cases across roughly eight categories (coding, image and video production, writing, education, conversational bots, information aggregation, data organization, and workflow automation), drawn from interviews with 50 companies, over 100 case studies, and 205 open source applications with at least 500 GitHub stars. A few examples grounded in that survey:</p>
+    <ul>
+      <li><b>Coding.</b> Consistently the most popular use case in these surveys. GitHub Copilot, one of the earliest production successes, crossed $100 million in annual recurring revenue within two years of launch. McKinsey researchers found AI roughly doubled developer productivity on documentation and boosted code generation and refactoring by 25 to 50%, with much smaller gains on highly complex tasks.</li>
+      <li><b>Image and video production.</b> Midjourney reached $200 million in annual recurring revenue at about a year and a half old. As of December 2023, half of the top 10 free Graphics &amp; Design apps on the Apple App Store had "AI" in their name.</li>
+      <li><b>Writing.</b> An MIT study (Noy and Zhang, 2023) gave 453 college-educated professionals occupation-specific writing tasks and randomly gave half of them access to ChatGPT; the group with access finished 40% faster with output quality up 18%, and the gains were bigger for workers who were weaker writers to begin with.</li>
+      <li><b>Education.</b> Chegg, a homework-help company, saw its share price fall from $28 when ChatGPT launched in November 2022 to $2 by September 2024, as an illustration of how disruptive this can be for incumbents who don't adapt.</li>
+      <li><b>Conversational bots, information aggregation, data organization, and workflow automation.</b> These cover customer support and product-copilot bots, summarization and "talk to your documents" tools, extracting structured data out of unstructured documents, and agents, defined in this chapter as AI systems that can plan and use external tools to get a multi-step task done (like booking a restaurant, which needs permission to search, call, and add a calendar entry).</li>
+    </ul>
+    <p>The throughline across all of these: because foundation models are general-purpose, a single application often spans more than one category at once (a support bot that also aggregates information, for instance), which is part of why the space is hard to cleanly categorize in the first place.</p>
+  </section>
+
+  <section>
+    <h2>Why it matters</h2>
+    <p>If you're building software today, this shift is the reason "add an AI feature" went from "hire an ML team and spend months collecting data" to "call an API this afternoon and see what happens." That's genuinely new leverage, and it's also why AI engineering is described in this chapter as one of the fastest-growing engineering disciplines: the barrier dropped for a huge number of people at once. But the flip side matters just as much: because the barrier is low for you, it's low for everyone else building the same idea, so the questions this chapter raises about defensibility, evaluation, and the last-mile gap between demo and product aren't optional extras, they're the actual hard part of the job now. The next few chapters build directly on this: chapter 2 goes deeper into how foundation models are actually built and adapted, and chapter 3 tackles evaluation, which this chapter already flags as one of the biggest differences from traditional ML work.</p>
+  </section>
+
+  <div class="remember">
+    <h2>Remember this</h2>
+    <ul>
+      <li>Self-supervision is the real reason language models could scale into the hundreds of billions of parameters: it turned ordinary, unlabeled text into free training data.</li>
+      <li>"Foundation model" describes both scale and purpose. It's meant to be built on top of, not used as a finished, single-purpose tool.</li>
+      <li>AI engineering isn't "easier ML engineering." It's a different job: less model training, more adapting an existing model, evaluating open-ended output, and building the interface around it.</li>
+      <li>Prompt engineering, RAG, and finetuning are three separate levers for adapting a model, and they trade off differently in how much data and effort they need.</li>
+      <li>A working demo tells you almost nothing about whether a product is ready to ship. The gap between "good enough to show" and "good enough to ship" is usually the hardest and slowest part of the whole project.</li>
+    </ul>
+  </div>
+
+  <div class="try">
+    <h2>Try it yourself</h2>
+    <ul>
+      <li><b>Count tokens versus words.</b> Take a paragraph you've written (100 to 300 words) and run it through any public tokenizer you have access to (many model providers expose one, and open source tokenizer libraries exist too). Compare the token count to the word count. Done when you can state your own ratio and note whether it's close to the "100 tokens ≈ 75 words" rule of thumb from this chapter.</li>
+      <li><b>Build the training-pairs table by hand.</b> Pick any short sentence (6 to 10 words) and write out, on paper or in a spreadsheet, every (input, next-token) pair it produces for next-token prediction, the way the schematic above does. Done when you have a full table from the first word through the end of the sentence.</li>
+      <li><b>Compare two models on the same prompt.</b> Pick a task (summarize a paragraph, write a short email, explain a concept simply) and run the identical prompt through two different publicly accessible chat models or assistants. Done when you've written two or three sentences comparing the outputs: where they agreed, where they differed, and which you'd trust more and why.</li>
+      <li><b>Sketch your own foundation-model application.</b> Pick a real idea (even a small one). Draw the architecture as boxes: your data/prompt, the foundation model, an adaptation layer, your application, the user, using the diagram above as a starting shape. Label which adaptation technique(s) you'd use (prompt engineering, RAG, finetuning, or a mix) and why. Done when you have a one-page diagram plus two or three sentences justifying the adaptation choice.</li>
+      <li><b>Run a use-case evaluation on a task you actually do.</b> Pick something repetitive you do often (writing similar emails, summarizing notes, drafting first-pass content). Answer, in writing: what's the risk of not automating it, what would "good enough to trust" look like for quality, latency, and cost, and how would you actually measure whether it's working. Done when you have short, specific answers to all three, not vague ones.</li>
+    </ul>
+  </div>
+
+  <section>
+    <h2>Go deeper (optional)</h2>
+    <div class="go-deeper">
+      <p style="margin:0">If the "self-supervision removed the labeling bottleneck" idea was the part that clicked for you, the natural next question is: what actually happens during that training process, step by step, and how does a model go from predicting the next token to following instructions and holding a conversation? This chapter mentions that later stage only briefly (it's called post-training), and it's exactly where chapter 2 picks up.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sources &amp; verify</h2>
+    <ul class="sources">
+      <li>Primary source: <i>AI Engineering</i> by Chip Huyen (O'Reilly), Chapter 1, "Introduction to Building AI Applications with Foundation Models," pages 25–72. This chapter was covered in full.</li>
+      <li>This digest is a teaching draft written from that source, not a replacement for it. Numbers tied to a specific date (funding rounds, revenue figures, stock prices, market-size projections, GitHub star counts) were current as of when the chapter was written and are very likely to have moved since; verify anything you plan to rely on against the original chapter or a current source before using it.</li>
+      <li>A few figures referenced in the chapter (bar charts and diagrams, e.g. the GitHub star-growth chart and the S&amp;P 500 earnings-call mention chart) are described here in words rather than reproduced, since the underlying image is the book's own; the surrounding numbers stated in this digest come from the chapter's text, not from reading values off those charts.</li>
+      <li>The Goldman Sachs $100B/$200B AI investment figure and the IDP market-size figure are both stated in the source chapter as third-party estimates/projections, not measured facts, and are presented here the same way.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div class="who">
+      <div class="name">Mayowa</div>
+      <div class="socials">
+        <span>in/mayowa-bodunwa</span>
+        <span>@mayowa.bodunwa</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
