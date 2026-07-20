@@ -98,11 +98,38 @@ jobs:
           REPLACE the 'Current batch' checklist with the new unit list, all unchecked." \
             --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
-      # Checks the generated decks against the content guardrails (book tells, structure,
-      # fixed chrome, unbounded absolutes). continue-on-error so a finding is loud in the
-      # run log and annotations but never costs an already-generated batch.
+      # ---- self-healing check: lint -> fix the findings -> re-check -> carry on ----
+      # Checks the generated decks against the content guardrails (book tells, counters,
+      # structure, fixed chrome, unbounded absolutes). continue-on-error so the run always
+      # reaches the fix pass and delivery, never losing an already-generated batch.
       - name: Lint the carousels
+        id: lint
         if: steps.gate.outputs.send == 'true'
+        continue-on-error: true
+        run: |
+          python "$SKILL"/scripts/lint_carousels.py \
+            --carousels build/carousels --report build/lint-report.txt
+
+      # Second, focused pass: fix ONLY what the lint flagged, then re-render those decks.
+      - name: Fix the lint findings
+        if: steps.gate.outputs.send == 'true' && steps.lint.outputs.has_errors == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          claude -p "The carousel lint found problems in the decks under build/carousels. Read the \
+          report at build/lint-report.txt, then fix ONLY those findings. For each flagged deck: edit \
+          build/carousels/<book>/<slug>/deck.json to clear the finding, then re-render that deck's PNGs \
+          with scripts/render_carousels.py, running it with the working directory inside \
+          .claude/skills/book-digest-carousels so the relative font paths in fonts.json resolve (they \
+          fail silently otherwise and the text overflows). Rules are in references/carousels.md: counters \
+          run 01/N..N/N over the non-cover slides, no book tells (chapter/the book/the author), fixed \
+          per-track terminal and counter prefix, 7-10 slides, exactly one code visual-proof slide. Make \
+          the MINIMUM edit that clears each finding: keep the existing voice, hooks, and structure, do \
+          not touch decks that were not flagged, and do not change any digest." \
+            --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep"
+
+      - name: Re-check the carousels
+        if: steps.gate.outputs.send == 'true' && steps.lint.outputs.has_errors == 'true'
         continue-on-error: true
         run: python "$SKILL"/scripts/lint_carousels.py --carousels build/carousels
 

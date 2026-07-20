@@ -148,6 +148,8 @@ def lint_deck(path, root, errors, warnings):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--carousels", default="build/carousels")
+    ap.add_argument("--report", default="",
+                    help="write the findings to this file, for the auto-fix pass to read")
     args = ap.parse_args()
 
     decks = sorted(glob.glob(os.path.join(args.carousels, "*", "*", "deck.json")))
@@ -171,8 +173,26 @@ def main():
             print(f"::error::{where}: {msg}")
 
     print(f"\nlint: {len(errors)} error(s), {len(warnings)} warning(s)")
+
+    # A report the auto-fix pass can read, and a flag the workflow can branch on.
+    if args.report:
+        os.makedirs(os.path.dirname(args.report) or ".", exist_ok=True)
+        with open(args.report, "w", encoding="utf-8") as f:
+            for where, msg in errors:
+                f.write(f"ERROR {where}: {msg}\n")
+            for where, msg in warnings:
+                f.write(f"WARN  {where}: {msg}\n")
+        print(f"lint: report written to {args.report}")
+
+    gh_out = os.environ.get("GITHUB_OUTPUT")
+    if gh_out:
+        with open(gh_out, "a", encoding="utf-8") as f:
+            f.write(f"errors={len(errors)}\n")
+            f.write(f"warnings={len(warnings)}\n")
+            f.write(f"has_errors={'true' if errors else 'false'}\n")
+
     if errors:
-        print("lint: fix the errors above before posting these decks.")
+        print("lint: the auto-fix pass will try to clear these.")
     return 1 if errors else 0
 
 
