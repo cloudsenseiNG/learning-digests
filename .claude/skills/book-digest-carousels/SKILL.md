@@ -305,3 +305,16 @@ the repo.
 - `scripts/build_email.py` — build the batch's **Gmail-safe** link email deterministically
   (table layout, fully inline styles, logo embedded as a CID image). Do not hand-author
   the email; email clients strip `<style>` blocks and non-embedded images.
+- `scripts/lint_carousels.py` — **check the generated decks against the guardrails** before
+  delivery. **Errors:** book tells, structure (7–10 slides, exactly one `code` visual-proof
+  slide, cover first / close last), counters running `01/N..N/N` over the non-cover slides,
+  and fixed per-track chrome. **Warnings:** unbounded absolutes (some are legitimately true,
+  so a human decides). Run it after rendering:
+  `python scripts/lint_carousels.py --carousels build/carousels --report build/lint-report.txt`
+
+  **It is self-healing, not a gate.** The unattended run does
+  **lint → fix the findings → re-check → carry on with delivery**: `--report` writes the
+  findings and the script sets `has_errors` on `$GITHUB_OUTPUT`, which triggers a second,
+  focused agent pass that edits only the flagged `deck.json` files and re-renders those
+  decks. Nothing blocks the email or the publish, so a finding is corrected in-flight
+  rather than costing an already-generated batch.
