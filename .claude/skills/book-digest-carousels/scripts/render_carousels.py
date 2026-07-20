@@ -25,6 +25,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import html
 
 from PIL import ImageFont
@@ -38,6 +39,38 @@ def parse_attrs(s):
     return dict(ATTR_RE.findall(s))
 
 
+def load_font_map(path):
+    """Load fonts.json, resolving its TTF paths **relative to the json file itself**.
+
+    The values in fonts.json are relative (`assets/fonts/X.ttf`). Resolving them against
+    the current working directory means running the renderer from anywhere but the skill
+    directory silently loses every font: PIL then measures with a tiny default bitmap
+    font, wrap_words concludes long headings fit on one line, and the rendered text
+    overflows the canvas (cairosvg still draws the real font via fontconfig, so the
+    output looks correctly typefaced but is unwrapped). Anchor to the file instead.
+    """
+    here = os.path.dirname(os.path.abspath(path))
+    # fonts.json lives in assets/ but its paths are written relative to the skill root
+    # ("assets/fonts/X.ttf"), so try the file's own dir, its parent, and plain cwd.
+    bases = [here, os.path.dirname(here), os.getcwd()]
+    raw = json.load(open(path, encoding="utf-8"))
+    resolved, missing = {}, []
+    for key, val in raw.items():
+        if os.path.isabs(val):
+            candidates = [val]
+        else:
+            candidates = [os.path.join(b, val) for b in bases]
+        p = next((c for c in candidates if os.path.exists(c)), candidates[0])
+        resolved[key] = p
+        if not os.path.exists(p):
+            missing.append(f"{key} -> {val}")
+    if missing:
+        sys.exit("render: these fonts in %s could not be found:\n  %s\n"
+                 "Text measurement would silently fall back and overflow the slides."
+                 % (path, "\n  ".join(missing)))
+    return resolved
+
+
 def load_font(font_map, family, weight, size):
     weight = "700" if str(weight) == "bold" else str(weight)
     for key in (f"{family}|{weight}", family):
@@ -45,9 +78,12 @@ def load_font(font_map, family, weight, size):
         if path and os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size)
-            except Exception:
-                pass
-    return ImageFont.load_default()
+            except Exception as e:
+                sys.exit(f"render: could not open font {path} for {family}|{weight}: {e}")
+    # Never fall back silently: a default bitmap font measures far narrower than the real
+    # face, so the shrink-to-fit and wrapping logic would produce overflowing slides.
+    sys.exit(f"render: no font mapped for `{family}` weight `{weight}`. "
+             f"Add it to fonts.json (known keys: {sorted(font_map)}).")
 
 
 def measure(font, text):
@@ -135,7 +171,7 @@ def main():
     ap.add_argument("--height", type=int, default=1350)
     args = ap.parse_args()
 
-    font_map = json.load(open(args.fonts))
+    font_map = load_font_map(args.fonts)
     deck = json.load(open(args.content))
     os.makedirs(args.out, exist_ok=True)
 
