@@ -24,20 +24,16 @@ still treated like a chapter: one digest, one carousel.
 
 ## Current batch: tick each when you've studied it
 
-- [ ] DDIA — Ch.1: Reliable, Scalable, and Maintainable Applications (`docs/digests/ddia-ch1-reliable-scalable-maintainable.html`)
-- [ ] AI Engineering — Ch.1 (Part 1 of 4): The Rise of AI Engineering (`docs/digests/ai-engineering-ch1-part1-foundation-models.html`)
-- [ ] High Performance MySQL — Ch.1: MySQL Architecture (`docs/digests/mysql-ch1-architecture.html`)
-- [ ] AWS — Topic 1: Core Networking (VPC, subnets, route tables, NAT, IGW) (`docs/digests/aws-topic1-core-networking.html`)
-
-<!-- Gate is CLEAR again once all four boxes above are ticked. The next run will pick up:
-     DDIA Ch.2, AI Engineering Ch.1 Part 2 (pages 40-52, "Foundation Model Use Cases"),
-     HP MySQL Ch.2, and AWS Topic 2 (Transit Gateway & multi-VPC connectivity). -->
+<!-- Fresh start from Chapter 1: this list is empty, so the completion gate is CLEAR and
+     the next run produces the FIRST batch (Chapter 1 of each book plus AWS topic 1) under
+     the full guardrail set, with the self-healing lint pass correcting any deck findings
+     before delivery. It then writes the new checklist here for you to tick. -->
 
 ## Track A: Designing Data-Intensive Applications
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | 2026-07-20 | 2026-07-20 | Full chapter covered in one digest, no split needed. Carousel idea: fault vs. failure; case study Feb 28 2017 AWS S3 outage (verified against AWS's own postmortem). |
+| 1 | Reliable, Scalable, and Maintainable Applications | 25–48 | | | |
 | 2 | Data Models and Query Languages | 49–90 | | | |
 | 3 | Storage and Retrieval | 91–132 | | | |
 | 4 | Encoding and Evolution | 133–166 | | | |
@@ -55,7 +51,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | Part 1/4: 2026-07-20 (pp.25-39) | 2026-07-20 (Part 1 idea: next-token prediction) | Chapter split into 4 coherent parts (47pp is too long for one thorough digest). Part 1 = "The Rise of AI Engineering" only. Next: Part 2 "Foundation Model Use Cases", pp.40-52. Then Part 3 "Planning AI Applications" pp.52-59, Part 4 "The AI Engineering Stack" + Summary pp.59-72. |
+| 1 | Introduction to Building AI Applications with Foundation Models | 25-72 | | | |
 | 2 | Understanding Foundation Models | 73-136 | | | |
 | 3 | Evaluation Methodology | 137-182 | | | |
 | 4 | Evaluate AI Systems | 183-234 | | | |
@@ -70,7 +66,7 @@ still treated like a chapter: one digest, one carousel.
 
 | Ch | Title | Pages | Digested | Carousel | Notes |
 |---:|-------|-------|----------|----------|-------|
-| 1 | MySQL Architecture | 23-40 | 2026-07-20 | 2026-07-20 | Full chapter covered in one digest. Carousel idea: pluggable storage engines; case study Facebook's MyRocks (announced Aug 31 2016, verified against engineering.fb.com). Render note: run `render_carousels.py` with cwd inside `.claude/skills/book-digest-carousels/` or the relative font paths in `fonts.json` silently fail to resolve and text overflows. |
+| 1 | MySQL Architecture | 23-40 | | | |
 | 2 | Monitoring in a Reliability Engineering World | 41-62 | | | |
 | 3 | Performance Schema | 63-96 | | | |
 | 4 | Operating System and Hardware Optimization | 97-120 | | | |
@@ -88,7 +84,7 @@ still treated like a chapter: one digest, one carousel.
 
 | # | Topic | Source | Digested | Carousel | Notes |
 |--:|-------|--------|----------|----------|-------|
-| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | 2026-07-20 | 2026-07-20 | Sourced from 8 fetched VPC User Guide pages (what-is-amazon-vpc, configure-subnets, VPC_Route_Tables, RouteTables, VPC_Internet_Gateway, vpc-nat-gateway, default-vpc, vpc-cidr-blocks). Carousel idea: one route-table row decides public vs private; case study Feb 28 2017 AWS S3 outage. |
+| 1 | Core networking (VPC, subnets, route tables, NAT, IGW) | docs.aws.amazon.com | | | |
 | 2 | Transit Gateway & multi-VPC connectivity | docs.aws.amazon.com | | | |
 | 3 | EC2 (instances, AMIs, ASGs, load balancing) | docs.aws.amazon.com | | | |
 | 4 | S3 (storage classes, lifecycle, security) | docs.aws.amazon.com | | | |
