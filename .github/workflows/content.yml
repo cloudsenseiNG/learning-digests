@@ -90,12 +90,21 @@ jobs:
           following references/digest-template.md exactly (a full 'How it works' that opens with a grounding \
           section, one labelled sub-section per concept with inline-SVG schematics, every term defined, and a \
           4-6 item 'Try it yourself'); do NOT thin it out or shorten it - err long. Append \
-          docs/digests.json, and render its carousel PNGs to build/carousels/<book>/<slug>/ where <book> \
+          docs/digests.json, and render its carousel PNGs to build/carousels/<book>/<slug>/ (keep that \
+          unit's deck.json in the same folder, the lint step reads it) where <book> \
           is a clean folder name (DDIA, AI-Engineering, High-Performance-MySQL, AWS) so the zip is \
           foldered per book. Do NOT write the email yourself; a later step builds a Gmail-safe one \
           from docs/digests.json. Update the per-book tables in TRACKER.md, and \
           REPLACE the 'Current batch' checklist with the new unit list, all unchecked." \
             --permission-mode acceptEdits --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
+
+      # Checks the generated decks against the content guardrails (book tells, structure,
+      # fixed chrome, unbounded absolutes). continue-on-error so a finding is loud in the
+      # run log and annotations but never costs an already-generated batch.
+      - name: Lint the carousels
+        if: steps.gate.outputs.send == 'true'
+        continue-on-error: true
+        run: python "$SKILL"/scripts/lint_carousels.py --carousels build/carousels
 
       - name: Rebuild index, build email, zip the carousels
         if: steps.gate.outputs.send == 'true'

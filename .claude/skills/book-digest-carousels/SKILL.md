@@ -305,3 +305,8 @@ the repo.
 - `scripts/build_email.py` — build the batch's **Gmail-safe** link email deterministically
   (table layout, fully inline styles, logo embedded as a CID image). Do not hand-author
   the email; email clients strip `<style>` blocks and non-embedded images.
+- `scripts/lint_carousels.py` — **check the generated decks against the guardrails** before
+  delivery: book tells and structure (7–10 slides, exactly one `code` visual-proof slide,
+  cover first / close last) and fixed per-track chrome are **errors**; unbounded absolutes
+  are **warnings** (some are legitimately true, so a human decides). Run it after rendering:
+  `python scripts/lint_carousels.py --carousels build/carousels`.
