@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Engineering — Ch.1 (Part 1 of 4): The Rise of AI Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0B; --panel:#0E0E10; --panel2:#131316; --hair:rgba(242,239,233,0.10);
+    --ink:#F2EFE9; --body:#C9C7C1; --muted:#7A7A80; --red:#C8453A; --green:#6FCF97;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',-apple-system,sans-serif;line-height:1.6;font-size:16px}
+  .wrap{max-width:660px;margin:0 auto;padding:56px 22px 80px}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--red);font-size:13px;letter-spacing:4px;font-weight:500}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:var(--ink);font-size:34px;line-height:1.15;margin:14px 0 10px}
+  .lead{color:var(--body);font-size:18px;margin:0 0 34px}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:21px;margin:44px 0 12px;letter-spacing:0.2px}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:17px;margin:26px 0 8px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px;padding-left:22px}
+  li{margin:0 0 8px}
+  strong{color:var(--ink)}
+  code{font-family:'JetBrains Mono',monospace;background:var(--panel2);border:1px solid var(--hair);border-radius:4px;padding:1px 6px;font-size:14px;color:var(--ink)}
+  .term{color:var(--ink);font-weight:600}
+  .card{background:var(--panel);border:1px solid var(--hair);border-radius:10px;padding:22px 24px;margin:20px 0}
+  .box{border-left:3px solid var(--red);background:var(--panel);border-radius:8px;padding:20px 22px;margin:30px 0}
+  .box.green{border-left-color:var(--green)}
+  .box h2{margin-top:0;font-size:15px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;color:var(--red)}
+  .box.green h2{color:var(--green)}
+  figure{margin:22px 0;border:1px solid var(--hair);border-radius:10px;background:var(--panel);padding:18px}
+  figure svg{display:block;width:100%;height:auto}
+  figcaption{font-family:'JetBrains Mono',monospace;color:var(--muted);font-size:12.5px;margin-top:10px;letter-spacing:0.3px}
+  hr{border:none;border-top:1px solid var(--hair);margin:40px 0}
+  .footer{margin-top:60px;padding-top:28px;border-top:1px solid var(--hair);display:flex;align-items:center;gap:16px}
+  .footer img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--hair)}
+  .footer .name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:17px}
+  .footer .socials{font-family:'JetBrains Mono',monospace;color:#D8D5CD;font-size:13px;line-height:1.9}
+  .sources{font-size:14.5px;color:var(--muted)}
+  .sources li{margin-bottom:6px}
+  a{color:var(--red)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">AI · CH.1 DIGEST</div>
+  <h1>The Rise of AI Engineering</h1>
+  <p class="lead">Part 1 of 4 &middot; how token-by-token prediction turned into foundation models, and why that gave rise to a whole new job called AI engineering.</p>
+
+  <p><strong>In one line:</strong> A foundation model is a single, very large model trained once on huge amounts of unlabeled data, and AI engineering is the discipline of building products on top of that one model instead of training your own from scratch.</p>
+
+  <h2>The big idea</h2>
+  <p>For most of AI history, if you wanted a model that did something, you built and trained it yourself for that one task. Getting good training data meant paying humans to label examples, which is slow and expensive. Language models found a shortcut: a sentence already contains its own "labels", because you can hide the next word and ask the model to guess it. That trick, called self-supervision, let a small number of well-resourced labs train models on a huge chunk of the public internet. The resulting models got so capable and general-purpose that a new kind of job appeared: instead of training a model, you adapt an existing one, an already-trained "foundation", to your specific product. That's what this covered portion is about: how we got from small language models to foundation models, and why adapting them became its own engineering discipline.</p>
+
+  <h2>Key terms</h2>
+  <ul>
+    <li><span class="term">Language model</span> — a model that predicts how likely a word (or token) is to come next, given some context. Feed it "My favorite food is ___" and it should rank "pizza" above "bicycle".</li>
+    <li><span class="term">Token</span> — the basic chunk a language model works with: a whole word, part of a word, or a character, depending on the model. GPT-4 splits "I can't wait" into pieces including <code>can</code> and <code>'t</code> as two separate tokens.</li>
+    <li><span class="term">Tokenization</span> — the process of chopping raw text into tokens before a model can use it.</li>
+    <li><span class="term">Vocabulary</span> — the fixed set of tokens a model knows. GPT-4's vocabulary has 100,256 tokens; Mixtral 8x7B's has 32,000.</li>
+    <li><span class="term">Masked language model</span> — a model trained to fill in a blank using context from both before and after it (example: BERT).</li>
+    <li><span class="term">Autoregressive language model</span> — a model trained to predict only the next token, using just what came before. This is the style behind most text-generation tools today.</li>
+    <li><span class="term">Self-supervision</span> — a training setup where the data supplies its own labels (the next word in a sentence is the "label" for everything before it), so no human has to hand-label examples.</li>
+    <li><span class="term">Supervision</span> — the older setup where humans label each training example by hand (e.g. tagging a transaction "fraud" or "not fraud").</li>
+    <li><span class="term">Parameter</span> — an internal number in a model that gets adjusted during training. Roughly, more parameters usually means more capacity to learn, though the covered text is explicit that this isn't always true.</li>
+    <li><span class="term">Foundation model</span> — a large, general-purpose model (often multimodal, meaning it can handle more than just text) that's powerful enough to be adapted, or "built upon", for many different downstream products.</li>
+    <li><span class="term">Multimodal model</span> — a model that can take in or generate more than one kind of data, such as text and images together.</li>
+    <li><span class="term">Embedding model</span> — a model trained to turn data (text, an image) into a vector of numbers that captures its meaning, rather than to generate new text. CLIP is the example used here.</li>
+    <li><span class="term">Prompt engineering</span> — crafting the instructions and examples you give a model to steer its output, without changing the model itself.</li>
+    <li><span class="term">Retrieval-augmented generation (RAG)</span> — connecting a model to an external database so it can pull in relevant information before answering.</li>
+    <li><span class="term">Finetuning</span> — further training an already-trained model on your own, smaller dataset so it adapts to your specific task.</li>
+    <li><span class="term">Model as a service</span> — the setup where a lab exposes its foundation model through an API, so you can call it without hosting or training anything yourself.</li>
+    <li><span class="term">AI engineering</span> — the practice of building applications on top of an existing foundation model, as opposed to training a model from scratch.</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <p>Before any of the "adapt a model to your product" work makes sense, it helps to understand what changed underneath. The short version: language models learned to predict text without needing labeled data, that let them scale up enormously, scale made them capable across many tasks at once instead of just one, and "many tasks at once" is exactly what turned them from a research artifact into something a product team could build a whole company on.</p>
+
+  <h3>1. A language model is a next-token guesser</h3>
+  <p>At the core, a language model just estimates how likely a given token is to come next, given the tokens before it. One useful way to picture it: you hand it an unfinished piece of text, and it keeps extending it, one token at a time. Feed it "To be or not to be" and a well-trained one continues with something like ", that is the question." It isn't reasoning about Hamlet, it's ranking which continuation is statistically most likely given everything it saw in training.</p>
+  <p>This sounds narrow, but a surprising number of tasks can be reframed as "complete this text": you can turn translation into a completion problem by prompting with something like "The Spanish word for ocean is", or turn spam filtering into one by prompting with "Question: is this message spam? Answer:" followed by the message. Both become "guess the next tokens" problems once phrased as a prompt. It's worth being precise about the limits though: a completion is a probability-weighted guess, not a guarantee of correctness, and a model trained only to complete text isn't automatically trained to hold a back-and-forth conversation (that shift, from completing text to acting like a conversational assistant, is a separate training step this covered section doesn't get into).</p>
+
+  <figure>
+    <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="220" fill="#0E0E10"/>
+      <text x="20" y="34" font-family="JetBrains Mono, monospace" font-size="14" fill="#7A7A80">prompt (tokens the model has already seen):</text>
+      <text x="20" y="62" font-family="JetBrains Mono, monospace" font-size="17" fill="#F2EFE9">"the best way to learn is to ___"</text>
+      <text x="20" y="98" font-family="JetBrains Mono, monospace" font-size="13" fill="#7A7A80">model ranks candidate next tokens by probability:</text>
+
+      <text x="20" y="130" font-family="JetBrains Mono, monospace" font-size="14" fill="#C9C7C1">build</text>
+      <rect x="90" y="116" width="330" height="16" rx="3" fill="#C8453A"/>
+      <text x="430" y="130" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9">0.62</text>
+
+      <text x="20" y="160" font-family="JetBrains Mono, monospace" font-size="14" fill="#C9C7C1">read</text>
+      <rect x="90" y="146" width="140" height="16" rx="3" fill="#6FCF97"/>
+      <text x="430" y="160" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9">0.26</text>
+
+      <text x="20" y="190" font-family="JetBrains Mono, monospace" font-size="14" fill="#C9C7C1">sleep</text>
+      <rect x="90" y="176" width="40" height="16" rx="3" fill="#7A7A80"/>
+      <text x="430" y="190" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9">0.04</text>
+    </svg>
+    <figcaption>Fig 1. Autoregressive prediction: the model scores possible next tokens and the highest-probability one (or a sampled one) gets picked. Numbers here are illustrative, not from any real model output.</figcaption>
+  </figure>
+
+  <h3>2. Two ways to use context: masked vs. autoregressive</h3>
+  <p>Not every language model predicts in the same direction. A <span class="term">masked language model</span> gets to see context on both sides of the blank and fills it in, closer to a fill-in-the-blank exercise. A <span class="term">autoregressive language model</span> only ever sees what came before and predicts what comes next, one token at a time, chaining its own outputs back in as input to keep going. As of the covered text, autoregressive models are the more common choice for open-ended text generation, largely because generation naturally means producing tokens in order without knowing the "future" text yet; masked models tend to show up more in tasks like classifying sentiment or catching bugs in code, where understanding the whole surrounding context matters more than generating new text.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="200" fill="#0E0E10"/>
+      <text x="20" y="30" font-family="JetBrains Mono, monospace" font-size="13" fill="#7A7A80">MASKED (sees both sides)</text>
+      <text x="20" y="62" font-family="JetBrains Mono, monospace" font-size="15" fill="#C9C7C1">my favorite </text>
+      <rect x="150" y="46" width="46" height="22" fill="#131316" stroke="#C8453A"/>
+      <text x="173" y="62" font-family="JetBrains Mono, monospace" font-size="15" fill="#C8453A" text-anchor="middle">?</text>
+      <text x="200" y="62" font-family="JetBrains Mono, monospace" font-size="15" fill="#C9C7C1"> is blue</text>
+      <path d="M170 40 Q 170 20 30 20" stroke="#6FCF97" fill="none" stroke-width="1.5"/>
+      <path d="M175 40 Q 175 20 380 20" stroke="#6FCF97" fill="none" stroke-width="1.5"/>
+
+      <text x="20" y="120" font-family="JetBrains Mono, monospace" font-size="13" fill="#7A7A80">AUTOREGRESSIVE (sees only the left side)</text>
+      <text x="20" y="152" font-family="JetBrains Mono, monospace" font-size="15" fill="#C9C7C1">my favorite color is </text>
+      <rect x="215" y="136" width="46" height="22" fill="#131316" stroke="#C8453A"/>
+      <text x="238" y="152" font-family="JetBrains Mono, monospace" font-size="15" fill="#C8453A" text-anchor="middle">?</text>
+      <path d="M235 130 Q 235 108 30 108" stroke="#6FCF97" fill="none" stroke-width="1.5"/>
+    </svg>
+    <figcaption>Fig 2. Masked models fill a blank using context from both directions; autoregressive models predict forward, one token at a time, using only what came before.</figcaption>
+  </figure>
+
+  <h3>3. Self-supervision: getting labels for free</h3>
+  <p>Traditional supervised training needs a human to label every example, and that gets expensive fast. The covered text walks through the arithmetic: at roughly 5 cents per labeled image, labeling the 1-million-image ImageNet dataset costs about $50,000, and scaling up to a million categories (instead of 1,000) pushes the labeling bill toward $50 million. Some labeling tasks are cheap because anyone can do them (naming everyday objects), but others are expensive or require expert judgment (translating into a rare language, or reading a CT scan for cancer signs).</p>
+  <p>Self-supervision sidesteps this. In self-supervised training, the model pulls its own labels out of the raw data, no human tagging required. For language modeling, a single sentence generates several training examples on its own, since every prefix of the sentence can be used to predict the next token. One useful distinction: self-supervised is not the same as unsupervised. In self-supervised learning the model still has labels, it's just that those labels come from the data itself instead of a human; in unsupervised learning there are no labels being predicted at all.</p>
+  <p>Because raw text is everywhere (books, articles, blog posts, forum comments), self-supervision let language models train on enormous amounts of data without a labeling budget, which is a big part of how a small model from 2018 became a much larger one within a year: OpenAI's first GPT model (June 2018) had 117 million parameters, and by February 2019 GPT-2 had scaled to 1.5 billion. Bigger models generally need more data too, not because they're worse at learning, but because more capacity only pays off if there's enough data to fill it; training a huge model on a tiny dataset just wastes compute without buying you better results.</p>
+
+  <h3>4. From language models to foundation models</h3>
+  <p>Text-only language models are limited to, well, text. To operate in a world that includes images, audio, and more, labs extended language modeling to other data types, producing models like GPT-4V and Claude 3 that can take in both text and images. A model that works with more than one data type is called a multimodal model, and a generative one (it produces new outputs, not just classifications) is sometimes called a large multimodal model, or LMM.</p>
+  <p>This is roughly the point where "large language model" stops being the most accurate label and "foundation model" takes over: the name signals both that these models are foundational to many applications and that they're meant to be built upon. One concrete example of extending self-supervision beyond text is CLIP (OpenAI, 2021), which learned from 400 million naturally occurring (image, caption) pairs scraped from the internet, about 400 times the size of the hand-labeled ImageNet, without paying for manual labels. Worth flagging: CLIP itself isn't a generative model, it's an embedding model, trained to place matching images and captions near each other in a shared vector space rather than to write new text. It's still a useful example of self-supervision generalizing past plain text.</p>
+  <p>The other big shift is going from task-specific to general-purpose. Older models were usually trained for one job (sentiment analysis, or translation, but not both). A foundation model, by contrast, can often do reasonably well at a wide range of tasks right out of the box, without being retrained for each one. That doesn't mean an out-of-the-box model is automatically good enough for your exact use case though: the covered text gives the example of a retailer using a general model to generate product descriptions, where the raw output can come back generic or full of marketing cliches even though the task itself ("write a product description") is one the model can technically do.</p>
+
+  <h3>5. Adapting a foundation model instead of training your own</h3>
+  <p>Once you have a capable general-purpose model, there are a few common ways to steer it toward your specific product without training a new model from scratch. Prompt engineering means writing clearer, more detailed instructions and examples in the input itself. Retrieval-augmented generation (RAG) means connecting the model to an external database, like a company's own product reviews, so it can pull in relevant facts before answering. Finetuning means continuing to train the existing model on a smaller, task-specific dataset so its behavior shifts toward what you need. These three overlap and are often combined, and the covered text is careful to bound the comparison: adapting an existing model is generally much cheaper and faster than building one from scratch (its own example: something like ten examples and a weekend, versus a million examples and six months), but task-specific models built from scratch can still have real advantages, like being smaller and cheaper to run at inference time. Which route makes sense, and how much data each one needs, depends on the technique and the task, so "just finetune it" isn't a universal answer.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+      <rect width="620" height="260" fill="#0E0E10"/>
+      <rect x="230" y="20" width="160" height="46" rx="6" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.3"/>
+      <text x="310" y="48" font-family="JetBrains Mono, monospace" font-size="14" fill="#F2EFE9" text-anchor="middle">foundation model</text>
+
+      <path d="M300 66 L120 130" stroke="#7A7A80" fill="none"/>
+      <path d="M310 66 L310 130" stroke="#7A7A80" fill="none"/>
+      <path d="M320 66 L500 130" stroke="#7A7A80" fill="none"/>
+
+      <rect x="40" y="130" width="160" height="60" rx="6" fill="#131316" stroke="#C8453A"/>
+      <text x="120" y="155" font-family="JetBrains Mono, monospace" font-size="13" fill="#C8453A" text-anchor="middle">prompt</text>
+      <text x="120" y="174" font-family="JetBrains Mono, monospace" font-size="13" fill="#C8453A" text-anchor="middle">engineering</text>
+
+      <rect x="230" y="130" width="160" height="60" rx="6" fill="#131316" stroke="#6FCF97"/>
+      <text x="310" y="155" font-family="JetBrains Mono, monospace" font-size="13" fill="#6FCF97" text-anchor="middle">RAG</text>
+      <text x="310" y="174" font-family="JetBrains Mono, monospace" font-size="12" fill="#6FCF97" text-anchor="middle">(add a database)</text>
+
+      <rect x="420" y="130" width="160" height="60" rx="6" fill="#131316" stroke="#F2EFE9" stroke-opacity="0.6"/>
+      <text x="500" y="155" font-family="JetBrains Mono, monospace" font-size="13" fill="#F2EFE9" text-anchor="middle">finetuning</text>
+      <text x="500" y="174" font-family="JetBrains Mono, monospace" font-size="12" fill="#F2EFE9" text-anchor="middle">(train it more)</text>
+
+      <text x="310" y="230" font-family="JetBrains Mono, monospace" font-size="12" fill="#7A7A80" text-anchor="middle">all three can be combined; none require training a model from zero</text>
+    </svg>
+    <figcaption>Fig 3. Three common ways to adapt one foundation model to a specific product, instead of training a new one.</figcaption>
+  </figure>
+
+  <h3>6. Why this turned into a new job: AI engineering</h3>
+  <p>AI engineering, in the covered text's framing, is the practice of building applications on top of an already-trained foundation model, as distinct from ML engineering, which includes the older practice of training your own model for your own task. Three conditions together made this practical at scale. First, general-purpose capability: a single foundation model can now do many tasks reasonably well, so it can support far more products than a narrow, task-specific model could. Second, a sharp rise in investment: Goldman Sachs Research estimated AI investment could approach $100 billion in the US and $200 billion globally by 2025, and FactSet found that about one in three S&amp;P 500 companies mentioned AI on their second-quarter-2023 earnings calls, roughly three times the share that did a year earlier (the covered text is careful to note it's unclear whether mentioning AI causes better outcomes or just correlates with being an early adopter). Third, a much lower barrier to entry: the model-as-a-service approach means you can call a powerful model through a single API instead of hosting and serving your own infrastructure, and you can often steer it in plain English rather than writing training code.</p>
+  <p>Put together, these three factors are why the covered text reports that, within about two years, several open source AI engineering tools had already collected more GitHub stars than Bitcoin's repository, and why job-title and skills language around generative AI reportedly grew fast on LinkedIn in 2023. None of this means every organization needs a bespoke foundation model strategy tomorrow, but it does explain why "adapt an existing model" became a viable, and often faster, alternative to "train your own" for a large and growing set of products.</p>
+
+  <h2>Why it matters</h2>
+  <p>This distinction between training a model and adapting one is the reason a solo builder or a small team can now ship something that would have needed a research lab and months of data collection a decade ago. It also reframes the actual skill being built: less "how do I train a model from raw data" and more "how do I choose and combine prompting, retrieval, and finetuning to get a general-purpose model to behave the way my product needs." That's the shift the rest of this book (per the covered introduction) is organized around, and it's worth having the vocabulary (token, self-supervision, autoregressive, foundation model) solid before moving into use cases and planning, which is where the next part of this unit picks up.</p>
+
+  <div class="box">
+    <h2>REMEMBER THIS</h2>
+    <ul>
+      <li>A language model just predicts the next likely token given what came before (or, for masked models, given both sides of a blank).</li>
+      <li>Self-supervision lets a model generate its own training labels from raw text, which is why language models could scale up without a giant human-labeling budget.</li>
+      <li>"Foundation model" generally means large, often multimodal, and general-purpose enough to be adapted for many different products, not just one task.</li>
+      <li>Prompt engineering, RAG, and finetuning are three common (and combinable) ways to adapt an existing foundation model, and usually far cheaper than training one from scratch.</li>
+      <li>AI engineering exists as its own discipline because capability, investment, and a much lower barrier to entry (mainly model-as-a-service APIs) arrived together, not because any one factor alone was enough.</li>
+    </ul>
+  </div>
+
+  <div class="box green">
+    <h2>TRY IT YOURSELF</h2>
+    <ul>
+      <li><strong>Count your own tokens.</strong> Install a tokenizer library (e.g. <code>tiktoken</code> for Python) and tokenize 5 sentences of your choosing. Compare token count to word count and see how close you land to the "average token is about &frac34; of a word" figure mentioned in the covered text. Completion criteria: a small script that prints tokens and a token-to-word ratio for each sentence.</li>
+      <li><strong>Build a tiny self-supervised next-word guesser.</strong> Take a short public-domain text file, split it into words, and build a simple frequency table of "given this word, what word comes next most often." Feed it a few starting words and let it generate a sentence by always picking the most frequent next word. Completion criteria: it generates at least 10 tokens of text without crashing, and you can explain in one sentence why this is (a very crude version of) self-supervision.</li>
+      <li><strong>Labeling-cost calculator.</strong> Write a small script or spreadsheet that takes a per-item labeling cost and a dataset size and outputs the total labeling bill, then chart it for 1,000 / 100,000 / 1,000,000 / 1,000,000,000 items. Completion criteria: a chart or table that makes the "labeling doesn't scale linearly with ambition" point visible at a glance.</li>
+      <li><strong>Masked vs. autoregressive by hand.</strong> Take 5 sentences, blank out one word in the middle of each (masked-style) and separately blank out the last word of each (autoregressive-style). Try to guess the missing word for both versions yourself and note which felt easier and why. Completion criteria: a short written note comparing your confidence on the two styles.</li>
+      <li><strong>Make one API call, then read the bill.</strong> Sign up for any foundation model API's free or trial tier, make a single request, and inspect the response for token counts (input and output). Completion criteria: you can state, in your own words, what "model as a service" bought you compared to hosting a model yourself (skip the infrastructure, pay per token).</li>
+      <li><strong>Sketch your own adapt-vs-build decision.</strong> Pick a hypothetical small AI feature (e.g. "summarize my own notes app"). Write two or three sentences each for how you'd approach it with prompt engineering, with RAG, and with finetuning, and note which you'd try first and why. Completion criteria: a short written comparison, no code required.</li>
+    </ul>
+  </div>
+
+  <h2>Go deeper</h2>
+  <p>If one thing is worth re-reading closely, it's the self-supervision walk-through with the "I love street food." example table: seeing exactly how one sentence turns into six separate training pairs is the moment the whole "labels for free" idea clicks. A natural next question for Part 2: given that a foundation model can do a lot out of the box, what does the actual landscape of real, working AI products look like today, and which categories of tasks is AI already good at versus still weak on?</p>
+
+  <h2>Sources &amp; verify</h2>
+  <ul class="sources">
+    <li>Primary source: <em>AI Engineering</em> by Chip Huyen (O'Reilly), Chapter 1, "Introduction to Building AI Applications with Foundation Models" &mdash; Part 1 of 4, covering the section "The Rise of AI Engineering," approximately pages 25&ndash;39 of the source PDF.</li>
+    <li>This digest is a teaching draft written from notes on that section, not a substitute for the chapter itself. If you're relying on any of these figures (parameter counts, vocabulary sizes, investment estimates, dates) for something important, verify them against the original text and its own cited sources.</li>
+    <li>A few numbers in the covered section are themselves estimates or survey results the author is citing secondhand (e.g. the Goldman Sachs investment estimate, the FactSet earnings-call count, the GitHub star comparison), not measurements Chip Huyen made directly. Treat them as reported figures, current as of the book's writing, rather than fixed facts.</li>
+  </ul>
+
+  <div class="footer">
+    <img src="../assets/brand/logo.png" alt="Mayowa Bodunwa">
+    <div>
+      <div class="name">Mayowa Bodunwa</div>
+      <div class="socials">in/mayowa-bodunwa<br>@mayowa.bodunwa</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

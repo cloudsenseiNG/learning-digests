@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing Data-Intensive Applications — Ch.1: Reliable, Scalable, and Maintainable Applications</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0A0B; --panel:#0E0E10; --panel2:#131316; --hair:rgba(242,239,233,0.10);
+    --ink:#F2EFE9; --body:#C9C7C1; --muted:#7A7A80; --red:#C8453A; --green:#6FCF97;
+    --footer-muted:#D8D5CD;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--body);font-family:'Inter',-apple-system,sans-serif;line-height:1.6;}
+  .wrap{max-width:660px;margin:0 auto;padding:56px 22px 80px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace;color:var(--red);font-size:13px;letter-spacing:3px;text-transform:uppercase;}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;color:var(--ink);font-size:36px;line-height:1.15;margin:14px 0 10px;}
+  .lead{color:var(--body);font-size:17px;margin:0 0 34px;}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:23px;margin:44px 0 14px;}
+  h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:19px;margin:30px 0 10px;}
+  p{margin:0 0 14px;font-size:16px;color:var(--body);}
+  .muted{color:var(--muted);}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin-bottom:8px;font-size:16px;color:var(--body);}
+  strong{color:var(--ink);}
+  .term{color:var(--ink);font-weight:600;}
+  .box{border-left:3px solid var(--red);background:var(--panel);border-radius:8px;padding:22px 24px;margin:36px 0;}
+  .box.green{border-left-color:var(--green);}
+  .box h2{margin-top:0;font-size:20px;}
+  .box.red-title h2{color:var(--red);}
+  .box.green-title h2{color:var(--green);}
+  figure{margin:20px 0 26px;border:1px solid var(--hair);border-radius:10px;background:var(--panel);padding:18px 18px 14px;}
+  figure svg{width:100%;height:auto;display:block;}
+  figcaption{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--muted);margin-top:10px;text-align:center;letter-spacing:0.3px;}
+  code, .mono{font-family:'JetBrains Mono',monospace;}
+  .kicker{font-family:'JetBrains Mono',monospace;color:var(--red);font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+  hr{border:none;border-top:1px solid var(--hair);margin:44px 0;}
+  a{color:var(--ink);}
+  .sources{font-size:14.5px;color:var(--muted);}
+  .sources li{color:var(--muted);font-size:14.5px;}
+  footer{margin-top:60px;padding-top:28px;border-top:1px solid var(--hair);display:flex;align-items:center;gap:16px;}
+  footer img{width:56px;height:56px;border-radius:50%;border:1px solid var(--hair);object-fit:cover;}
+  .footer-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);font-size:16px;margin:0 0 4px;}
+  .social-line{font-family:'JetBrains Mono',monospace;color:var(--footer-muted);font-size:13.5px;display:flex;align-items:center;gap:6px;margin:2px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">SYSTEMS · CH.1 DIGEST</div>
+  <h1>Reliable, Scalable, and Maintainable Applications</h1>
+  <p class="lead">What we actually mean when we call a data system "good," and why reliability, scalability, and maintainability are things you design for, not things you get lucky into.</p>
+
+  <h2>In one line</h2>
+  <p>Before you pick a database or a framework, it helps to agree on what "working well" even means, and this chapter breaks that down into three concrete goals you can actually reason about: reliability, scalability, and maintainability.</p>
+
+  <h2>The big idea</h2>
+  <p>Modern applications are usually built by stitching together existing building blocks: a database to store things, a cache to speed up reads, a search index, a queue for async work, a batch job for crunching large datasets. Once you combine a few of these into your own system, you become a data system designer, not just an application developer, and that comes with real questions: what happens when a part of it breaks? What happens when usage grows tenfold? What happens two years from now when a different engineer has to change it? This chapter gives you a vocabulary for those three questions: <span class="term">reliability</span> (keeps working when things go wrong), <span class="term">scalability</span> (has a reasonable way to handle growth), and <span class="term">maintainability</span> (stays workable for the humans who touch it later).</p>
+
+  <h2>Key terms</h2>
+  <ul>
+    <li><span class="term">Data-intensive application</span> — an application where the hard part is the amount, complexity, or rate of change of data, not raw CPU power. Think a system storing and searching millions of records, versus a system doing heavy number-crunching on a small amount of input.</li>
+    <li><span class="term">Fault</span> — one component of the system deviating from what it's supposed to do. A disk that dies, a service that returns a bad response, a bug that trips on one bad input.</li>
+    <li><span class="term">Failure</span> — the system as a whole stops providing the service it's supposed to provide to the user. Not the same thing as a fault: a fault is local, a failure is what the user actually experiences.</li>
+    <li><span class="term">Fault-tolerant / resilient</span> — describes a system built to keep working even when some faults happen. It's bounded on purpose: no system can tolerate literally every possible fault (nobody is budgeting for "the planet gets swallowed by a black hole"), so in practice it means tolerating certain expected kinds of faults.</li>
+    <li><span class="term">Reliability</span> — a system continuing to do the correct thing, at acceptable performance, even when hardware, software, or people misbehave.</li>
+    <li><span class="term">Scalability</span> — a system's ability to cope with growth in load (more users, more data, more traffic) by adding resources in a reasonable way, rather than falling over.</li>
+    <li><span class="term">Load parameters</span> — the small set of numbers you use to describe how much load a system is under right now, so you have something concrete to reason about when asking "what if this grows?" Requests per second, read/write ratio, number of active users, that kind of thing.</li>
+    <li><span class="term">Throughput</span> — how many records or requests a system can process per unit time. The number that matters most for batch jobs.</li>
+    <li><span class="term">Response time</span> — what the client actually experiences: the time from sending a request to getting a response back, including network delay and any time spent waiting in a queue.</li>
+    <li><span class="term">Latency</span> — often used loosely as a synonym for response time, but strictly it's the time a request spends waiting to be handled before anyone starts working on it.</li>
+    <li><span class="term">Percentile (p50, p95, p99...)</span> — sort every response time from fastest to slowest; the 50th percentile (p50, the median) is the point where half the requests were faster and half slower. p95 means 95% of requests were faster than that value. Higher percentiles show you how bad your worst cases are.</li>
+    <li><span class="term">Tail latency</span> — the high percentiles (p99, p99.9). Called "the tail" because that's where they sit on a distribution curve of response times, and they matter because a small number of very slow requests can still ruin the experience for real users.</li>
+    <li><span class="term">Head-of-line blocking</span> — when one slow request stuck at the front of a queue delays every request behind it, even ones that would otherwise be fast.</li>
+    <li><span class="term">SLA / SLO</span> — service level agreement / service level objective: a stated promise about performance and uptime, usually expressed with percentiles (for example, "p99 under 1 second, up 99.9% of the time").</li>
+    <li><span class="term">Scaling up vs scaling out</span> — scaling up (vertical) means moving to a bigger, more powerful machine. Scaling out (horizontal) means spreading the load across more machines. A system built around scaling out is often called a shared-nothing architecture.</li>
+    <li><span class="term">Operability</span> — how easy the system is for an operations team to keep running smoothly day to day.</li>
+    <li><span class="term">Simplicity (and accidental complexity)</span> — how easy the system is for a new engineer to understand. "Accidental" complexity is complexity that comes from how the system happens to be built, not from the actual problem it's solving, and it's the kind you can often design away.</li>
+    <li><span class="term">Evolvability</span> — how easy it is to change the system later as requirements change, which they always do.</li>
+  </ul>
+
+  <h2>How it works</h2>
+  <p>The chapter opens by pointing out something easy to miss: databases, caches, queues, and search indexes look like totally different tools, but we group them under one umbrella, "data systems," because most real applications end up stitching several of them together to get one working product. The moment you do that stitching yourself (say, keeping a cache in sync with your main database, or gluing a search index onto your app), you've become a data system designer whether you meant to or not, and now you own the tricky questions: does the data stay correct when something goes wrong internally? Does performance stay decent when part of the system is degraded? Can it handle more load later? This is the frame for the whole book: reliability, scalability, and maintainability are the three lenses it keeps coming back to, so it's worth getting a solid mental model of each one now.</p>
+
+  <h3>Reliability: keep working, even when things go wrong</h3>
+  <p>Reliability sounds fuzzy until you break it into a fault versus a failure. A <span class="term">fault</span> is one part of the system deviating from spec: a disk crashes, a service returns garbage, a bug trips on an edge case. A <span class="term">failure</span> is when the system as a whole stops doing its job for the user. The whole point of building a reliable system is designing so that faults, which are basically guaranteed to happen eventually, don't automatically turn into failures, which the user actually experiences.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow diagram showing a fault leading to either a contained outcome or a failure">
+      <rect x="190" y="20" width="240" height="66" rx="10" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="310" y="48" text-anchor="middle" fill="#F2EFE9" font-family="Bricolage Grotesque" font-weight="700" font-size="17">FAULT</text>
+      <text x="310" y="70" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">one component breaks or misbehaves</text>
+
+      <line x1="310" y1="86" x2="310" y2="122" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="310,130 303,118 317,118" fill="#7A7A80"/>
+
+      <rect x="150" y="128" width="320" height="60" rx="10" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="310" y="153" text-anchor="middle" fill="#F2EFE9" font-family="Bricolage Grotesque" font-weight="700" font-size="15">CAUGHT BEFORE IT REACHES THE USER?</text>
+      <text x="310" y="174" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">redundancy, retries, error handling</text>
+
+      <line x1="240" y1="188" x2="140" y2="226" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="130,232 137,220 148,228" fill="#7A7A80"/>
+      <text x="205" y="212" text-anchor="middle" fill="#7A7A80" font-family="JetBrains Mono" font-size="12">yes</text>
+
+      <line x1="380" y1="188" x2="480" y2="226" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="490,232 483,220 472,228" fill="#7A7A80"/>
+      <text x="415" y="212" text-anchor="middle" fill="#7A7A80" font-family="JetBrains Mono" font-size="12">no</text>
+
+      <rect x="10" y="230" width="260" height="66" rx="10" fill="#0E0E10" stroke="#6FCF97" stroke-opacity="0.5"/>
+      <text x="140" y="258" text-anchor="middle" fill="#6FCF97" font-family="Bricolage Grotesque" font-weight="700" font-size="16">CONTAINED</text>
+      <text x="140" y="280" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">system keeps serving users</text>
+
+      <rect x="350" y="230" width="260" height="66" rx="10" fill="#0E0E10" stroke="#C8453A" stroke-opacity="0.6"/>
+      <text x="480" y="258" text-anchor="middle" fill="#C8453A" font-family="Bricolage Grotesque" font-weight="700" font-size="16">FAILURE</text>
+      <text x="480" y="280" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="12.5">users notice the system is down</text>
+    </svg>
+    <figcaption>Same fault, two different endings. The system design decides which one you get.</figcaption>
+  </figure>
+
+  <p>Faults roughly fall into three buckets, and each one behaves differently:</p>
+  <ul>
+    <li><strong>Hardware faults.</strong> Disks are commonly reported with a mean time to failure (MTTF) somewhere around 10 to 50 years, so on a cluster with 10,000 disks that works out to roughly one disk dying per day on average. The traditional fix is redundancy: RAID setups, dual power supplies, backup generators, so a broken part can be swapped without the whole machine going down. That worked well enough when most systems ran on one or a handful of machines. Once systems span very large numbers of machines (or run on cloud platforms where a virtual machine can become unavailable without much warning), the odds of some hardware fault happening on any given day go up proportionally, which pushes systems toward tolerating the loss of a whole machine rather than just a whole disk.</li>
+    <li><strong>Software errors.</strong> These are systematic rather than random: the same bug fires the same way everywhere it's triggered, which is why software bugs tend to be correlated across many machines at once in a way hardware faults usually aren't. One real example from the chapter: a leap second added on June 30, 2012 caused a bug in the Linux kernel that made many applications hang simultaneously. There's no single fix for this category. It's a mix of things: careful assumptions, thorough testing, isolating processes so one crash doesn't take others down, and monitoring that catches drift from expected behavior early.</li>
+    <li><strong>Human errors.</strong> People configure and operate these systems, and people make mistakes. One study of large internet services found that configuration errors by operators were the leading cause of outages, with hardware faults responsible for only 10 to 25% of them. The best defenses aren't about expecting perfection from people: well-designed interfaces that make the right thing easy and the wrong thing hard, safe sandbox environments to practice in, thorough testing, quick rollback when something goes wrong, and good monitoring so problems get caught early rather than discovered by users.</li>
+  </ul>
+  <p>One idea that sounds backwards at first: some teams deliberately increase the rate of faults on purpose, for example by randomly killing processes in production, so that their fault-tolerance mechanisms get exercised constantly instead of sitting untested until the day they're actually needed. The Netflix Chaos Monkey tool, mentioned in the chapter, is a well-known example of this approach.</p>
+  <p>It's also worth noting reliability isn't free, and sometimes it's fine to trade some of it away deliberately, for example on an early prototype where speed of iteration matters more than uptime. The point isn't "always maximize reliability." It's knowing when you're cutting that corner on purpose versus by accident.</p>
+
+  <h3>Scalability: having an answer for "what happens when this grows?"</h3>
+  <p>Scalability isn't a label you can just slap on a system ("this is scalable"). It only makes sense as a question: if load grows in a particular way, what are your options for coping with it? To even ask that question you first need a way to describe the load you have right now, and a way to measure whether performance is holding up.</p>
+
+  <h3>Describing load</h3>
+  <p>Load parameters are the handful of numbers that describe current load, and which ones matter depends entirely on your system: requests per second, the ratio of reads to writes, how many users are active at once, your cache hit rate, or something specific to your architecture.</p>
+  <p>The chapter walks through a real example from Twitter, using numbers Twitter published in November 2012. Posting a tweet ran at around 4.6k requests/second on average (peaking over 12k/second). Reading a home timeline ran at around 300k requests/second, nearly two orders of magnitude higher. Twitter's actual scaling challenge wasn't the volume of tweets, it was the "fan-out": every user follows many people and is followed by many people. There were two broad ways to build the home timeline feature:</p>
+  <ol>
+    <li>Store every tweet in one global table, and when a user asks for their timeline, look up everyone they follow, pull each of those users' tweets, and merge them by time, on every single read.</li>
+    <li>Give every user a precomputed timeline cache. When someone posts, look up everyone who follows them and insert the new tweet into each of those followers' cached timelines right away. Reading a timeline is then just a cheap lookup, because the work already happened at write time.</li>
+  </ol>
+  <p>Twitter started with approach 1, but it couldn't keep up with the read volume, so they switched to approach 2, because reads happened far more often than writes and it made sense to do more work up front and less on every read. The catch: approach 2 makes posting expensive. On average a tweet fans out to about 75 followers, so 4.6k tweets/second becomes roughly 345k writes/second to timeline caches, but that average hides a lot: some accounts have over 30 million followers, so a single tweet from one of them can mean over 30 million cache writes, and Twitter aims to deliver tweets to followers within about five seconds. In practice, Twitter ended up moving to a hybrid: most users still get fanned out at write time (approach 2), but tweets from accounts with huge follower counts get fetched at read time instead (approach 1) and merged in, because fanning those out to millions of caches on every post isn't worth it. This is a specific, attributed example from one company's system at one point in time, not a universal rule for how every application should be built. The transferable idea is the general one: your own load parameters (whichever ones matter for your system) are what should drive which operations you optimize for.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagram comparing computing a timeline at read time versus precomputing it at write time">
+      <text x="20" y="26" fill="#C8453A" font-family="JetBrains Mono" font-size="12" letter-spacing="1.5">APPROACH 1 · WORK HAPPENS AT READ TIME</text>
+      <rect x="20" y="40" width="150" height="52" rx="8" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="95" y="71" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12.5">new tweet</text>
+      <line x1="170" y1="66" x2="212" y2="66" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="220,66 208,60 208,72" fill="#7A7A80"/>
+      <rect x="220" y="40" width="150" height="52" rx="8" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="295" y="71" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12.5">tweet store</text>
+
+      <rect x="420" y="40" width="180" height="52" rx="8" fill="#0E0E10" stroke="rgba(242,239,233,0.18)"/>
+      <text x="510" y="71" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12">timeline read</text>
+      <line x1="420" y1="66" x2="378" y2="66" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="370,66 382,60 382,72" fill="#7A7A80"/>
+      <text x="500" y="106" text-anchor="middle" fill="#C8453A" font-family="JetBrains Mono" font-size="11">join across follows, every read</text>
+
+      <line x1="20" y1="130" x2="600" y2="130" stroke="rgba(242,239,233,0.10)" stroke-width="1"/>
+
+      <text x="20" y="158" fill="#6FCF97" font-family="JetBrains Mono" font-size="12" letter-spacing="1.5">APPROACH 2 · WORK HAPPENS AT WRITE TIME</text>
+      <rect x="20" y="172" width="150" height="52" rx="8" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="95" y="203" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12.5">new tweet</text>
+      <line x1="170" y1="198" x2="212" y2="198" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="220,198 208,192 208,204" fill="#7A7A80"/>
+      <rect x="220" y="172" width="150" height="52" rx="8" fill="#131316" stroke="rgba(242,239,233,0.18)"/>
+      <text x="295" y="197" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12">fan out to</text>
+      <text x="295" y="213" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12">followers</text>
+
+      <line x1="345" y1="224" x2="300" y2="256" stroke="#7A7A80" stroke-width="1.5"/>
+      <line x1="295" y1="224" x2="295" y2="256" stroke="#7A7A80" stroke-width="1.5"/>
+      <line x1="245" y1="224" x2="290" y2="256" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="200" y="256" width="80" height="44" rx="7" fill="#0E0E10" stroke="rgba(242,239,233,0.18)"/>
+      <text x="240" y="283" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="10.5">cache A</text>
+      <rect x="290" y="256" width="80" height="44" rx="7" fill="#0E0E10" stroke="rgba(242,239,233,0.18)"/>
+      <text x="330" y="283" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="10.5">cache B</text>
+      <rect x="380" y="256" width="80" height="44" rx="7" fill="#0E0E10" stroke="rgba(242,239,233,0.18)"/>
+      <text x="420" y="283" text-anchor="middle" fill="#C9C7C1" font-family="Inter" font-size="10.5">cache C</text>
+
+      <rect x="420" y="172" width="180" height="52" rx="8" fill="#0E0E10" stroke="rgba(242,239,233,0.18)"/>
+      <text x="510" y="203" text-anchor="middle" fill="#F2EFE9" font-family="Inter" font-size="12">timeline read</text>
+      <line x1="420" y1="198" x2="378" y2="198" stroke="#7A7A80" stroke-width="2"/>
+      <polygon points="370,198 382,192 382,204" fill="#7A7A80"/>
+      <text x="500" y="238" text-anchor="middle" fill="#6FCF97" font-family="JetBrains Mono" font-size="11">cheap lookup, already computed</text>
+    </svg>
+    <figcaption>Twitter's home-timeline tradeoff (Nov 2012 figures): push the work to write time when reads vastly outnumber writes.</figcaption>
+  </figure>
+
+  <h3>Describing performance</h3>
+  <p>Once you can describe load, you need a way to describe performance so you can see what happens as load changes. Batch systems (crunching a big dataset in one go) usually care about <span class="term">throughput</span>: records processed per second. Online systems, the kind responding to individual requests, usually care more about <span class="term">response time</span>: how long a client waits between sending a request and getting a response back. That response time includes network delays and any queueing, not just the actual work done, which is a subtly different thing from <span class="term">latency</span> (the time a request spends waiting before anyone starts handling it).</p>
+  <p>The important shift here is realizing response time isn't one number, it's a distribution. Run the exact same request over and over and you'll get a slightly different time each try, and in a real system handling varied load, that spread gets a lot wider (context switches, garbage collection pauses, network retransmits, disk reads, and plenty of other causes pile on top of the "real" work). The mean (average) response time gets reported a lot, but it's a weak signal for "what does a typical user experience," because it doesn't tell you how many people actually hit that number. Percentiles are the better tool: sort every response time from fastest to slowest, and the median (p50) is the halfway point. A p95 or p99 tells you where your worst cases sit; if p95 is 1.5 seconds, that means 95 out of 100 requests were faster than that, and 5 were slower.</p>
+
+  <figure>
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Right-skewed response time distribution with p50, p95 and p99 marked">
+      <line x1="40" y1="210" x2="580" y2="210" stroke="#7A7A80" stroke-width="1.5"/>
+      <rect x="360" y="20" width="220" height="190" fill="#C8453A" opacity="0.08"/>
+
+      <path d="M40,208 C68,204 92,60 148,54 C188,50 208,120 236,150 C296,192 380,204 460,207 C500,208 540,209 580,210"
+            fill="none" stroke="#F2EFE9" stroke-width="2.5"/>
+
+      <line x1="182" y1="52" x2="182" y2="210" stroke="#7A7A80" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="182" y="38" text-anchor="middle" fill="#C9C7C1" font-family="JetBrains Mono" font-size="12">p50</text>
+
+      <line x1="360" y1="30" x2="360" y2="210" stroke="#C8453A" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="360" y="16" text-anchor="middle" fill="#C8453A" font-family="JetBrains Mono" font-size="12">p95</text>
+
+      <line x1="460" y1="30" x2="460" y2="210" stroke="#C8453A" stroke-width="1.5" stroke-dasharray="4 4"/>
+      <text x="460" y="16" text-anchor="middle" fill="#C8453A" font-family="JetBrains Mono" font-size="12">p99</text>
+
+      <text x="310" y="240" text-anchor="middle" fill="#7A7A80" font-family="JetBrains Mono" font-size="12">response time →</text>
+    </svg>
+    <figcaption>Illustrative shape, not measured data: most requests cluster fast, a shrinking few stretch the tail out.</figcaption>
+  </figure>
+
+  <p>High percentiles ("tail latencies") matter more than they sound like they should, because they're what your worst-treated users actually feel. The chapter mentions Amazon describing its internal service requirements in terms of the 99.9th percentile, even though that only touches 1 in 1,000 requests, on the reasoning that the customers hitting those slow requests are often the ones with the most data on their account, which tends to mean the most valuable customers. Amazon has also reported that a 100 ms increase in response time can reduce sales by about 1%, and other reports cited in the chapter found a 1-second slowdown cutting a customer satisfaction metric by about 16%. On the flip side, Amazon apparently found that chasing the 99.99th percentile (the slowest 1 in 10,000) wasn't worth the cost, since gains that far into the tail get expensive fast and are easily swamped by random factors outside your control. These are specific, attributed figures from specific companies at a point in time, not universal constants, but they're a useful illustration of why tail percentiles get taken seriously.</p>
+  <p>Percentiles show up directly in <span class="term">SLAs and SLOs</span>: a service level agreement might define "up" as a median response time under 200 ms and a p99 under 1 second, with a requirement to be up at least 99.9% of the time. That's the chapter's own illustrative example of what an SLA can look like, not a claim that every service targets those exact numbers.</p>
+  <p>Two extra wrinkles worth knowing: <span class="term">queueing delays</span> often dominate response time at high percentiles, because a server can only handle so many things in parallel, so a handful of slow requests at the front of the line can hold up everything behind them (head-of-line blocking) even if those later requests would individually have been fast. And when a single end-user request depends on several backend calls, it only takes one of those calls being slow to make the whole request slow, an effect the chapter calls tail latency amplification: the more backend calls a request fans out to, the higher the odds that at least one of them lands in the slow tail.</p>
+
+  <h3>Approaches for coping with load</h3>
+  <p>Once you can describe load and performance, the actual scaling question is: what do you do as load grows? Broadly there's scaling up (a bigger single machine) and scaling out (spreading load across more machines, sometimes called a shared-nothing architecture). A single powerful machine can be simpler to run, but very demanding workloads often can't avoid scaling out eventually, and in practice a lot of real architectures mix both, since a handful of solid machines can be simpler and cheaper than a huge fleet of tiny ones. Some systems are elastic and add capacity automatically when load spikes; others are scaled manually by a human deciding when to add machines. Elastic systems help with unpredictable load, but manual scaling tends to be simpler and more predictable operationally.</p>
+  <p>Distributing a stateless service (one that doesn't hold onto data between requests) across machines is fairly straightforward. Taking a stateful data system like a database from one machine to a distributed setup is a lot more involved, which is why a lot of common practice has been to keep a database on one beefy machine for as long as possible, and only go distributed once cost or availability needs force the issue. There's no single generic architecture that scales for every application. A system built for 100,000 small requests per second looks nothing like a system built for a handful of requests per minute each carrying gigabytes of data, even though the two might move the same total amount of data. A scalable architecture is built around assumptions about which operations are common and which are rare (your load parameters); if those assumptions turn out wrong, the engineering effort spent scaling for them can be wasted or even actively counterproductive. That's part of why an early-stage product usually gets more value from iterating quickly than from scaling for a load it doesn't have yet.</p>
+
+  <h3>Maintainability: designing for the humans who come after you</h3>
+  <p>Most of the lifetime cost of software isn't writing it, it's maintaining it afterward: fixing bugs, keeping it running, adapting it to new requirements, paying down shortcuts taken earlier. The chapter frames three design goals that make that ongoing work less painful.</p>
+
+  <h3>Operability</h3>
+  <p>Operability is about making life easier for whoever keeps the system running day to day. In practice that means things like: giving good visibility into what the system is doing internally, supporting automation instead of requiring manual babysitting, not depending on any one specific machine staying alive, documenting how the system behaves clearly enough that "if I do X, Y happens" is actually true, providing sane defaults while still letting an operator override them when needed, and generally behaving predictably so there are fewer surprises in production.</p>
+
+  <h3>Simplicity and accidental complexity</h3>
+  <p>Small projects can stay simple. Bigger ones tend to accumulate complexity: tangled dependencies, inconsistent naming, special-case hacks layered on top of each other, until the whole thing is hard for anyone to reason about, sometimes called a "big ball of mud." Making a system simpler doesn't have to mean cutting functionality. A useful distinction the chapter draws is <span class="term">accidental complexity</span>: complexity that comes from how the system happens to be implemented, not from the actual problem it's solving. That kind is usually avoidable. One of the best tools for removing it is a good abstraction, something that hides a pile of implementation detail behind a clean interface. High-level programming languages hiding machine code and CPU registers, or SQL hiding the on-disk structures and concurrency control underneath it, are both examples of abstractions doing exactly that. Good abstractions are hard to find, especially in distributed systems, but they're worth hunting for because they pay off every time the system gets touched again.</p>
+
+  <h3>Evolvability</h3>
+  <p>Requirements change. You learn new things, business priorities shift, new platforms replace old ones, and a system that can't adapt becomes a system people are afraid to touch. Agile practices like test-driven development and refactoring address this at the scale of a single codebase, but the chapter is interested in the same idea at the scale of a whole data system, possibly spanning multiple services: how easily can you reshape it as requirements shift? That's what the chapter calls evolvability (also sometimes called extensibility or modifiability), and it's closely tied to how simple and well-abstracted the system already is: simpler systems are just easier to reshape than tangled ones.</p>
+
+  <h2>Why it matters</h2>
+  <p>These three lenses aren't just chapter-one throat-clearing, they're the frame the rest of the book keeps returning to. Every design choice covered later (which kind of database, how to replicate data, how to partition it, which consistency guarantees to pick) eventually gets evaluated against some mix of "does this stay reliable," "does this scale the way we need," and "can we still maintain this in two years." Having concrete definitions for those three words now means later chapters can talk about tradeoffs precisely instead of vaguely. It also matters outside of any book: the fault-versus-failure distinction, load parameters, and percentile thinking are all things you'll bump into in real incident reviews, real capacity planning conversations, and real "why does this feel slow sometimes" debugging sessions.</p>
+
+  <div class="box red-title">
+    <h2>Remember this</h2>
+    <ul>
+      <li>A fault is one part breaking. A failure is the whole system failing the user. Reliable design is about stopping the first from becoming the second.</li>
+      <li>Scalability is a question, not a label: "if load grows this way, what are our options?" It always needs load parameters to be concrete.</li>
+      <li>The average response time hides more than it reveals. Percentiles, especially the tail (p95, p99, p999), tell you what your worst-treated users actually experience.</li>
+      <li>There's no universal "scales for everything" architecture. A good architecture is built around your specific, current assumptions about what's common and what's rare, and those assumptions can be wrong.</li>
+      <li>Maintainability comes down to operability (easy to run), simplicity (easy to understand), and evolvability (easy to change). All three compound over a system's life far more than they seem to on day one.</li>
+    </ul>
+  </div>
+
+  <div class="box green green-title">
+    <h2>Try it yourself</h2>
+    <ol>
+      <li><strong>Percentile meter.</strong> Write a script that takes a list of numbers (simulate 100-500 fake "response times" if you don't have real ones) and prints the p50, p95, and p99. Done when: it matches a value you sanity-check by manually sorting a small sample by hand.</li>
+      <li><strong>Redundancy demo.</strong> Spin up 3 or more toy "worker" processes or threads behind a tiny dispatcher that routes fake requests to whichever ones are alive. Kill one at random every few seconds. Done when: you can watch requests keep succeeding in your terminal output even while a worker is down.</li>
+      <li><strong>Load parameter logger.</strong> Wrap a tiny local script or server so it counts requests per second and the ratio between two kinds of requests (reads vs writes, or any split that fits what you're testing). Done when: pointing a few seconds of simulated traffic at it prints a rolling requests/sec number and a read:write ratio.</li>
+      <li><strong>Fan-out simulator.</strong> Build a tiny in-memory version of the two Twitter timeline approaches from this digest, using maybe 20 fake users and a small follow graph. Time how long a "post" and a "read" take under each approach. Done when: you can show, with your own numbers, that approach 2 makes reads cheap and writes more expensive, the same tradeoff described above.</li>
+      <li><strong>Chaos-lite dependency call.</strong> Write a function that calls a "downstream service" function which randomly fails some fixed percent of the time. Wrap the caller with a retry (and optionally a simple circuit breaker that stops calling after repeated failures). Done when: running it 100+ times shows the raw failure rate roughly matches what you injected, and the wrapped version's effective failure rate is visibly lower.</li>
+    </ol>
+  </div>
+
+  <h2>Go deeper (optional)</h2>
+  <p>Pick one system you use daily (an app, a website, anything) and try to guess its load parameters: what's the read/write ratio likely to be, what's probably the spikiest moment of its day, and which of reliability, scalability, or maintainability do you think it sacrifices most for the others? Sitting with that question is a good primer before later chapters start picking apart specific tools and techniques for achieving these three goals.</p>
+
+  <h2>Sources & verify</h2>
+  <ul class="sources">
+    <li><em>Designing Data-Intensive Applications</em>, Chapter 1: "Reliable, Scalable, and Maintainable Applications," pages 25–48.</li>
+    <li>Specific attributed figures in this digest (disk MTTF, the 2012 Linux leap-second bug, the internet-services outage-cause study, Twitter's November 2012 load figures, and the Amazon/Google response-time statistics) are themselves drawn from sources the chapter cites in its own reference list; if you want to verify one of those numbers directly, that reference list is the place to start.</li>
+    <li>This digest is a teaching draft written to help you learn the material, not a substitute for the chapter itself. If you're going to rely on anything here for real decisions, verify it against the source.</li>
+  </ul>
+
+  <footer>
+    <img src="../assets/brand/logo.png" alt="Mayowa">
+    <div>
+      <p class="footer-name">Mayowa</p>
+      <p class="social-line">in/mayowa-bodunwa</p>
+      <p class="social-line">@mayowa.bodunwa</p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
