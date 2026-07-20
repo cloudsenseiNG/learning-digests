@@ -152,9 +152,26 @@ becomes `~/learning/ddia`. Always use exactly these:
 | High Performance MySQL | `~/learning/sql` | `SQL` |
 | AWS | `~/learning/aws` | `AWS` |
 
-The cover's `counter` is `<PREFIX> · NN` (the chapter/topic number, e.g. `AI · 03`);
-inner slides use `NN / TOTAL` (e.g. `02 / 08`). Only the footer `tags` (e.g.
-`ai · foundation models`) vary by subtopic — the terminal and prefix never do.
+The cover's `counter` is `<PREFIX> · NN` (the chapter/topic number, e.g. `AI · 03`).
+
+**Every other slide uses `NN / TOTAL`, where `TOTAL` is the number of NON-cover slides**
+and `NN` is that slide's position among them, starting at `01`. The cover is an unnumbered
+title card, so it is **not** counted in `TOTAL`. That means **the last slide must always
+read `N / N`** — a final slide showing `07 / 08` is a bug: it tells the reader another
+slide is coming when the deck has ended.
+
+For an 8-slide deck (cover + 7 others):
+
+```
+slide 1 (cover)  ->  SQL · 01      <- track chrome, not a fraction
+slide 2          ->  01 / 07
+slide 3          ->  02 / 07
+...
+slide 8 (close)  ->  07 / 07       <- numerator == denominator, always
+```
+
+Only the footer `tags` (e.g. `ai · foundation models`) vary by subtopic — the terminal
+and prefix never do.
 
 ## The templates (already built, on-brand)
 
