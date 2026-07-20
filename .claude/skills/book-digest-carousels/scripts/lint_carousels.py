@@ -9,7 +9,9 @@ Reads every `<carousels>/<book>/<slug>/deck.json` and checks:
   1. Book tells      - words that reveal a book/course sits behind the post
                        ("chapter", "the book", "the author", ...)          -> ERROR
   2. Structure       - 7-10 slides, exactly one `code` visual-proof slide,
-                       cover first and close last                          -> ERROR
+                       cover first and close last, and counters that run
+                       01/N .. N/N over the non-cover slides (the cover is an
+                       unnumbered title card, so a final `07 / 08` is a bug) -> ERROR
   3. Fixed chrome    - `terminal` path and cover `counter` prefix match the
                        track, so they never drift between chapters         -> ERROR
   4. Unbounded absolutes - "always/never/only/every/must/guarantees" with no
@@ -87,6 +89,27 @@ def lint_deck(path, root, errors, warnings):
         errors.append((rel, f"first slide is `{templates[0]}` (must be `cover`)"))
     if templates and templates[-1] != "close":
         errors.append((rel, f"last slide is `{templates[-1]}` (must be `close`)"))
+
+    # --- counters ---------------------------------------------------------
+    # The cover is an unnumbered title card, so TOTAL counts only the non-cover
+    # slides and the final slide must read N/N (never "07 / 08").
+    body_slides = slides[1:]
+    k = len(body_slides)
+    for pos, s in enumerate(body_slides, 1):
+        counter = (s.get("fields") or {}).get("counter", "")
+        if not counter:
+            continue
+        m = re.match(r"^\s*(\d+)\s*/\s*(\d+)\s*$", counter)
+        if not m:
+            errors.append((rel, f"slide {pos + 1}: counter `{counter}` (must be `NN / {k:02d}`)"))
+            continue
+        num, den = int(m.group(1)), int(m.group(2))
+        if den != k:
+            errors.append((rel, f"slide {pos + 1}: counter `{counter}` has total {den}, "
+                                f"but there are {k} non-cover slides (cover is not counted)"))
+        if num != pos:
+            errors.append((rel, f"slide {pos + 1}: counter `{counter}` is out of sequence "
+                                f"(expected {pos:02d})"))
 
     # --- 4. fixed chrome --------------------------------------------------
     book = os.path.basename(os.path.dirname(os.path.dirname(path)))
